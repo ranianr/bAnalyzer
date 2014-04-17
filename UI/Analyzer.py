@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'UI/Analyzer.ui'
 #
-# Created: Thu Apr 17 22:48:00 2014
+# Created: Fri Apr 18 00:05:50 2014
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -60,7 +60,7 @@ class Ui_MainWindow(object):
         self.removeNoiseChecked.setGeometry(QtCore.QRect(120, 130, 117, 22))
         self.removeNoiseChecked.setObjectName(_fromUtf8("removeNoiseChecked"))
         self.removeNoiseUnchecked = QtGui.QRadioButton(self.centralWidget)
-        self.removeNoiseUnchecked.setGeometry(QtCore.QRect(260, 130, 117, 22))
+        self.removeNoiseUnchecked.setGeometry(QtCore.QRect(190, 130, 117, 22))
         self.removeNoiseUnchecked.setObjectName(_fromUtf8("removeNoiseUnchecked"))
         self.StartSample = QtGui.QSlider(self.centralWidget)
         self.StartSample.setGeometry(QtCore.QRect(50, 100, 371, 29))
@@ -111,6 +111,10 @@ class Ui_MainWindow(object):
         self.TrainButton = QtGui.QPushButton(self.centralWidget)
         self.TrainButton.setGeometry(QtCore.QRect(270, 300, 99, 27))
         self.TrainButton.setObjectName(_fromUtf8("TrainButton"))
+        self.subjectName = QtGui.QLabel(self.centralWidget)
+        self.subjectName.setGeometry(QtCore.QRect(390, 30, 171, 17))
+        self.subjectName.setText(_fromUtf8(""))
+        self.subjectName.setObjectName(_fromUtf8("subjectName"))
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 639, 25))
@@ -136,8 +140,8 @@ class Ui_MainWindow(object):
         self.label_6.setText(QtGui.QApplication.translate("MainWindow", "Feature enhancement method: ", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("MainWindow", "Classifier:", None, QtGui.QApplication.UnicodeUTF8))
         self.BrowseButton.setText(QtGui.QApplication.translate("MainWindow", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.removeNoiseChecked.setText(QtGui.QApplication.translate("MainWindow", "RadioButton", None, QtGui.QApplication.UnicodeUTF8))
-        self.removeNoiseUnchecked.setText(QtGui.QApplication.translate("MainWindow", "RadioButton", None, QtGui.QApplication.UnicodeUTF8))
+        self.removeNoiseChecked.setText(QtGui.QApplication.translate("MainWindow", "yes", None, QtGui.QApplication.UnicodeUTF8))
+        self.removeNoiseUnchecked.setText(QtGui.QApplication.translate("MainWindow", "no", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("MainWindow", "3", None, QtGui.QApplication.UnicodeUTF8))
         self.label_9.setText(QtGui.QApplication.translate("MainWindow", "6", None, QtGui.QApplication.UnicodeUTF8))
         self.label_10.setText(QtGui.QApplication.translate("MainWindow", "5", None, QtGui.QApplication.UnicodeUTF8))

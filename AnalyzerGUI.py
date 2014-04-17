@@ -1,6 +1,6 @@
 import sys
 sys.path.append('UI')
-
+sys.path.append('Classes')
 
 from PyQt4 import QtCore, QtGui
 from Analyzer_extended import Ui_MainWindow_Extended
