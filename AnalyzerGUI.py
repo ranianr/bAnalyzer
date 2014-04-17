@@ -1,6 +1,7 @@
 import sys
 sys.path.append('UI')
 sys.path.append('Classes')
+sys.path.append('Octave')
 
 from PyQt4 import QtCore, QtGui
 from Analyzer_extended import Ui_MainWindow_Extended

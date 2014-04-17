@@ -5,19 +5,20 @@ import oct2py
 import thread
 from PyQt4 import QtCore, QtGui
 class readDataThread(QtCore.QThread):
-    def __init__(self,  dataFile, removeNoiseFlag, featureExtractionmeFile, featureEnhancementMethod, classifierFile):
+    def __init__(self,  dataFile, removeNoiseFlag,SignalStart, SignalEnd,  featureExtractionmeFile, featureEnhancementMethod, classifierFile):
         QtCore.QThread.__init__(self)
-	self.path = dataFile
-	#write any initialization here
-	self.dataFile = dataFile
-	self.removeNoiseFlag = removeNoiseFlag
-	self.featureEnhancementMethod = featureEnhancementMethod
-	self.featureExtractionmeFile = featureExtractionmeFile
-	self.classifierFile = classifierFile
+        self.path = dataFile
+        #write any initialization here
+        self.dataFile = dataFile
+        self.removeNoiseFlag = removeNoiseFlag
+        self.SignalStart = SignalStart
+        self.SignalEnd = SignalEnd
+        self.featureEnhancementMethod = featureEnhancementMethod
+        self.featureExtractionmeFile = featureExtractionmeFile
+        self.classifierFile = classifierFile
 
     def featureMerger(self, features, count, direction):
-	
-	if (direction == 'H'): 
+        if (direction == 'H'): #horizontal merging
             if (count == 2):
                return np.r_[features[0], features[1]]
             if (count == 3):
@@ -26,52 +27,37 @@ class readDataThread(QtCore.QThread):
                return np.r_[features[0], features[1], features[2], features[3]]
             if (count == 5):
                return np.r_[features[0], features[1], features[2], features[3], features[4]]
-	    
-	elif (direction == 'V'):
-	    if (count == 2):
-		return np.c_[features[0], features[1]]
-	    if (count == 3):
-		return np.c_[features[0], features[1], features[2]]
-	    if (count == 4):
-		return np.c_[features[0], features[1], features[2], features[3]]
-	    if (count == 5):
-		return np.c_[features[0], features[1], features[2], features[3], features[4]]
+        elif (direction == 'V'): #vertical merging
+            if (count == 2):
+                return np.c_[features[0], features[1]]
+            if (count == 3):
+                return np.c_[features[0], features[1], features[2]]
+            if (count == 4):
+                return np.c_[features[0], features[1], features[2], features[3]]
+            if (count == 5):
+                return np.c_[features[0], features[1], features[2], features[3], features[4]]
 
     def getClassNumbers(self, HDR, classTags):
-	octave = oct2py.Oct2Py()
-	octave.addpath('Classifiers/RawDataFunctions')
+        octave = oct2py.Oct2Py()
+        octave.addpath('Octave')
+        labels = list()
+        for tag in classTags:
+             labels.append(octave.call('getClassNumber.m', HDR, tag))
+        return labels
 
-	labels = list()
-
-	for tag in classTags:
-	     labels.append(octave.call('getClassNumber.m', HDR, tag))
-
-	return labels
-
-	
-    #octave thread -> run all octave functions then return back to the gui 
     def run(self): 
+        octave = oct2py.Oct2Py()
+        octave.addpath('Octave')	
         
-	octave = oct2py.Oct2Py()
-	octave.addpath('Classifiers/RawDataFunctions')
-	octave.addpath('Classifiers/Functions')
-	
-	print(str(self.removeNoiseFlag) + str(self.featureExtractionmeFile) + str(self.featureEnhancementMethod) + str(self.classifierFile) )
-	
-	                                         #run the octave functions here !
-	               #---------------------------------------------------------------------------------------------#
-	####read the data from the file give in "dataFile"
-	rawData = {}
-	rawData["Data"], rawData["HDR"] = octave.call('getRawData.m', str(self.dataFile))
+        ####read the data from the file give in "dataFile"
+        rawData = {}
+        rawData["Data"], rawData["HDR"] = octave.call('getRawData.m', str(self.dataFile))
 	
 	####check the "removeNoiseFlag" and perform action
 	if(self.removeNoiseFlag):
 	    rawData["Data"] = octave.call('remove_noise.m',rawData["Data"])
 	    #self.emit( QtCore.SIGNAL('dataCleaningSignal(PyQt_PyObject)'), rawData["Data"])#data enhancment signal 
 
-	#TODO
-	####check the "smoothSignalFLag" and perform action
-	
 	####check the feature extraction method then execute it
 	#FFT
 	if (str(self.featureExtractionmeFile) == "FFT" ):

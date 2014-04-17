@@ -23,7 +23,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	
 	#EVENTS
 	QtCore.QObject.connect(self.BrowseButton, QtCore.SIGNAL(("clicked()")), self.browseButtonClicked) #browse button
-	print(self.path)
+	
 	QtCore.QObject.connect(self.TrainButton, QtCore.SIGNAL(("clicked()")), self.TrainButton_Clicked) #train button
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -54,13 +54,11 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	TrainingFileClass.getClasses(self.path)
 	Details["SubjectName"]          = TrainingFileClass.getName(self.path)
 	Details["Classes"]              = TrainingFileClass.getClasses(self.path)
-	print(Details["SubjectName"] )
 	self.subjectName.setText(Details["SubjectName"]) #subject name label
     
     #used by "browseButtonClicked" function to get the selected file path          
     def getFileName(self):
         self.path = self.fileDialog.getOpenFileName()
-        print(" File Selected: ", self.path)
 	return self.path	
     
     def TrainButton_Clicked(self):
@@ -69,13 +67,14 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	    removeNoiseFlag = 1;
 	elif(self.removeNoiseUnchecked.isChecked()):
 	    removeNoiseFlag = 0;
-	    
+	SignalStart = self.SampleStart.toPlainText()
+	SignalEnd   = self.SampleEnd.toPlainText()
 	SignalEnhancementSelectedMethod  = self.signalEnhancementMethod.currentText()
 	FeatureEnhancementSelectedMethod = self.FeatureEnhancementMethod.currentText()
 	classifierSelected = self.ClassifierBox.currentText()
 	
 	#calling the octave thread
-	self.readThread = readDataThread(self.path,removeNoiseFlag, SignalEnhancementSelectedMethod,FeatureEnhancementSelectedMethod, classifierSelected)
+	self.readThread = readDataThread(self.path,removeNoiseFlag,SignalStart, SignalEnd, SignalEnhancementSelectedMethod,FeatureEnhancementSelectedMethod, classifierSelected)
 	
 		#done signals calling
 	#enhancment is done

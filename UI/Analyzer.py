@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'UI/Analyzer.ui'
 #
-# Created: Fri Apr 18 00:05:50 2014
+# Created: Fri Apr 18 01:01:39 2014
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -57,52 +57,11 @@ class Ui_MainWindow(object):
         self.ClassifierBox.setGeometry(QtCore.QRect(220, 260, 151, 27))
         self.ClassifierBox.setObjectName(_fromUtf8("ClassifierBox"))
         self.removeNoiseChecked = QtGui.QRadioButton(self.centralWidget)
-        self.removeNoiseChecked.setGeometry(QtCore.QRect(120, 130, 117, 22))
+        self.removeNoiseChecked.setGeometry(QtCore.QRect(120, 130, 61, 22))
         self.removeNoiseChecked.setObjectName(_fromUtf8("removeNoiseChecked"))
         self.removeNoiseUnchecked = QtGui.QRadioButton(self.centralWidget)
         self.removeNoiseUnchecked.setGeometry(QtCore.QRect(190, 130, 117, 22))
         self.removeNoiseUnchecked.setObjectName(_fromUtf8("removeNoiseUnchecked"))
-        self.StartSample = QtGui.QSlider(self.centralWidget)
-        self.StartSample.setGeometry(QtCore.QRect(50, 100, 371, 29))
-        self.StartSample.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.StartSample.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
-        self.StartSample.setAutoFillBackground(False)
-        self.StartSample.setMinimum(3)
-        self.StartSample.setMaximum(6)
-        self.StartSample.setProperty("value", 3)
-        self.StartSample.setOrientation(QtCore.Qt.Horizontal)
-        self.StartSample.setInvertedAppearance(False)
-        self.StartSample.setInvertedControls(False)
-        self.StartSample.setTickPosition(QtGui.QSlider.NoTicks)
-        self.StartSample.setTickInterval(1)
-        self.StartSample.setObjectName(_fromUtf8("StartSample"))
-        self.endSample = QtGui.QSlider(self.centralWidget)
-        self.endSample.setGeometry(QtCore.QRect(170, 100, 360, 29))
-        self.endSample.setMinimum(4)
-        self.endSample.setMaximum(7)
-        self.endSample.setProperty("value", 7)
-        self.endSample.setTracking(False)
-        self.endSample.setOrientation(QtCore.Qt.Horizontal)
-        self.endSample.setInvertedAppearance(False)
-        self.endSample.setInvertedControls(False)
-        self.endSample.setTickPosition(QtGui.QSlider.NoTicks)
-        self.endSample.setTickInterval(1)
-        self.endSample.setObjectName(_fromUtf8("endSample"))
-        self.label_8 = QtGui.QLabel(self.centralWidget)
-        self.label_8.setGeometry(QtCore.QRect(50, 80, 67, 17))
-        self.label_8.setObjectName(_fromUtf8("label_8"))
-        self.label_9 = QtGui.QLabel(self.centralWidget)
-        self.label_9.setGeometry(QtCore.QRect(400, 80, 67, 17))
-        self.label_9.setObjectName(_fromUtf8("label_9"))
-        self.label_10 = QtGui.QLabel(self.centralWidget)
-        self.label_10.setGeometry(QtCore.QRect(290, 80, 67, 17))
-        self.label_10.setObjectName(_fromUtf8("label_10"))
-        self.label_11 = QtGui.QLabel(self.centralWidget)
-        self.label_11.setGeometry(QtCore.QRect(170, 80, 67, 17))
-        self.label_11.setObjectName(_fromUtf8("label_11"))
-        self.label_12 = QtGui.QLabel(self.centralWidget)
-        self.label_12.setGeometry(QtCore.QRect(520, 80, 67, 17))
-        self.label_12.setObjectName(_fromUtf8("label_12"))
         self.datafile = QtGui.QTextEdit(self.centralWidget)
         self.datafile.setGeometry(QtCore.QRect(20, 30, 201, 21))
         self.datafile.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -115,6 +74,22 @@ class Ui_MainWindow(object):
         self.subjectName.setGeometry(QtCore.QRect(390, 30, 171, 17))
         self.subjectName.setText(_fromUtf8(""))
         self.subjectName.setObjectName(_fromUtf8("subjectName"))
+        self.label_8 = QtGui.QLabel(self.centralWidget)
+        self.label_8.setGeometry(QtCore.QRect(30, 80, 121, 17))
+        self.label_8.setObjectName(_fromUtf8("label_8"))
+        self.label_9 = QtGui.QLabel(self.centralWidget)
+        self.label_9.setGeometry(QtCore.QRect(220, 80, 111, 17))
+        self.label_9.setObjectName(_fromUtf8("label_9"))
+        self.SampleStart = QtGui.QTextEdit(self.centralWidget)
+        self.SampleStart.setGeometry(QtCore.QRect(140, 80, 51, 21))
+        self.SampleStart.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.SampleStart.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.SampleStart.setObjectName(_fromUtf8("SampleStart"))
+        self.SampleEnd = QtGui.QTextEdit(self.centralWidget)
+        self.SampleEnd.setGeometry(QtCore.QRect(320, 80, 51, 21))
+        self.SampleEnd.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.SampleEnd.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.SampleEnd.setObjectName(_fromUtf8("SampleEnd"))
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 639, 25))
@@ -142,10 +117,17 @@ class Ui_MainWindow(object):
         self.BrowseButton.setText(QtGui.QApplication.translate("MainWindow", "Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.removeNoiseChecked.setText(QtGui.QApplication.translate("MainWindow", "yes", None, QtGui.QApplication.UnicodeUTF8))
         self.removeNoiseUnchecked.setText(QtGui.QApplication.translate("MainWindow", "no", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setText(QtGui.QApplication.translate("MainWindow", "3", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_9.setText(QtGui.QApplication.translate("MainWindow", "6", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_10.setText(QtGui.QApplication.translate("MainWindow", "5", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_11.setText(QtGui.QApplication.translate("MainWindow", "4", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_12.setText(QtGui.QApplication.translate("MainWindow", "7", None, QtGui.QApplication.UnicodeUTF8))
         self.TrainButton.setText(QtGui.QApplication.translate("MainWindow", "Train", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_8.setText(QtGui.QApplication.translate("MainWindow", "Sample Start At", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_9.setText(QtGui.QApplication.translate("MainWindow", "Sample End At", None, QtGui.QApplication.UnicodeUTF8))
+        self.SampleStart.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">3</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.SampleEnd.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">7</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 
