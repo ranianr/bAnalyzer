@@ -2,8 +2,8 @@ function TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLa
 %{
 
 example call
-use normal getMuBeta .. PCA .. start at 3 .. end at 7 
-TrainOut = KNN_Generic("../Osama Mohamed.csv",1,0,0,0,0,0,0,1,0,0,3,7 ); 
+use remove noise .. getMuBeta .. PCA .. start at 3 .. end at 7 
+TrainOut = KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,3,7 ); 
 
 directory = data file path
 
