@@ -1,4 +1,4 @@
- function [mu,Beta] = GetMuBeta(start, endD, data,HDR)
+function [mu,Beta] = GetMuBeta_more_feature3(start, endD, data,HDR)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
@@ -45,28 +45,38 @@ data       : Just the raw data from the gdf file
 	nChannels = nChannels(2);
 
 
-	mu   = zeros(length(HDR.TRIG),nChannels);
-	Beta = zeros(length(HDR.TRIG),nChannels);
+	mu   = zeros(length(HDR.TRIG),nChannels*3);
+	Beta = zeros(length(HDR.TRIG),nChannels*3);
 
 	[Am Bm] = butter(5,[10/(fs/2) 12/(fs/2)] ,'pass');
 	[Ab Bb] = butter(5,[16/(fs/2) 24/(fs/2)] ,'pass');
+	fData=0;
+	for f = 1:3:nChannels*3
+		fData = fData + 1;
+		temp = data(:,fData);
 
-	for f = 1:nChannels
-		temp = data(:,f);
 		for k =1:length(HDR.TRIG)
 			if(k==length(HDR.TRIG))
-				Data      =  [ temp(HDR.TRIG(k)+(start-3)*250 : end) ] ;
-				Data_mu   =  filter(Am,Bm,Data);
-				Data_be   =  filter(Ab,Bb,Data);
-				mu(k,f)   =  mean(abs(fft(Data_mu)/length(Data_mu) )) ;
-				Beta(k,f) =  mean(abs(fft(Data_be)/length(Data_be) )) ;%eshm3na el mean leh mesh el RMS mathlan ?! 		
+				Data      				  =  [ temp(HDR.TRIG(k)+start*fs : end) ] ;
+				Data_mu   				  =  filter(Am,Bm,Data);
+				Data_be   				  =  filter(Ab,Bb,Data);
+				Mu						  =  abs(fft(Data_mu));
+				BETA					  =  abs(fft(Data_be));
+				[mu(k,f) mu(k,f+1)] 	  =  min(Mu) ;
+				mu(k,f+2)				  =  mean(Mu) ;
+				[Beta(k,f) Beta(k,f+1)]   =  max(BETA) ;%eshm3na el mean leh mesh el RMS mathlan ?!
+				Beta(k,f+2)				  =  mean(BETA) ;%eshm3na el mean leh mesh el RMS mathlan ?!   
 			else
-				Data      =  [ temp(HDR.TRIG(k)+(start-3)*fs : HDR.TRIG(k)+fs*(endD--3)-1) ] ;
-				Data_mu   =  filter(Am,Bm,Data);
-				Data_be   =  filter(Ab,Bb,Data);
-				mu(k,f)   =  mean(abs(fft(Data_mu)/length(Data_mu) )) ;
-				Beta(k,f) =  mean(abs(fft(Data_be)/length(Data_be) )) ;%eshm3na el mean leh mesh el RMS mathlan ?! 
+				Data      				  =  [ temp(HDR.TRIG(k)+start*fs : HDR.TRIG(k)+fs*endD-1) ] ;
+				Data_mu  				  =  filter(Am,Bm,Data);
+				Data_be   				  =  filter(Ab,Bb,Data);
+				Mu						  =  abs(fft(Data_mu));
+				BETA					  =  abs(fft(Data_be));
+				[mu(k,f) mu(k,f+1)] 	  =  min(Mu) ;
+				mu(k,f+2)				  =  mean(Mu) ;
+				[Beta(k,f) Beta(k,f+1)]   =  max(BETA) ;%eshm3na el mean leh mesh el RMS mathlan ?!
+				Beta(k,f+2)				  =  mean(BETA) ;%eshm3na el mean leh mesh el RMS mathlan ?!   
 			end
 		end
 	end
-end
+endfunction

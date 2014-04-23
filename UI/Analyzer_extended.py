@@ -29,19 +29,20 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 
     def addComboBoxesData(self):
 	#self.featureSelectionMethods = ("FFT", "trivial") #add methods manually !
-	self.featureSelectionMethods = 'FFT' #add methods manually !
-        self.featureSelectionMethods = ('FFT', "error") #add methods manually !
+	self.getFeaturesMethods = ("mean", "Min MU and Max Beta","Min Mu, Max Beta, Mean Mu, Mean Beta","Min Mu Max Mu Min Beta Max Bita","Min Mu, max Mu, Min Beta, Max Beta, Mean Mu, Mean Beta")
+	self.featureSelectionMethodBox.addItems(self.getFeaturesMethods)
         
-	self.featureEnhancementMethods = ("PCA","LDA","CSP") #add more feature enhancement methods manully
+	self.preprocessingBoxContent = ("method1","method2")
+	self.preprocessingBox.addItems(self.preprocessingBoxContent)
+	
+	self.featureEnhancementMethods = ("PCA","LDA","CSP")
+	self.FeatureEnhancementMethod.addItems(self.featureEnhancementMethods)
         
 	self.classifiers = ("Fisher","KNN","Likelihood","Least Squares") #add classifiers manually !
-
-	self.signalEnhancementMethod.clear()
-	self.signalEnhancementMethod.addItems(self.featureSelectionMethods)
-	self.FeatureEnhancementMethod.clear()
-	self.FeatureEnhancementMethod.addItems(self.featureEnhancementMethods)
-	self.ClassifierBox.clear()
 	self.ClassifierBox.addItems(self.classifiers )
+	
+	
+	
      
     def browseButtonClicked(self):
 	self.fileDialog = QtGui.QFileDialog()
@@ -69,12 +70,13 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	    removeNoiseFlag = 0;
 	SignalStart = self.SampleStart.toPlainText()
 	SignalEnd   = self.SampleEnd.toPlainText()
-	SignalEnhancementSelectedMethod  = self.signalEnhancementMethod.currentText()
+	selectedFeatureExtractionMethod  = self.featureSelectionMethodBox.currentText()
+	selectedPreprocessingMethod  = self.preprocessingBox.currentText()
 	FeatureEnhancementSelectedMethod = self.FeatureEnhancementMethod.currentText()
 	classifierSelected = self.ClassifierBox.currentText()
 	
 	#calling the octave thread
-	self.readThread = readDataThread(self.path,removeNoiseFlag,SignalStart, SignalEnd, SignalEnhancementSelectedMethod,FeatureEnhancementSelectedMethod, classifierSelected)
+	self.readThread = readDataThread(self.path,removeNoiseFlag,SignalStart, SignalEnd, selectedFeatureExtractionMethod,selectedPreprocessingMethod,FeatureEnhancementSelectedMethod, classifierSelected)
 	
 		#done signals calling
 	#enhancment is done
@@ -89,17 +91,17 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	self.readThread.start()
 	
     def cleanData(self, data):
-	self.done1.setText("Done!")
+	self.label_11.setText("Done!")
 	self.readThread.terminate()
 
     def selectFeatures(self, data):
-	self.done2.setText("Done2!")
+	self.label_12.setText("Done2!")
 	self.readThread.terminate()
 
     def enhanceFeatures(self, data):
-	self.done3.setText("Done3!")
+	self.label_14.setText("Done3!")
 	self.readThread.terminate()
 
     def classifyData(self, data):
-	self.done4.setText("Done4!")
+	self.label_13.setText("Done4!")
 	self.readThread.terminate()

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'UI/Analyzer.ui'
 #
-# Created: Fri Apr 18 01:01:39 2014
+# Created: Wed Apr 23 16:29:07 2014
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,35 +32,29 @@ class Ui_MainWindow(object):
         self.label_3 = QtGui.QLabel(self.centralWidget)
         self.label_3.setGeometry(QtCore.QRect(10, 60, 111, 17))
         self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.label_4 = QtGui.QLabel(self.centralWidget)
-        self.label_4.setGeometry(QtCore.QRect(10, 181, 211, 24))
-        self.label_4.setObjectName(_fromUtf8("label_4"))
         self.label_5 = QtGui.QLabel(self.centralWidget)
-        self.label_5.setGeometry(QtCore.QRect(10, 130, 211, 17))
+        self.label_5.setGeometry(QtCore.QRect(10, 110, 211, 15))
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.label_6 = QtGui.QLabel(self.centralWidget)
-        self.label_6.setGeometry(QtCore.QRect(10, 225, 221, 17))
+        self.label_6.setGeometry(QtCore.QRect(10, 200, 221, 17))
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.label_7 = QtGui.QLabel(self.centralWidget)
-        self.label_7.setGeometry(QtCore.QRect(10, 263, 211, 20))
+        self.label_7.setGeometry(QtCore.QRect(10, 230, 211, 20))
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.BrowseButton = QtGui.QPushButton(self.centralWidget)
         self.BrowseButton.setGeometry(QtCore.QRect(228, 27, 99, 27))
         self.BrowseButton.setObjectName(_fromUtf8("BrowseButton"))
-        self.signalEnhancementMethod = QtGui.QComboBox(self.centralWidget)
-        self.signalEnhancementMethod.setGeometry(QtCore.QRect(220, 180, 151, 27))
-        self.signalEnhancementMethod.setObjectName(_fromUtf8("signalEnhancementMethod"))
         self.FeatureEnhancementMethod = QtGui.QComboBox(self.centralWidget)
-        self.FeatureEnhancementMethod.setGeometry(QtCore.QRect(220, 220, 151, 27))
+        self.FeatureEnhancementMethod.setGeometry(QtCore.QRect(220, 200, 151, 27))
         self.FeatureEnhancementMethod.setObjectName(_fromUtf8("FeatureEnhancementMethod"))
         self.ClassifierBox = QtGui.QComboBox(self.centralWidget)
-        self.ClassifierBox.setGeometry(QtCore.QRect(220, 260, 151, 27))
+        self.ClassifierBox.setGeometry(QtCore.QRect(220, 230, 151, 27))
         self.ClassifierBox.setObjectName(_fromUtf8("ClassifierBox"))
         self.removeNoiseChecked = QtGui.QRadioButton(self.centralWidget)
-        self.removeNoiseChecked.setGeometry(QtCore.QRect(120, 130, 61, 22))
+        self.removeNoiseChecked.setGeometry(QtCore.QRect(120, 110, 61, 20))
         self.removeNoiseChecked.setObjectName(_fromUtf8("removeNoiseChecked"))
         self.removeNoiseUnchecked = QtGui.QRadioButton(self.centralWidget)
-        self.removeNoiseUnchecked.setGeometry(QtCore.QRect(190, 130, 117, 22))
+        self.removeNoiseUnchecked.setGeometry(QtCore.QRect(190, 110, 117, 20))
         self.removeNoiseUnchecked.setObjectName(_fromUtf8("removeNoiseUnchecked"))
         self.datafile = QtGui.QTextEdit(self.centralWidget)
         self.datafile.setGeometry(QtCore.QRect(20, 30, 201, 21))
@@ -68,7 +62,7 @@ class Ui_MainWindow(object):
         self.datafile.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.datafile.setObjectName(_fromUtf8("datafile"))
         self.TrainButton = QtGui.QPushButton(self.centralWidget)
-        self.TrainButton.setGeometry(QtCore.QRect(270, 300, 99, 27))
+        self.TrainButton.setGeometry(QtCore.QRect(270, 290, 99, 27))
         self.TrainButton.setObjectName(_fromUtf8("TrainButton"))
         self.subjectName = QtGui.QLabel(self.centralWidget)
         self.subjectName.setGeometry(QtCore.QRect(390, 30, 171, 17))
@@ -90,6 +84,18 @@ class Ui_MainWindow(object):
         self.SampleEnd.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.SampleEnd.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.SampleEnd.setObjectName(_fromUtf8("SampleEnd"))
+        self.label_10 = QtGui.QLabel(self.centralWidget)
+        self.label_10.setGeometry(QtCore.QRect(10, 150, 181, 17))
+        self.label_10.setObjectName(_fromUtf8("label_10"))
+        self.featureSelectionMethodBox = QtGui.QComboBox(self.centralWidget)
+        self.featureSelectionMethodBox.setGeometry(QtCore.QRect(220, 140, 151, 27))
+        self.featureSelectionMethodBox.setObjectName(_fromUtf8("featureSelectionMethodBox"))
+        self.preprocessingBox = QtGui.QComboBox(self.centralWidget)
+        self.preprocessingBox.setGeometry(QtCore.QRect(220, 170, 151, 27))
+        self.preprocessingBox.setObjectName(_fromUtf8("preprocessingBox"))
+        self.label_4 = QtGui.QLabel(self.centralWidget)
+        self.label_4.setGeometry(QtCore.QRect(10, 174, 171, 17))
+        self.label_4.setObjectName(_fromUtf8("label_4"))
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 639, 25))
@@ -110,8 +116,7 @@ class Ui_MainWindow(object):
         self.label.setText(QtGui.QApplication.translate("MainWindow", "Select Data FIle ", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("MainWindow", "Subject Name", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("MainWindow", "Sample Size", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("MainWindow", "Signal Enhancement Method: ", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("MainWindow", "remove noise :", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setText(QtGui.QApplication.translate("MainWindow", "Remove noise :", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("MainWindow", "Feature enhancement method: ", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("MainWindow", "Classifier:", None, QtGui.QApplication.UnicodeUTF8))
         self.BrowseButton.setText(QtGui.QApplication.translate("MainWindow", "Browse", None, QtGui.QApplication.UnicodeUTF8))
@@ -124,10 +129,12 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">3</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">0</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.SampleEnd.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">7</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">4</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_10.setText(QtGui.QApplication.translate("MainWindow", "Getting features method", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("MainWindow", "Preprocessing method", None, QtGui.QApplication.UnicodeUTF8))
 

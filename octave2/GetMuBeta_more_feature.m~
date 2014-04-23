@@ -1,4 +1,4 @@
- function [mu,Beta] = GetMuBeta(start, endD, data,HDR)
+function [mu,Beta] = GetMuBeta_more_feature(data,HDR)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
@@ -45,28 +45,30 @@ data       : Just the raw data from the gdf file
 	nChannels = nChannels(2);
 
 
-	mu   = zeros(length(HDR.TRIG),nChannels);
-	Beta = zeros(length(HDR.TRIG),nChannels);
+	mu   = zeros(length(HDR.TRIG),nChannels*2);
+	Beta = zeros(length(HDR.TRIG),nChannels*2);
 
 	[Am Bm] = butter(5,[10/(fs/2) 12/(fs/2)] ,'pass');
 	[Ab Bb] = butter(5,[16/(fs/2) 24/(fs/2)] ,'pass');
+	fData=0;
+	for f = 1:2:nChannels*2
+		fData = fData + 1;
+		temp = data(:,fData);
 
-	for f = 1:nChannels
-		temp = data(:,f);
 		for k =1:length(HDR.TRIG)
 			if(k==length(HDR.TRIG))
-				Data      =  [ temp(HDR.TRIG(k)+(start-3)*250 : end) ] ;
-				Data_mu   =  filter(Am,Bm,Data);
-				Data_be   =  filter(Ab,Bb,Data);
-				mu(k,f)   =  mean(abs(fft(Data_mu)/length(Data_mu) )) ;
-				Beta(k,f) =  mean(abs(fft(Data_be)/length(Data_be) )) ;%eshm3na el mean leh mesh el RMS mathlan ?! 		
+				Data      				=  [ temp(HDR.TRIG(k)+0*fs : end) ] ;
+				Data_mu   				=  filter(Am,Bm,Data);
+				Data_be   				=  filter(Ab,Bb,Data);
+				[mu(k,f) mu(k,f+1)] 	=  min(abs(fft(Data_mu))) ;
+				[Beta(k,f) Beta(k,f+1)] =  max(abs(fft(Data_be))) ;%eshm3na el mean leh mesh el RMS mathlan ?! 
 			else
-				Data      =  [ temp(HDR.TRIG(k)+(start-3)*fs : HDR.TRIG(k)+fs*(endD--3)-1) ] ;
-				Data_mu   =  filter(Am,Bm,Data);
-				Data_be   =  filter(Ab,Bb,Data);
-				mu(k,f)   =  mean(abs(fft(Data_mu)/length(Data_mu) )) ;
-				Beta(k,f) =  mean(abs(fft(Data_be)/length(Data_be) )) ;%eshm3na el mean leh mesh el RMS mathlan ?! 
+				Data      				=  [ temp(HDR.TRIG(k)+0*fs : HDR.TRIG(k)+fs*4-1) ] ;
+				Data_mu  				=  filter(Am,Bm,Data);
+				Data_be   				=  filter(Ab,Bb,Data);
+				[mu(k,f) mu(k,f+1)] 	=  min(abs(fft(Data_mu))) ;
+				[Beta(k,f) Beta(k,f+1)] =  max(abs(fft(Data_be))) ;%eshm3na el mean leh mesh el RMS mathlan ?! 
 			end
 		end
 	end
-end
+endfunction
