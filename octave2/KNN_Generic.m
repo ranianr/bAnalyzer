@@ -3,7 +3,7 @@ function TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLa
 
 example call
 use remove noise .. getMuBeta .. PCA .. start at 3 .. end at 7 
-TrainOut = KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,3,7 ); 
+TrainOut = KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
 
 directory = data file path
 
@@ -11,8 +11,8 @@ f1FLag = getMuBeta
 f2Flag = GetMuBeta_more_feature 
 f3Flag = GetMuBeta_more_feature2 -> get min Mu, max Beta
 f4Flag = GetMuBeta_more_feature3 -> get min Mu, max Beta, mean Mu, mean Beta 
-f5Flag = GetMuBeta_more_feature4 -> get min Mu, max Mu, min Beta, max Bita
-f6Flag = GetMuBeta_more_feature5 -> get min Mu, max Mu, min Beta, max Bita, mean Mu, mean Beta
+f5Flag = GetMuBeta_more_feature4 -> get min Mu, max Mu, min Beta, max Beta
+f6Flag = GetMuBeta_more_feature5 -> get min Mu, max Mu, min Beta, max Beta, mean Mu, mean Beta
 
 LDAFLag = use LDA
 PCAFlag = use PCA
@@ -24,6 +24,9 @@ signal starts at 3 and ends at 7 (4 seconds)
 startD = start time for the trial enter number between 3 to 7 
 endD = end of trial signal
 %}
+
+        startD = int32(startD);
+        endD = int32(endD);
 
 	% Get Raw Data from the file 
 	[data, HDR] = getRawData(directory);
@@ -99,13 +102,17 @@ endD = end of trial signal
 	endif
         
 	% Returing output structure
-	TrainOut.KPCA = KPCA;
+        
+        %%% adding a new variable to the struct is as easy as the following line
+        %TrainOut.lol = "haha";
+        %%% if we ever wanted to comment multi-lines, use % instead of %{ and %}
+        
+	TrainOut.KPCA = KPCA
 	TrainOut.KLDA = KLDA;
 	TrainOut.Ztrain = Z;
 	TrainOut.V = V;
 	TrainOut.PC_Num = PC_Num;
         TrainOut.ClassLabels = HDR.Classlabel;
-
 
 end
 function accuracy = getAccuracy(projected, HDR)

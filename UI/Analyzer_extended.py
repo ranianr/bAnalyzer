@@ -29,7 +29,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 
     def addComboBoxesData(self):
 	#self.featureSelectionMethods = ("FFT", "trivial") #add methods manually !
-	self.getFeaturesMethods = ("mean", "Min MU and Max Beta","Min Mu, Max Beta, Mean Mu, Mean Beta","Min Mu Max Mu Min Beta Max Bita","Min Mu, max Mu, Min Beta, Max Beta, Mean Mu, Mean Beta")
+	self.getFeaturesMethods = ("mean", "Min MU and Max Beta","Min Mu, Max Beta, Mean Mu, Mean Beta","Min Mu Max Mu Min Beta Max Beta","Min Mu, max Mu, Min Beta, Max Beta, Mean Mu, Mean Beta")
 	self.featureSelectionMethodBox.addItems(self.getFeaturesMethods)
         
 	self.preprocessingBoxContent = ("method1","method2")

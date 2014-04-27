@@ -25,6 +25,9 @@ startD = start time for the trial enter number between 3 to 7
 endD = end of trial signal
 %}
 
+        startD = int32(startD);
+        endD = int32(endD);
+
 	% Get Raw Data from the file 
 	[data, HDR] = getRawData(directory);
         
