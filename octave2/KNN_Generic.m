@@ -2,7 +2,7 @@ function TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLa
 %{
 
 example call
-use remove noise .. getMuBeta .. PCA .. start at 3 .. end at 7 
+use remove noise .. getMuBeta .. PCA .. start at 0 .. end at 4
 TrainOut = KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
 
 directory = data file path
@@ -57,27 +57,36 @@ endD = end of trial signal
 	% apply LDA or PCA or CSP
 	KLDA = 0;
 	KPCA = 0;
+	Zlda = [];
+	Zpca = [];
+	Vpca = [];
+	Vlda = [];
+	PC_NumLDA = 0;
+	PC_NumPCA = 0;
+	
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];
-		[Z, V]  = LDA_fn(HDR.Classlabel, X, classes_no);
-		C1 = Z((HDR.Classlabel==1),:);
-		C2 = Z((HDR.Classlabel==2),:);
-		Z = [C1; C2];
+		[Zlda, Vlda]  = LDA_fn(HDR.Classlabel, X, classes_no);
+		C1 = Zlda((HDR.Classlabel==1),:);
+		C2 = Zlda((HDR.Classlabel==2),:);
+		Zlda = [C1; C2];
 		t = [ones(size(C1)(1),1) ; 2*ones(size(C2)(1),1)]';
-		[accuracy k_total] = knnResults(Z, t);
+		[accuracy k_total] = knnResults(Zlda, t);
 		[AccSelected, AccIndex] = max(accuracy);
-		PC_Num = min(AccIndex);
-		KLDA = k_total(PC_Num);
+		PC_NumLDA = min(AccIndex);
+		KLDA = k_total(PC_NumLDA);
+	
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
-		[V, Z]= pcaProject(pureData);
-		[accuracy k_total] = knnResults(Z', HDR.Classlabel);
+		[Vpca, Zpca]= pcaProject(pureData);Z = [Mu Beta]*real(Vpca); 
+		[accuracy k_total] = knnResults(Zpca', HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
-		PC_Num = min(AccIndex);
-		KPCA = k_total(PC_Num);
-	elseif(CSP_LDAFlag == 1)
+		PC_NumPCA = min(AccIndex);
+		KPCA = k_total(PC_NumPCA);
+		
+	 elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
 		Trials_Mu   = getTrials(Mu, HDR);
@@ -91,7 +100,7 @@ endD = end of trial signal
 	    	C1 = Xoriginal(HDR.Classlabel==1,:);
 		C2 = Xoriginal(HDR.Classlabel==2,:);
 	    	[Z, W] = CSP_fn(C1, C2);
-	        [V, Xm, Vproj]  = LDA_fn(c, Z, ClassLabels);
+	        [Vlda, Xm, Vproj]  = LDA_fn(c, Z, ClassLabels);
 		z1 = V(:,1);
 		z2 = V(:,2);
 		z3 = V(:,4);
@@ -109,9 +118,16 @@ endD = end of trial signal
         
 	TrainOut.KPCA = KPCA
 	TrainOut.KLDA = KLDA;
-	TrainOut.Ztrain = Z;
-	TrainOut.V = V;
-	TrainOut.PC_Num = PC_Num;
+	
+	TrainOut.ZtrainLDA = Zlda;
+	TrainOut.ZtrainPCA = Zpca;
+	
+	TrainOut.VPCA = Vpca;
+	TrainOut.VLDA = Vlda;
+	
+	TrainOut.PC_NumPCA = PC_NumPCA;
+	TrainOut.PC_NumLDA = PC_NumLDA;
+	
         TrainOut.ClassLabels = HDR.Classlabel;
 
 end
