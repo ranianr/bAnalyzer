@@ -1,0 +1,31 @@
+	## ignore hidden files ##
+.*
+
+
+	## python temp paths ##
+__pycache__/
+# check http://stackoverflow.com/questions/8822335/what-does-python-file-extensions-pyc-pyd-pyo-stand-for
+*.py[cod]
+# http://stackoverflow.com/questions/16869024/what-is-pycache
+
+
+	## editors ##
+*~
+*.swp
+*.swo
+*#
+
+
+	## windows ##
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+
+	## recorded data ##
+##not available yet
+
+
+	## local patches ##
+/*.patch
+/*.diff
