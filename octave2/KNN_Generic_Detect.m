@@ -1,9 +1,18 @@
-function [DetectOut Debug] = KNN_Generic_Detect(DetectIn,noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag)
+function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag)
    
  %{
- [DetectOut Debug] = KNN_Generic_Detect(DetectIn,1, 1,0,0,0,0,0,0,1,0,0)
+ [DetectOut Debug] = KNN_Generic_Detect(1, 1,0,0,0,0,0,0,1,0,0);
  
  %}  
+ 	warning('off');
+ 	%TESTING AND DEBUGGING
+ 	[Data, HDR] = getRawData("../Osama Mohamed.csv");
+ 	TRIG = HDR.TRIG(5);
+    DetectIn.("TrialData") = getTrialData(Data, TRIG, 5, length(HDR.TRIG));
+ 	
+ 	TrainOut = KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
+ 	DetectIn.("TrainOut") = TrainOut;
+ 	
     % Get inputs from python
 	TrialData = DetectIn.("TrialData"); %data to be sent from python
 	TrainOut = DetectIn.("TrainOut"); %
@@ -33,30 +42,30 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn,noiseFlag, f1FLag,f2FLa
 
 	% Get features (mu & beta) according to the selected method
 	if(f1FLag == 1)
-		[Mu,Beta] =  GetMuBeta_detect(startD, endD,TrialData);
+		[Mu,Beta] =  GetMuBeta_detect(TrialData);
 	elseif (f2FLag == 1)
-		[Mu,Beta] =  GetMuBeta_detect_more_feature(startD, endD,TrialData);
+		[Mu,Beta] =  GetMuBeta_detect_more_feature( TrialData);
 	elseif (f3FLag == 1)
-		[Mu,Beta] =  GetMuBeta_detect_more_feature2(startD, endD, TrialData);
+		[Mu,Beta] =  GetMuBeta_detect_more_feature2(  TrialData);
 	elseif (f4FLag == 1)
-		[Mu,Beta] =  GetMuBeta_detect_more_feature3(startD, endD, TrialData);
+		[Mu,Beta] =  GetMuBeta_detect_more_feature3(  TrialData);
 	elseif (f5FLag == 1)
-		[Mu,Beta] =  GetMuBeta_detect_more_feature4(startD, endD,TrialData);
+		[Mu,Beta] =  GetMuBeta_detect_more_feature4( TrialData);
 	elseif (f6FLag == 1)
-		[Mu,Beta] = GetMuBeta_detect_more_feature5(startD, endD, TrialData);
+		[Mu,Beta] = GetMuBeta_detect_more_feature5(  TrialData);
 	endif
 
     % apply LDA method to the features
 	if(LDAFLag == 1)
-		Z = [Mu Beta]*real(V); 
+		Z = [Mu Beta]*real(VLDA); 
         Z = Z(:,1:PC_NumLDA);
-        Ztrain = Ztrain(:,1:PC_NumLDA);
+        ZtrainLDA = ZtrainLDA(:,1:PC_NumLDA);
 		% apply the classifier here
 		if(size(Z)(2) == 1)
-			Ztrain = [Ztrain, Ztrain];
+			ZtrainLDA = [ZtrainLDA, ZtrainLDA];
 			Z = [Z, Z];
 		end 
-		pointDistance = distancePoints(Z, Ztrain); 
+		pointDistance = distancePoints(Z, ZtrainLDA); 
 		distance = pointDistance';
 		[dist index1] = sort(distance);
         nearestK = dist(2:KLDA+1);
@@ -79,17 +88,21 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn,noiseFlag, f1FLag,f2FLa
         end
     endif
     if(PCAFlag == 1)
-    	Z = [Mu Beta]*real(V); 
+    	Z = [Mu Beta]*real(VPCA); 
         Z = Z(:,1:PC_NumPCA);
-        Ztrain = Ztrain(:,1:PC_NumPCA);
+        ZtrainPCA = ZtrainPCA(:,1:PC_NumPCA);
 		% apply the classifier here
 		if(size(Z)(2) == 1)
-			Ztrain = [Ztrain, Ztrain];
+			ZtrainPCA = [ZtrainPCA, ZtrainPCA];
 			Z = [Z, Z];
 		end 
-		pointDistance = distancePoints(Z, Ztrain); 
+		size(ZtrainPCA)
+		size(Z)
+		pointDistance = distancePoints(Z, ZtrainPCA); 
 		distance = pointDistance';
+		size(distance)
 		[dist index1] = sort(distance);
+		%dist = dist';
         nearestK = dist(2:KPCA+1);
         nearestPointsIndex = index1(2:KPCA+1);
         Ktargets = ClassLabels(nearestPointsIndex);

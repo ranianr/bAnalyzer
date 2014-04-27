@@ -80,7 +80,7 @@ endD = end of trial signal
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
-		[Vpca, Zpca]= pcaProject(pureData);Z = [Mu Beta]*real(Vpca); 
+		[Vpca, Zpca]= pcaProject(pureData); 
 		[accuracy k_total] = knnResults(Zpca', HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);
