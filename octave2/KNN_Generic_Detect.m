@@ -10,6 +10,9 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
  	TRIG = HDR.TRIG(5);
     DetectIn.("TrialData") = getTrialData(Data, TRIG, 5, length(HDR.TRIG));
  	
+ 	%to test PCA flag use KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 );
+ 	%to test LDA flag use KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,1,0,0,0,0,4 );
+ 	%TODO change this behavior of debugging/testing :'/
  	TrainOut = KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
  	DetectIn.("TrainOut") = TrainOut;
  	
@@ -23,11 +26,11 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
 	VPCA = TrainOut.VPCA ;
 	VLDA = TrainOut.VLDA ;
 	
-    ZtrainPCA  = TrainOut.ZtrainPCA
-    ZtrainLDA  = TrainOut.ZtrainLDA
+    ZtrainPCA  = TrainOut.ZtrainPCA;
+    ZtrainLDA  = TrainOut.ZtrainLDA;
     
-	PC_NumPCA  = TrainOut.PC_NumPCA
-	PC_NumLDA  = TrainOut.PC_NumLDA
+	PC_NumPCA  = TrainOut.PC_NumPCA;
+	PC_NumLDA  = TrainOut.PC_NumLDA;
 
     ClassLabels = TrainOut.ClassLabels;%class labels
 
@@ -54,17 +57,22 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
 	elseif (f6FLag == 1)
 		[Mu,Beta] = GetMuBeta_detect_more_feature5(  TrialData);
 	endif
-
+	%defualt return
+	TargetsLDA="Unknown";
+	TargetsPCA="Unknown";
+	
     % apply LDA method to the features
 	if(LDAFLag == 1)
 		Z = [Mu Beta]*real(VLDA); 
         Z = Z(:,1:PC_NumLDA);
         ZtrainLDA = ZtrainLDA(:,1:PC_NumLDA);
+
 		% apply the classifier here
 		if(size(Z)(2) == 1)
 			ZtrainLDA = [ZtrainLDA, ZtrainLDA];
 			Z = [Z, Z];
 		end 
+
 		pointDistance = distancePoints(Z, ZtrainLDA); 
 		distance = pointDistance';
 		[dist index1] = sort(distance);
@@ -80,29 +88,32 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
             TargetsLDA = 'LEFT';
         else 
             single_target = ClassLabels( distance == min(distance(2:KLDA+1)));
-            if(single_target > 0)
-                TargetsLDA =  'RIGHT';
-            else
-                TargetsLDA = 'LEFT';
-            end
+			if(single_target > 0)
+			TargetsLDA =  'RIGHT';
+			else
+			TargetsLDA = 'LEFT';
+			end
         end
     endif
+    
+    
     if(PCAFlag == 1)
-    	Z = [Mu Beta]*real(VPCA); 
+    	Z = [Mu Beta]*real(VPCA);
+        
         Z = Z(:,1:PC_NumPCA);
+        ZtrainPCA = ZtrainPCA';
         ZtrainPCA = ZtrainPCA(:,1:PC_NumPCA);
-		% apply the classifier here
-		if(size(Z)(2) == 1)
-			ZtrainPCA = [ZtrainPCA, ZtrainPCA];
-			Z = [Z, Z];
-		end 
-		size(ZtrainPCA)
-		size(Z)
-		pointDistance = distancePoints(Z, ZtrainPCA); 
-		distance = pointDistance';
-		size(distance)
-		[dist index1] = sort(distance);
-		%dist = dist';
+
+        % apply the classifier here
+        if(size(Z)(2) == 1)
+                ZtrainPCA = [ZtrainPCA, ZtrainPCA];
+                Z = [Z, Z];
+        end
+        
+        pointDistance = distancePoints(Z, ZtrainPCA); 
+        distance = pointDistance';
+        [dist index1] = sort(distance);
+        %dist = dist';
         nearestK = dist(2:KPCA+1);
         nearestPointsIndex = index1(2:KPCA+1);
         Ktargets = ClassLabels(nearestPointsIndex);
@@ -122,9 +133,10 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
             end
         end
     endif
+    %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
 	Debug = vote;
-    
+
     %DetectOut
 	DetectOut.LDAresult = TargetsLDA;
 	DetectOut.PCAresult = TargetsPCA;

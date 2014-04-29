@@ -116,7 +116,7 @@ endD = end of trial signal
         %TrainOut.lol = "haha";
         %%% if we ever wanted to comment multi-lines, use % instead of %{ and %}
         
-	TrainOut.KPCA = KPCA
+	TrainOut.KPCA = KPCA;
 	TrainOut.KLDA = KLDA;
 	
 	TrainOut.ZtrainLDA = Zlda;
