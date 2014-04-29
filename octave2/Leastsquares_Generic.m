@@ -58,22 +58,28 @@ endD = end of trial signal
 	% apply LDA or PCA or CSP
 	Wlda=0;
 	Wpca =0;
+	VLDA = [];
+	VPCA = [];
+	PC_NumPCA = 0;
+	PC_NumLDA = 0;
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];
-		[Z, V]  = LDA_fn(HDR.Classlabel, X, classes_no);
-		accuracy = leastSquaresResults(Z, HDR.Classlabel)
+		[Z, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
+		accuracy = leastSquaresResults(Z, HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
-		PC_Num = min(AccIndex);
-	 	Wlda  = Least_Classifier_Parameters(PC_Num, Z, HDR.Classlabel);
+		PC_NumLDA = min(AccIndex);
+	 	Wlda  = Least_Classifier_Parameters(PC_NumLDA, Z, HDR.Classlabel);
+	
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
-		[V, Z]= pcaProject(pureData);
-		accuracy = leastSquaresResults(Z', HDR.Classlabel)
+		[VPCA, Z]= pcaProject(pureData);
+		accuracy = leastSquaresResults(Z', HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
-		PC_Num = min(AccIndex);
-		Wpca  = Least_Classifier_Parameters(PC_Num, Z', HDR.Classlabel);
+		PC_NumPCA = min(AccIndex);
+		Wpca  = Least_Classifier_Parameters(PC_NumPCA, Z', HDR.Classlabel);
+	
 	elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
@@ -83,13 +89,18 @@ endD = end of trial signal
 	endif
         
 	% Returing output structure
-	TrainOut.V = V;
+	TrainOut.VPCA = VPCA;
+	TrainOut.VLDA = VLDA;
+	
 	TrainOut.Wlda = Wlda(1:end-1);
 	TrainOut.Wolda = Wlda(end);
+	
 	TrainOut.Wpca = Wpca(1:end-1);
 	TrainOut.Wopca = Wpca(end);
 
-	TrainOut.PC_Num = PC_Num;
+	TrainOut.PC_NumPCA = PC_NumPCA;
+	TrainOut.PC_NumLDA = PC_NumLDA;
+	
 	TrainOut.HDR = HDR;
 
 end

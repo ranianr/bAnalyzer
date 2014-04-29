@@ -58,31 +58,47 @@ endD = end of trial signal
 	% apply LDA or PCA or CSP
 	Wlda=0;
 	Wpca =0;
+	VLDA = [];
+	VPCA = [];
+	PC_NumPCA = 0;
+	PC_NumLDA = 0;
+
+	mu1PCA = [];
+	mu2PCA = [];
+	mu1LDA = [];
+	mu2LDA = [];
+
+	PIPCA = [];
+	PILDA = [];
+
+	segmaPCA = [];
+	segmaLDA = [];
+
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];
-		[Z, V]  = LDA_fn(HDR.Classlabel, X, classes_no);
+		[Z, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
 		C1 = Z((HDR.Classlabel==1),:);
 		C2 = Z((HDR.Classlabel==2),:);
 		Z = [C1; C2];
 		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
-		accuracy = likelihoodResults(C1, C2, t)
-		[AccSelected, AccIndex] = max(accuracy)
-		PC_Num = min(AccIndex)
-		[PI segma mu1 mu2] = Likeli_Classifier_Parameters(PC_Num, Z, t);
+		accuracy = likelihoodResults(C1, C2, t);
+		[AccSelected, AccIndex] = max(accuracy);
+		PC_NumLDA = min(AccIndex);
+		[PILDA segmaLDA mu1LDA mu2LDA] = Likeli_Classifier_Parameters(PC_NumLDA, Z, t);
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
-		[V, Z]= pcaProject(pureData);
+		[VPCA, Z]= pcaProject(pureData);
 		Z=Z';
 		C1 = Z((HDR.Classlabel==1),:);
 		C2 = Z((HDR.Classlabel==2),:);
 		Z = [C1; C2];
 		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
-		accuracy = likelihoodResults(C1, C2, t)
-		[AccSelected, AccIndex] = max(accuracy)
-		PC_Num = min(AccIndex)
-		[PI segma mu1 mu2] = Likeli_Classifier_Parameters(PC_Num, Z, t);
+		accuracy = likelihoodResults(C1, C2, t);
+		[AccSelected, AccIndex] = max(accuracy);
+		PC_NumPCA = min(AccIndex);
+		[PIPCA segmaPCA mu1PCA mu2PCA] = Likeli_Classifier_Parameters(PC_NumPCA, Z, t);
 	elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
@@ -92,13 +108,29 @@ endD = end of trial signal
 	endif
         
 	% Returing output structure
-	TrainOut.V = V;
+	TrainOut.VPCA = VPCA;
+	TrainOut.VLDA = VLDA;
+	
 	TrainOut.Wlda = Wlda(1:end-1);
 	TrainOut.Wolda = Wlda(end);
+	
 	TrainOut.Wpca = Wpca(1:end-1);
 	TrainOut.Wopca = Wpca(end);
 
-	TrainOut.PC_Num = PC_Num;
+	TrainOut.PC_NumPCA = PC_NumPCA;
+	TrainOut.PC_NumLDA = PC_NumLDA;
+
+	TrainOut.mu1PCA = mu1PCA;
+	TrainOut.mu2PCA = mu2PCA;
+	TrainOut.mu1LDA = mu1LDA;
+	TrainOut.mu2LDA = mu2LDA;
+
+	TrainOut.PIPCA = PIPCA;
+	TrainOut.PILDA = PILDA;
+
+	TrainOut.segmaPCA = segmaPCA;
+	TrainOut.segmaLDA = segmaLDA;
+
 	TrainOut.HDR = HDR;
 
 end

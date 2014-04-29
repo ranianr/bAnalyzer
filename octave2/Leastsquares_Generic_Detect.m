@@ -1,7 +1,7 @@
-function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag)
+function [DetectOut Debug] = Leastsquares_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag)
    
  %{
- [DetectOut Debug] = Fisher_Generic_Detect(1, 1,0,0,0,0,0,1,0,0,0);
+ [DetectOut Debug] = Leastsquares_Generic_Detect(1, 1,0,0,0,0,0,1,0,0,0);
  
  %}  
  	warning('off');
@@ -10,10 +10,10 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
  	TRIG = HDR.TRIG(5);
     DetectIn.("TrialData") = getTrialData(Data, TRIG, 5, length(HDR.TRIG));
  	
- 	%to test PCA flag use Fisher_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 );
- 	%to test LDA flag use Fisher_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,1,0,0,0,0,4 );
+ 	%to test PCA flag use KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 );
+ 	%to test LDA flag use KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,1,0,0,0,0,4 );
  	%TODO change this behavior of debugging/testing :'/
- 	TrainOut = Fisher_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
+ 	TrainOut = Leastsquares_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
  	DetectIn.("TrainOut") = TrainOut;
  	
     % Get inputs from python
