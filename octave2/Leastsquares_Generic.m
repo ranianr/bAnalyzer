@@ -62,24 +62,30 @@ endD = end of trial signal
 	VPCA = [];
 	PC_NumPCA = 0;
 	PC_NumLDA = 0;
+
+        ZLDA = [];
+	ZPCA = [];
+
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];
-		[Z, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
-		accuracy = leastSquaresResults(Z, HDR.Classlabel);
+		[ZLDA, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
+		accuracy = leastSquaresResults(ZLDA, HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumLDA = min(AccIndex);
-	 	Wlda  = Least_Classifier_Parameters(PC_NumLDA, Z, HDR.Classlabel);
+	 	Wlda  = Least_Classifier_Parameters(PC_NumLDA, ZLDA, HDR.Classlabel);
+        	datalength = size(ZLDA)(1);                
 	
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
-		[VPCA, Z]= pcaProject(pureData);
-		accuracy = leastSquaresResults(Z', HDR.Classlabel);
+		[VPCA, ZPCA]= pcaProject(pureData);
+		accuracy = leastSquaresResults(ZPCA', HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);
-		Wpca  = Least_Classifier_Parameters(PC_NumPCA, Z', HDR.Classlabel);
-	
+		Wpca  = Least_Classifier_Parameters(PC_NumPCA, ZPCA', HDR.Classlabel);
+        	datalength = size(ZPCA)(1);
+
 	elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
@@ -103,6 +109,9 @@ endD = end of trial signal
 	
 	TrainOut.HDR = HDR;
 
+        TrainOut.PCAData = ZPCA;
+        TrainOut.LDAData = ZLDA;
+        TrainOut.datalength = datalength;
 end
 
 

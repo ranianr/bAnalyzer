@@ -76,7 +76,7 @@ endD = end of trial signal
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumLDA = min(AccIndex);
 		KLDA = k_total(PC_NumLDA);
-	
+        	datalength = size(Zlda)(1);
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
@@ -85,7 +85,7 @@ endD = end of trial signal
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);
 		KPCA = k_total(PC_NumPCA);
-		
+        	datalength = size(Zpca)(1);		
 	 elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
@@ -106,6 +106,7 @@ endD = end of trial signal
 		z3 = V(:,4);
 		Z = V;
        	        accuracy = getAccuracy(Z, HDR);	
+       	        
 	elseif(CSPFlag == 1)
 		%not tested
 	endif
@@ -129,6 +130,10 @@ endD = end of trial signal
 	TrainOut.PC_NumLDA = PC_NumLDA;
 	
         TrainOut.ClassLabels = HDR.Classlabel;
+        
+        TrainOut.PCAData = Zpca;
+        TrainOut.LDAData = Zlda;
+        TrainOut.datalength = datalength;
 
 end
 function accuracy = getAccuracy(projected, HDR)

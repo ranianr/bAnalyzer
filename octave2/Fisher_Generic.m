@@ -65,24 +65,27 @@ endD = end of trial signal
 	VLDA = 0;
 	PC_NumPCA = 0;
 	PC_NumLDA = 0;
+	ZLDA = [];
+	ZPCA = [];
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];
-		[Z, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
-		accuracy = FisherResults(Z, HDR.Classlabel);
+		#TODO change Z to ZPCA
+		[ZLDA, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
+		accuracy = FisherResults(ZLDA, HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumLDA = min(AccIndex);
-		[Wlda, Wolda] = Fisher_Classifier_Parameters(PC_NumLDA, Z, HDR.Classlabel);
-		
+		[Wlda, Wolda] = Fisher_Classifier_Parameters(PC_NumLDA, ZLDA, HDR.Classlabel);
+        	datalength = size(ZLDA)(1);
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
-		[VPCA, Z]= pcaProject(pureData);
-		accuracy = FisherResults(Z', HDR.Classlabel);
+		[VPCA, ZPCA]= pcaProject(pureData);
+		accuracy = FisherResults(ZPCA', HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);
-		[Wpca, Wopca] = Fisher_Classifier_Parameters(PC_NumPCA, Z', HDR.Classlabel);
-		
+		[Wpca, Wopca] = Fisher_Classifier_Parameters(PC_NumPCA, ZPCA', HDR.Classlabel);
+        	datalength = size(ZPCA)(1);		
 	elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
@@ -105,7 +108,10 @@ endD = end of trial signal
 	TrainOut.PC_NumLDA = PC_NumLDA;
 	
 	TrainOut.accuracy = accuracy;
-
+        
+        TrainOut.PCAData = ZPCA;
+        TrainOut.LDAData = ZLDA;
+        TrainOut.datalength = datalength;
 
 end
 

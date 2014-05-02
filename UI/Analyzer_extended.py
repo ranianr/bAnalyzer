@@ -22,9 +22,16 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	self.path=None
 	
 	#EVENTS
-	QtCore.QObject.connect(self.BrowseButton, QtCore.SIGNAL(("clicked()")), self.browseButtonClicked) #browse button
+	#detectionBrowseButton
 	
-	QtCore.QObject.connect(self.TrainButton, QtCore.SIGNAL(("clicked()")), self.TrainButton_Clicked) #train button
+	QtCore.QObject.connect(self.BrowseButton, QtCore.SIGNAL(("clicked()")), self.browseButtonClicked) #Train browse button
+	
+	QtCore.QObject.connect(self.TrainButton, QtCore.SIGNAL(("clicked()")), self.TrainButton_Clicked) #Train button
+	
+	QtCore.QObject.connect(self.detectionBrowseButton, QtCore.SIGNAL(("clicked()")), self.testBrowseButtonClicked) #Test browse button
+	
+	QtCore.QObject.connect(self.testButton, QtCore.SIGNAL(("clicked()")), self.TestButton_Clicked) #Test button
+	
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     def addComboBoxesData(self):
@@ -41,8 +48,6 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	self.classifiers = ("Fisher","KNN","Likelihood","Least Squares") #add classifiers manually !
 	self.ClassifierBox.addItems(self.classifiers )
 	
-	
-	
      
     def browseButtonClicked(self):
 	self.fileDialog = QtGui.QFileDialog()
@@ -57,6 +62,45 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	Details["Classes"]              = TrainingFileClass.getClasses(self.path)
 	self.subjectName.setText(Details["SubjectName"]) #subject name label
     
+    def testBrowseButtonClicked(self):
+	self.fileDialog = QtGui.QFileDialog()
+	self.path=self.getFileName()
+	
+	self.DetectDataFile.setText(self.path)
+	self.XmlFileName = self.path
+	    #read CSV files GDF files will be supported later
+	Details = {}
+	TrainingFileClass.getClasses(self.path)
+	Details["SubjectName"]          = TrainingFileClass.getName(self.path)
+	Details["Classes"]              = TrainingFileClass.getClasses(self.path)
+	self.testDataSubjectName.setText(Details["SubjectName"]) #subject name label
+    
+    def TestButton_Clicked(self):
+	#check all files flag then offset else read from new file
+	selectedData={}
+	if(self.sameFileFlag.isChecked()):
+	   if(self.allData2080.isChecked()):
+		selectedData["All"] = True
+		print selectedData["All"]
+	   elif(self.offset_0_2080.isChecked()):
+		selectedData["off0"] = True
+	   elif(self.offset_1_2080.isChecked()):
+		selectedData["off1"] = True
+	   elif(self.offset_2_2080.isChecked()):
+		selectedData["off2"] = True
+	   elif(self.offset_3_2080.isChecked()):
+		selectedData["off3"] = True
+	   elif(self.offset_4_2080.isChecked()):
+		selectedData["off4"] = True
+
+	else:
+	    print("mesh hello")
+	    
+	#calling the octave thread
+	self.readThread1 = readDataThread(self.path, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, False, selectedData)
+	self.readThread1.start()
+
+    
     #used by "browseButtonClicked" function to get the selected file path          
     def getFileName(self):
         self.path = self.fileDialog.getOpenFileName()
@@ -65,20 +109,20 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
     def TrainButton_Clicked(self):
 	print("Training Started...")
 	if(self.removeNoiseChecked.isChecked()):
-	    removeNoiseFlag = 1;
+	    self.removeNoiseFlag = 1;
 	elif(self.removeNoiseUnchecked.isChecked()):
-	    removeNoiseFlag = 0;
-	SignalStart = self.SampleStart.toPlainText()
-	SignalEnd   = self.SampleEnd.toPlainText()
-	selectedFeatureExtractionMethod  = self.featureSelectionMethodBox.currentText()
-	selectedPreprocessingMethod  = self.preprocessingBox.currentText()
-	FeatureEnhancementSelectedMethod = self.FeatureEnhancementMethod.currentText()
-	classifierSelected = self.ClassifierBox.currentText()
+	    self.removeNoiseFlag = 0;
+	self.SignalStart = self.SampleStart.toPlainText()
+	self.SignalEnd   = self.SampleEnd.toPlainText()
+	self.selectedFeatureExtractionMethod  = self.featureSelectionMethodBox.currentText()
+	self.selectedPreprocessingMethod  = self.preprocessingBox.currentText()
+	self.FeatureEnhancementSelectedMethod = self.FeatureEnhancementMethod.currentText()
+	self.classifierSelected = self.ClassifierBox.currentText()
 	
 	#calling the octave thread
-	self.readThread = readDataThread(self.path,removeNoiseFlag,SignalStart, SignalEnd, selectedFeatureExtractionMethod,selectedPreprocessingMethod,FeatureEnhancementSelectedMethod, classifierSelected)
+	self.readThread = readDataThread(self.path, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, True)
 	
-		#done signals calling
+	#done signals calling
 	#enhancment is done
 	QtCore.QObject.connect(self.readThread, QtCore.SIGNAL(("dataCleaningSignal(PyQt_PyObject)")), self.cleanData)
 	#feature exctraction is done

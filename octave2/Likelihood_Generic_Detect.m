@@ -1,4 +1,4 @@
-function [DetectOut Debug] = Likelihood_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag)
+function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag)
    
  %{
  [DetectOut Debug] =Likelihood_Generic_Detect(1, 1,0,0,0,0,0,1,0,0,0);
@@ -6,14 +6,14 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(noiseFlag, f1FLag,f2FLag,
  %}  
  	warning('off');
  	%TESTING AND DEBUGGING
- 	[Data, HDR] = getRawData("../Osama Mohamed.csv");
+ 	[Data, HDR] = getRawData("./Osama Mohamed.csv");
  	TRIG = HDR.TRIG(5);
     DetectIn.("TrialData") = getTrialData(Data, TRIG, 5, length(HDR.TRIG));
  	
  	%to test PCA flag use Likelihood_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 );
  	%to test LDA flag use Likelihood_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,1,0,0,0,0,4 );
  	%TODO change this behavior of debugging/testing :'/
- 	TrainOut = Likelihood_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
+ 	TrainOut = Likelihood_Generic("./Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
  	DetectIn.("TrainOut") = TrainOut;
  	
     % Get inputs from python

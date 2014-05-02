@@ -1,4 +1,4 @@
- function [mu,Beta] = GetMuBeta_detect_more_feature2(data)
+ function [mu,Beta] = GetMuBeta_detect_more_feature(data)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{

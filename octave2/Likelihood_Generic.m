@@ -74,31 +74,36 @@ endD = end of trial signal
 	segmaPCA = [];
 	segmaLDA = [];
 
+	ZLDA = [];
+	ZPCA = [];
+
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];
-		[Z, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
-		C1 = Z((HDR.Classlabel==1),:);
-		C2 = Z((HDR.Classlabel==2),:);
-		Z = [C1; C2];
+		[ZLDA, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
+		C1 = ZLDA((HDR.Classlabel==1),:);
+		C2 = ZLDA((HDR.Classlabel==2),:);
+		ZLDA = [C1; C2];
 		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
 		accuracy = likelihoodResults(C1, C2, t);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumLDA = min(AccIndex);
-		[PILDA segmaLDA mu1LDA mu2LDA] = Likeli_Classifier_Parameters(PC_NumLDA, Z, t);
+		[PILDA segmaLDA mu1LDA mu2LDA] = Likeli_Classifier_Parameters(PC_NumLDA, ZLDA, t);
+        	datalength = size(ZLDA)(1);                
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
-		[VPCA, Z]= pcaProject(pureData);
-		Z=Z';
-		C1 = Z((HDR.Classlabel==1),:);
-		C2 = Z((HDR.Classlabel==2),:);
-		Z = [C1; C2];
+		[VPCA, ZPCA]= pcaProject(pureData);
+		ZPCA=ZPCA';
+		C1 = ZPCA((HDR.Classlabel==1),:);
+		C2 = ZPCA((HDR.Classlabel==2),:);
+		ZPCA = [C1; C2];
 		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
 		accuracy = likelihoodResults(C1, C2, t);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);
-		[PIPCA segmaPCA mu1PCA mu2PCA] = Likeli_Classifier_Parameters(PC_NumPCA, Z, t);
+		[PIPCA segmaPCA mu1PCA mu2PCA] = Likeli_Classifier_Parameters(PC_NumPCA, ZPCA, t);
+        	datalength = size(ZPCA)(1);
 	elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
@@ -132,6 +137,11 @@ endD = end of trial signal
 	TrainOut.segmaLDA = segmaLDA;
 
 	TrainOut.HDR = HDR;
+
+        TrainOut.PCAData = ZPCA;
+        TrainOut.LDAData = ZLDA;
+        TrainOut.datalength = datalength;
+
 
 end
 

@@ -1,19 +1,24 @@
-function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag)
+function DetectOut = KNN_Generic_Detect(DetectIn, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag)
    
  %{
  [DetectOut Debug] = KNN_Generic_Detect(1, 1,0,0,0,0,0,0,1,0,0);
  
- %}  
- 	warning('off');
+ %}
+ 	%warning('off');
  	%TESTING AND DEBUGGING
- 	[Data, HDR] = getRawData("../Osama Mohamed.csv");
+
+        %use single dot to work the shell script and double to work directly from octave from the current directory
+        %we could better use the pwd ... but that's not worth it, it's for debugging purposes anyway
+ 	[Data, HDR] = getRawData("./Osama Mohamed.csv");
  	TRIG = HDR.TRIG(5);
+            
+
     DetectIn.("TrialData") = getTrialData(Data, TRIG, 5, length(HDR.TRIG));
  	
  	%to test PCA flag use KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 );
  	%to test LDA flag use KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,1,0,0,0,0,4 );
  	%TODO change this behavior of debugging/testing :'/
- 	TrainOut = KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
+ 	TrainOut = KNN_Generic("./Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
  	DetectIn.("TrainOut") = TrainOut;
  	
     % Get inputs from python
@@ -35,8 +40,7 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
     ClassLabels = TrainOut.ClassLabels;%class labels
 
     ClassLabels(ClassLabels == 2) = -1;
-
-    
+   
     % do pre-processing here please
     if(noiseFlag == 1)
 		noise = mean(TrialData')';
@@ -47,8 +51,11 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
 	if(f1FLag == 1)
 		[Mu,Beta] =  GetMuBeta_detect(TrialData);
 	elseif (f2FLag == 1)
+            % a stub is being used here, should implemented first before calling
+            % reason: inconsistant filename with fn name
 		[Mu,Beta] =  GetMuBeta_detect_more_feature( TrialData);
 	elseif (f3FLag == 1)
+            % a stub is being used here, should implemented first before calling            
 		[Mu,Beta] =  GetMuBeta_detect_more_feature2(  TrialData);
 	elseif (f4FLag == 1)
 		[Mu,Beta] =  GetMuBeta_detect_more_feature3(  TrialData);
@@ -96,7 +103,6 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
         end
     endif
     
-    
     if(PCAFlag == 1)
     	Z = [Mu Beta]*real(VPCA);
         
@@ -135,9 +141,9 @@ function [DetectOut Debug] = KNN_Generic_Detect(noiseFlag, f1FLag,f2FLag,f3FLag,
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
-	Debug = vote;
-
+	
     %DetectOut
 	DetectOut.LDAresult = TargetsLDA;
 	DetectOut.PCAresult = TargetsPCA;
+
 end
