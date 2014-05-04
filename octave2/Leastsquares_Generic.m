@@ -84,6 +84,8 @@ endD = end of trial signal
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);
 		Wpca  = Least_Classifier_Parameters(PC_NumPCA, ZPCA', HDR.Classlabel);
+                % make zpca consistent with zlda!
+                ZPCA = ZPCA';
         	datalength = size(ZPCA)(1);
 
 	elseif(CSP_LDAFlag == 1)

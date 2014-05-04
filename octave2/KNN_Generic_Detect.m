@@ -1,41 +1,27 @@
-function DetectOut = KNN_Generic_Detect(DetectIn, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag)
+function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag, preProjectedFlag)
    
  %{
  [DetectOut Debug] = KNN_Generic_Detect(1, 1,0,0,0,0,0,0,1,0,0);
  
  %}
  	%warning('off');
- 	%TESTING AND DEBUGGING
-
-        %use single dot to work the shell script and double to work directly from octave from the current directory
-        %we could better use the pwd ... but that's not worth it, it's for debugging purposes anyway
- 	[Data, HDR] = getRawData("./Osama Mohamed.csv");
- 	TRIG = HDR.TRIG(5);
-            
-
-    DetectIn.("TrialData") = getTrialData(Data, TRIG, 5, length(HDR.TRIG));
- 	
- 	%to test PCA flag use KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 );
- 	%to test LDA flag use KNN_Generic("../Osama Mohamed.csv",1,1,0,0,0,0,0,1,0,0,0,0,4 );
- 	%TODO change this behavior of debugging/testing :'/
- 	TrainOut = KNN_Generic("./Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4 ); 
- 	DetectIn.("TrainOut") = TrainOut;
- 	
+        %may be useful later
+ 	%[Data, HDR] = getRawData(directory);
     % Get inputs from python
-	TrialData = DetectIn.("TrialData"); %data to be sent from python
-	TrainOut = DetectIn.("TrainOut"); %
-   
-	KPCA = TrainOut.KPCA;
-	KLDA = TrainOut.KLDA;
+    TrialData = DetectIn.("TrialData"); %data to be sent from python
+    TrainOut = DetectIn.("TrainOut"); %
 
-	VPCA = TrainOut.VPCA ;
-	VLDA = TrainOut.VLDA ;
+    KPCA = TrainOut.KPCA;
+    KLDA = TrainOut.KLDA;
+
+    VPCA = TrainOut.VPCA ;
+    VLDA = TrainOut.VLDA ;
 	
     ZtrainPCA  = TrainOut.ZtrainPCA;
     ZtrainLDA  = TrainOut.ZtrainLDA;
     
-	PC_NumPCA  = TrainOut.PC_NumPCA;
-	PC_NumLDA  = TrainOut.PC_NumLDA;
+    PC_NumPCA  = TrainOut.PC_NumPCA;
+    PC_NumLDA  = TrainOut.PC_NumLDA;
 
     ClassLabels = TrainOut.ClassLabels;%class labels
 
@@ -47,30 +33,38 @@ function DetectOut = KNN_Generic_Detect(DetectIn, noiseFlag, f1FLag,f2FLag,f3FLa
 		TrialData =  TrialData -noise;
     endif
 
-	% Get features (mu & beta) according to the selected method
-	if(f1FLag == 1)
-		[Mu,Beta] =  GetMuBeta_detect(TrialData);
-	elseif (f2FLag == 1)
+    if (preProjectedFlag == 1)
+        % Get features (mu & beta) according to the selected method
+        if(f1FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect(TrialData);
+        elseif (f2FLag == 1)
             % a stub is being used here, should implemented first before calling
             % reason: inconsistant filename with fn name
-		[Mu,Beta] =  GetMuBeta_detect_more_feature( TrialData);
-	elseif (f3FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature( TrialData);
+        elseif (f3FLag == 1)
             % a stub is being used here, should implemented first before calling            
-		[Mu,Beta] =  GetMuBeta_detect_more_feature2(  TrialData);
-	elseif (f4FLag == 1)
-		[Mu,Beta] =  GetMuBeta_detect_more_feature3(  TrialData);
-	elseif (f5FLag == 1)
-		[Mu,Beta] =  GetMuBeta_detect_more_feature4( TrialData);
-	elseif (f6FLag == 1)
-		[Mu,Beta] = GetMuBeta_detect_more_feature5(  TrialData);
-	endif
-	%defualt return
-	TargetsLDA="Unknown";
-	TargetsPCA="Unknown";
+                [Mu,Beta] =  GetMuBeta_detect_more_feature2(  TrialData);
+        elseif (f4FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature3(  TrialData);
+        elseif (f5FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature4( TrialData);
+        elseif (f6FLag == 1)
+                [Mu,Beta] = GetMuBeta_detect_more_feature5(  TrialData);
+        endif
+        %else we've got preprojected already
+    endif
+        
+    %default return
+    TargetsLDA="Unknown";
+    TargetsPCA="Unknown";
 	
     % apply LDA method to the features
-	if(LDAFLag == 1)
-		Z = [Mu Beta]*real(VLDA); 
+    if(LDAFLag == 1)
+        if (preProjectedFlag == 1)
+            Z =TrialData;
+        else
+            Z = [Mu Beta]*real(VLDA);
+        endif
         Z = Z(:,1:PC_NumLDA);
         ZtrainLDA = ZtrainLDA(:,1:PC_NumLDA);
 
@@ -104,7 +98,11 @@ function DetectOut = KNN_Generic_Detect(DetectIn, noiseFlag, f1FLag,f2FLag,f3FLa
     endif
     
     if(PCAFlag == 1)
-    	Z = [Mu Beta]*real(VPCA);
+        if (preProjectedFlag == 1)
+            Z =TrialData;
+        else
+            Z = [Mu Beta]*real(VPCA);
+        endif
         
         Z = Z(:,1:PC_NumPCA);
         ZtrainPCA = ZtrainPCA';

@@ -57,35 +57,37 @@ endD = end of trial signal
 	% apply LDA or PCA or CSP
 	KLDA = 0;
 	KPCA = 0;
-	Zlda = [];
-	Zpca = [];
-	Vpca = [];
-	Vlda = [];
+	ZLDA = [];
+	ZPCA = [];
+	VPCA = [];
+	VLDA = [];
 	PC_NumLDA = 0;
 	PC_NumPCA = 0;
 	
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];
-		[Zlda, Vlda]  = LDA_fn(HDR.Classlabel, X, classes_no);
-		C1 = Zlda((HDR.Classlabel==1),:);
-		C2 = Zlda((HDR.Classlabel==2),:);
-		Zlda = [C1; C2];
+		[ZLDA, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
+		C1 = ZLDA((HDR.Classlabel==1),:);
+		C2 = ZLDA((HDR.Classlabel==2),:);
+		ZLDA = [C1; C2];
 		t = [ones(size(C1)(1),1) ; 2*ones(size(C2)(1),1)]';
-		[accuracy k_total] = knnResults(Zlda, t);
+		[accuracy k_total] = knnResults(ZLDA, t);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumLDA = min(AccIndex);
 		KLDA = k_total(PC_NumLDA);
-        	datalength = size(Zlda)(1);
+        	datalength = size(ZLDA)(1);
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
-		[Vpca, Zpca]= pcaProject(pureData); 
-		[accuracy k_total] = knnResults(Zpca', HDR.Classlabel);
+		[VPCA, ZPCA]= pcaProject(pureData); 
+		[accuracy k_total] = knnResults(ZPCA', HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);
 		KPCA = k_total(PC_NumPCA);
-        	datalength = size(Zpca)(1);		
+                % make zpca consistent with zlda!
+                ZPCA = ZPCA';
+        	datalength = size(ZPCA)(1);		
 	 elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
@@ -100,7 +102,7 @@ endD = end of trial signal
 	    	C1 = Xoriginal(HDR.Classlabel==1,:);
 		C2 = Xoriginal(HDR.Classlabel==2,:);
 	    	[Z, W] = CSP_fn(C1, C2);
-	        [Vlda, Xm, Vproj]  = LDA_fn(c, Z, ClassLabels);
+	        [VLDA, Xm, Vproj]  = LDA_fn(c, Z, ClassLabels);
 		z1 = V(:,1);
 		z2 = V(:,2);
 		z3 = V(:,4);
@@ -120,19 +122,20 @@ endD = end of trial signal
 	TrainOut.KPCA = KPCA;
 	TrainOut.KLDA = KLDA;
 	
-	TrainOut.ZtrainLDA = Zlda;
-	TrainOut.ZtrainPCA = Zpca;
+        % is this used anywhere!?
+	TrainOut.ZtrainLDA = ZLDA;
+	TrainOut.ZtrainPCA = ZPCA;
 	
-	TrainOut.VPCA = Vpca;
-	TrainOut.VLDA = Vlda;
+	TrainOut.VPCA = VPCA;
+	TrainOut.VLDA = VLDA;
 	
 	TrainOut.PC_NumPCA = PC_NumPCA;
 	TrainOut.PC_NumLDA = PC_NumLDA;
 	
         TrainOut.ClassLabels = HDR.Classlabel;
         
-        TrainOut.PCAData = Zpca;
-        TrainOut.LDAData = Zlda;
+        TrainOut.PCAData = ZPCA;
+        TrainOut.LDAData = ZLDA;
         TrainOut.datalength = datalength;
 
 end

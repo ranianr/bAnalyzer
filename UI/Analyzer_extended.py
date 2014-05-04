@@ -78,26 +78,35 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
     def TestButton_Clicked(self):
 	#check all files flag then offset else read from new file
 	selectedData={}
-	if(self.sameFileFlag.isChecked()):
-	   if(self.allData2080.isChecked()):
-		selectedData["All"] = True
-		print selectedData["All"]
-	   elif(self.offset_0_2080.isChecked()):
-		selectedData["off0"] = True
-	   elif(self.offset_1_2080.isChecked()):
-		selectedData["off1"] = True
-	   elif(self.offset_2_2080.isChecked()):
-		selectedData["off2"] = True
-	   elif(self.offset_3_2080.isChecked()):
-		selectedData["off3"] = True
-	   elif(self.offset_4_2080.isChecked()):
-		selectedData["off4"] = True
+	self.setSameFileFlag(self.sameFileFlag.isChecked())
+
+	if(self.sameFile):
+
+	    selectedData["All"] = False
+	    selectedData["off0"] = False
+	    selectedData["off1"] = False
+	    selectedData["off2"] = False
+	    selectedData["off3"] = False
+	    selectedData["off4"] = False
+
+	    if(self.allData2080.isChecked()):
+		 selectedData["All"] = True
+	    elif(self.offset_0_2080.isChecked()):
+		 selectedData["off0"] = True
+	    elif(self.offset_1_2080.isChecked()):
+		 selectedData["off1"] = True
+	    elif(self.offset_2_2080.isChecked()):
+		 selectedData["off2"] = True
+	    elif(self.offset_3_2080.isChecked()):
+		 selectedData["off3"] = True
+	    elif(self.offset_4_2080.isChecked()):
+		 selectedData["off4"] = True
 
 	else:
 	    print("mesh hello")
 	    
 	#calling the octave thread
-	self.readThread1 = readDataThread(self.path, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, False, selectedData)
+	self.readThread1 = readDataThread(self.path, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, False, selectedData, self.sameFile)
 	self.readThread1.start()
 
     
@@ -149,3 +158,6 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
     def classifyData(self, data):
 	self.label_13.setText("Done4!")
 	self.readThread.terminate()
+
+    def setSameFileFlag(self, val):
+	self.sameFile = val

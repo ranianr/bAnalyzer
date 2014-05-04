@@ -85,6 +85,8 @@ endD = end of trial signal
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);
 		[Wpca, Wopca] = Fisher_Classifier_Parameters(PC_NumPCA, ZPCA', HDR.Classlabel);
+                % make zpca consistent with zlda!
+                ZPCA = ZPCA';
         	datalength = size(ZPCA)(1);		
 	elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
@@ -109,6 +111,7 @@ endD = end of trial signal
 	
 	TrainOut.accuracy = accuracy;
         
+        % Caution: transposing the ZPCA here won't generate errors, but only wrong calculations
         TrainOut.PCAData = ZPCA;
         TrainOut.LDAData = ZLDA;
         TrainOut.datalength = datalength;
