@@ -1,4 +1,4 @@
- function [mu,Beta] = GetMuBeta(start, endD, data,HDR)
+ function [mu,Beta] = GetMuBeta(start, endD, data, HDR)
 	
 	fs=HDR.SampleRate;
 

@@ -30,7 +30,8 @@ endD = end of trial signal
 
 	% Get Raw Data from the file 
 	[data, HDR] = getRawData(directory);
-        
+
+
 	% Intial values
 	classes_no = [ getClassNumber(HDR,'RIGHT')  getClassNumber(HDR,'LEFT') ];
         
@@ -38,7 +39,7 @@ endD = end of trial signal
 	if(noiseFlag == 1)
 		noise = mean(data')';
 		data =  data -noise;	
-	endif	
+	endif
 	% Get features (mu & beta) according to the selected method
 	if(f1FLag == 1)
 		[Mu,Beta] =  GetMuBeta(startD, endD, data, HDR);

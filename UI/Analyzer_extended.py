@@ -19,7 +19,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow_Extended(Ui_MainWindow):
     def InitializeUI(self):
         self.addComboBoxesData()
-	self.path=None
+	self.trainFilePath = None
 	
 	#EVENTS
 	#detectionBrowseButton
@@ -51,28 +51,30 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
      
     def browseButtonClicked(self):
 	self.fileDialog = QtGui.QFileDialog()
-	self.path=self.getFileName()
+	self.trainFilePath=self.getFileName()
 	
-	self.datafile.setText(self.path)
-	self.XmlFileName = self.path
+	self.datafile.setText(self.trainFilePath)
+	# deprecated
+	self.XmlFileName = self.trainFilePath
 	    #read CSV files GDF files will be supported later
 	Details = {}
-	TrainingFileClass.getClasses(self.path)
-	Details["SubjectName"]          = TrainingFileClass.getName(self.path)
-	Details["Classes"]              = TrainingFileClass.getClasses(self.path)
+	TrainingFileClass.getClasses(self.trainFilePath)
+	Details["SubjectName"]          = TrainingFileClass.getName(self.trainFilePath)
+	Details["Classes"]              = TrainingFileClass.getClasses(self.trainFilePath)
 	self.subjectName.setText(Details["SubjectName"]) #subject name label
     
     def testBrowseButtonClicked(self):
 	self.fileDialog = QtGui.QFileDialog()
-	self.path=self.getFileName()
-	
-	self.DetectDataFile.setText(self.path)
-	self.XmlFileName = self.path
+	#self.detectFilePath = self.getFileName()
+	print self.detectFilePath 
+	self.DetectDataFile.setText(self.detectFilePath)
+	# deprecated
+	self.XmlFileName = self.detectFilePath
 	    #read CSV files GDF files will be supported later
 	Details = {}
-	TrainingFileClass.getClasses(self.path)
-	Details["SubjectName"]          = TrainingFileClass.getName(self.path)
-	Details["Classes"]              = TrainingFileClass.getClasses(self.path)
+	TrainingFileClass.getClasses(self.detectFilePath)
+	Details["SubjectName"]          = TrainingFileClass.getName(self.detectFilePath)
+	Details["Classes"]              = TrainingFileClass.getClasses(self.detectFilePath)
 	self.testDataSubjectName.setText(Details["SubjectName"]) #subject name label
     
     def TestButton_Clicked(self):
@@ -103,17 +105,15 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 		 selectedData["off4"] = True
 
 	else:
-	    print("mesh hello")
-	    
-	#calling the octave thread
-	self.readThread1 = readDataThread(self.path, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, False, selectedData, self.sameFile)
+	    print("Detection from a different file than training")
+
+	self.readThread1 = readDataThread(self.trainFilePath, self.detectFilePath, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, False, selectedData, self.sameFile)
 	self.readThread1.start()
 
     
     #used by "browseButtonClicked" function to get the selected file path          
     def getFileName(self):
-        self.path = self.fileDialog.getOpenFileName()
-	return self.path	
+        return self.fileDialog.getOpenFileName()
     
     def TrainButton_Clicked(self):
 	print("Training Started...")
@@ -129,7 +129,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	self.classifierSelected = self.ClassifierBox.currentText()
 	
 	#calling the octave thread
-	self.readThread = readDataThread(self.path, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, True)
+	self.readThread = readDataThread(self.trainFilePath, None, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, True)
 	
 	#done signals calling
 	#enhancment is done

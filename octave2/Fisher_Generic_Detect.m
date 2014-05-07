@@ -23,27 +23,26 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
 	PC_NumPCA  = TrainOut.PC_NumPCA;
 	PC_NumLDA  = TrainOut.PC_NumLDA;
 
-    % do pre-processing here please
-    if(noiseFlag == 1)
-        testw
-		noise = mean(TrialData')';
-		TrialData =  TrialData -noise;
-    endif
+    if (preProjectedFlag == 0)
+        % do pre-processing here please
+        if(noiseFlag == 1)
+            noise = mean(TrialData')';
+            TrialData =  TrialData -noise;
+        endif
 
-    if (preProjectedFlag == 1)
         % Get features (mu & beta) according to the selected method
         if(f1FLag == 1)
-                [Mu,Beta] =  GetMuBeta_detect(TrialData);
+            [Mu,Beta] = GetMuBeta_detect(TrialData);
         elseif (f2FLag == 1)
-                [Mu,Beta] =  GetMuBeta_detect_more_feature( TrialData);
+            [Mu,Beta] = GetMuBeta_detect_more_feature(TrialData);
         elseif (f3FLag == 1)
-                [Mu,Beta] =  GetMuBeta_detect_more_feature2(  TrialData);
+            [Mu,Beta] = GetMuBeta_detect_more_feature2(TrialData);
         elseif (f4FLag == 1)
-                [Mu,Beta] =  GetMuBeta_detect_more_feature3(  TrialData);
+            [Mu,Beta] = GetMuBeta_detect_more_feature3(TrialData);
         elseif (f5FLag == 1)
-                [Mu,Beta] =  GetMuBeta_detect_more_feature4( TrialData);
+            [Mu,Beta] = GetMuBeta_detect_more_feature4(TrialData);
         elseif (f6FLag == 1)
-                [Mu,Beta] = GetMuBeta_detect_more_feature5(  TrialData);
+            [Mu,Beta] = GetMuBeta_detect_more_feature5(TrialData);
         endif
         %else the trial is already pre-projected
     endif
@@ -73,8 +72,10 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
         if (preProjectedFlag == 1)
             Z =TrialData;
         else
+            size([Mu Beta])
             Z = [Mu Beta]*real(VPCA);
         endif
+        
         Z = Z(:,1:PC_NumPCA);
         y = TrainOut.Wpca'*Z';
         y += WoPCA;
