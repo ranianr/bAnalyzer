@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'UI/Analyzer.ui'
 #
-# Created: Wed May  7 14:28:01 2014
+# Created: Wed May  7 16:31:36 2014
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

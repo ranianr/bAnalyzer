@@ -104,6 +104,8 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	    elif(self.offset_4_2080.isChecked()):
 		 selectedData["off4"] = True
 
+	    self.detectFilePath = None
+
 	else:
 	    print("Detection from a different file than training")
 
