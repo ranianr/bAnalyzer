@@ -65,7 +65,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
     
     def testBrowseButtonClicked(self):
 	self.fileDialog = QtGui.QFileDialog()
-	#self.detectFilePath = self.getFileName()
+	self.detectFilePath = self.getFileName()
 	print self.detectFilePath 
 	self.DetectDataFile.setText(self.detectFilePath)
 	# deprecated
@@ -116,6 +116,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
         return self.fileDialog.getOpenFileName()
     
     def TrainButton_Clicked(self):
+
 	print("Training Started...")
 	if(self.removeNoiseChecked.isChecked()):
 	    self.removeNoiseFlag = 1;
