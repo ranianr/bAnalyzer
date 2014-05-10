@@ -177,6 +177,11 @@ class readDataThread(QtCore.QThread):
 	cf = self.classifierFile
 	self.setPreProjectedFlag()
 
+	self.classifierResult = []
+	self.realClasses = []
+
+	indexWindow = 0
+
 	if (cf == "KNN"):
 	    trials = self.captureTrialData()
 	    index = trials["index"]
@@ -195,6 +200,15 @@ class readDataThread(QtCore.QThread):
 		print self.knnResult.PCAresult
 		print self.knnResult.LDAresult		
 		print "trial " + str(i) + " passed ;)"
+
+		if (self.PCAFlag == 1):
+		    self.classifierResult.append(self.knnResult.PCAResultClass)
+		    print "bingo"
+		elif (self.LDAFlag == 1):
+		    self.classifierResult.append(self.knnResult.LDAResultClass)
+
+		self.realClasses = self.knnTrainOut.ClassesTypes
+
 
 	elif (cf == "Fisher"):
 	    trials = self.captureTrialData()
@@ -217,6 +231,15 @@ class readDataThread(QtCore.QThread):
 		print self.fisherResult.LDAresult
 		print "trial " + str(i) + " passed ;)"
 
+		#TODO move into a separate function
+		if (self.PCAFlag == 1):
+		    self.classifierResult.append(self.fisherResult.PCAResultClass)
+		    print "bingo"
+		elif (self.LDAFlag == 1):
+		    self.classifierResult.append(self.fisherResult.LDAResultClass)
+
+		self.realClasses = self.fisherTrainOut.ClassesTypes
+
 	elif (cf == "Likelihood"):
 	    trials = self.captureTrialData()
 	    index = trials["index"]
@@ -236,6 +259,14 @@ class readDataThread(QtCore.QThread):
 		print self.likelihoodResult.LDAresult		
 		print "trial " + str(i) + " passed ;)"
 
+		if (self.PCAFlag == 1):
+		    self.classifierResult.append(self.likelihoodResult.PCAResultClass)
+		    print "bingo"
+		elif (self.LDAFlag == 1):
+		    self.classifierResult.append(self.likelihoodResult.LDAResultClass)
+
+		self.realClasses = self.likelihoodTrainOut.ClassesTypes
+
 	elif (cf == "Least Squares"):
 	    trials = self.captureTrialData()
 	    index = trials["index"]
@@ -254,6 +285,33 @@ class readDataThread(QtCore.QThread):
 		print self.leastSquaresResult.PCAresult
 		print self.leastSquaresResult.LDAresult		
 		print "trial " + str(i) + " passed ;)"
+
+		if (self.PCAFlag == 1):
+		    self.classifierResult.append(self.leastSquaresResult.PCAResultClass)
+		elif (self.LDAFlag == 1):
+		    self.classifierResult.append(self.leastSquaresResult.LDAResultClass)
+
+		self.realClasses = self.leastSquaresTrainOut.ClassesTypes
+
+
+	self.trialStatues(indexWindow)
+	print self.comparisonResults
+
+    #for all the trials, compare and get the results into comparisonResults
+    def trialStatues(self, indexWindow):
+
+	self.comparisonResults = []
+
+	for i in range (indexWindow):
+	    if (self.classifierResult[i] == int(self.realClasses[i])):
+
+		self.comparisonResults.append(True)
+
+	    else:
+
+		self.comparisonResults.append(False)
+	
+	return self.comparisonResults
 
     def  captureTrialData(self):
 

@@ -20,8 +20,8 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
     WoPCA  = TrainOut.Wopca;
     WoLDA  = TrainOut.Wolda;
     
-	PC_NumPCA  = TrainOut.PC_NumPCA;
-	PC_NumLDA  = TrainOut.PC_NumLDA;
+    PC_NumPCA  = TrainOut.PC_NumPCA;
+    PC_NumLDA  = TrainOut.PC_NumLDA;
 
     if (preProjectedFlag == 0)
         % do pre-processing here please
@@ -47,9 +47,12 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
         %else the trial is already pre-projected
     endif
     
-    %defualt return
+    %default return
     TargetsLDA="Unknown";
     TargetsPCA="Unknown";
+
+    ClassPCA = 0;
+    ClassLDA = 0;
 
     % apply LDA method to the features
     if(LDAFlag == 1)
@@ -61,10 +64,12 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
         Z = Z(:,1:PC_NumLDA);
         y = TrainOut.Wlda'*Z';
         y += WoLDA;
-        if(y > 0) 
-            TargetsLDA = "RIGHT"
+        if(y > 0)
+            TargetsLDA = "RIGHT";
+            ClassLDA = 1;
         elseif(y < 0)
-            TargetsLDA = "LEFT"
+            TargetsLDA = "LEFT";
+            ClassLDA = 2;
         end
     endif
 
@@ -81,14 +86,19 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
         y += WoPCA;
         if(y > 0) 
             TargetsPCA = "RIGHT";
+            ClassPCA = 1;
 	elseif(y < 0)
             TargetsPCA = "LEFT";
+            ClassPCA = 1;
 	end
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
 
     %DetectOut
-	DetectOut.LDAresult = TargetsLDA;
-	DetectOut.PCAresult = TargetsPCA;
+    DetectOut.LDAresult = TargetsLDA;
+    DetectOut.PCAresult = TargetsPCA;
+
+    DetectOut.LDAResultClass = ClassLDA;
+    DetectOut.PCAResultClass = ClassPCA;
 end

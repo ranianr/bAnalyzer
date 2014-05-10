@@ -59,6 +59,10 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     %default return
     TargetsLDA="Unknown";
     TargetsPCA="Unknown";
+
+    ClassPCA = 0;
+    ClassLDA = 0;
+
     % apply LDA method to the features
     if(LDAFLag == 1)
         if (preProjectedFlag == 1)
@@ -82,8 +86,10 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
 
         if(P_comparison == 1)
             TargetsLDA = 'RIGHT';
+            ClassLDA = 1;
         elseif(P_comparison == 0)
             TargetsLDA = 'LEFT';
+            ClassLDA = 2;
         end
     endif
     
@@ -108,8 +114,10 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
 
         if(P_comparison == 1)
             TargetsPCA = 'RIGHT';
+            ClassPCA = 1;
         elseif(P_comparison == 0)
             TargetsPCA = 'LEFT';
+            ClassPCA = 2;
         end
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
@@ -117,6 +125,9 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
 	
 
     %DetectOut
-	DetectOut.LDAresult = TargetsLDA;
-	DetectOut.PCAresult = TargetsPCA;
+    DetectOut.LDAresult = TargetsLDA;
+    DetectOut.PCAresult = TargetsPCA;
+
+    DetectOut.LDAResultClass = ClassLDA;
+    DetectOut.PCAResultClass = ClassPCA;
 end

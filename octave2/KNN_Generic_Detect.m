@@ -57,7 +57,10 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
     %default return
     TargetsLDA="Unknown";
     TargetsPCA="Unknown";
-	
+
+    ClassPCA = 0;
+    ClassLDA = 0;
+
     % apply LDA method to the features
     if(LDAFLag == 1)
         if (preProjectedFlag == 1)
@@ -85,15 +88,21 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
         
         if(vote > 0)
             TargetsLDA =  'RIGHT';
+            ClassLDA = 1;
+
         elseif(vote < 0)
             TargetsLDA = 'LEFT';
+            ClassLDA = 2;
         else 
             single_target = ClassLabels( distance == min(distance(2:KLDA+1)));
-			if(single_target > 0)
-			TargetsLDA =  'RIGHT';
-			else
-			TargetsLDA = 'LEFT';
-			end
+
+            if(single_target > 0)
+                TargetsLDA =  'RIGHT';
+                ClassLDA = 1;
+            else
+                TargetsLDA = 'LEFT';
+                ClassLDA = 2;
+            end
         end
     endif
     
@@ -126,14 +135,18 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
         
         if(vote > 0)
             TargetsPCA =  'RIGHT';
+            ClassPCA = 1;
         elseif(vote < 0)
             TargetsPCA = 'LEFT';
+            ClassPCA = 2;
         else 
             single_target = ClassLabels( distance == min(distance(2:KPCA+1)));
             if(single_target > 0)
                 TargetsPCA =  'RIGHT';
+                ClassPCA = 1;
             else
                 TargetsPCA = 'LEFT';
+                ClassPCA = 2;
             end
         end
     endif
@@ -141,7 +154,9 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
     % Debug
 	
     %DetectOut
-	DetectOut.LDAresult = TargetsLDA;
-	DetectOut.PCAresult = TargetsPCA;
+    DetectOut.LDAresult = TargetsLDA;
+    DetectOut.PCAresult = TargetsPCA;
 
+    DetectOut.LDAResultClass = ClassLDA;
+    DetectOut.PCAResultClass = ClassPCA;
 end

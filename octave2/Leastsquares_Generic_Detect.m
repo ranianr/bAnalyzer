@@ -4,14 +4,14 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
  [DetectOut Debug] = Leastsquares_Generic_Detect(1, 1,0,0,0,0,0,1,0,0,0);
  
  %}  
- 	warning('off');
+    warning('off');
  	
     % Get inputs from python
-	TrialData = DetectIn.("TrialData"); %data to be sent from python
-	TrainOut = DetectIn.("TrainOut"); %
+    TrialData = DetectIn.("TrialData"); %data to be sent from python
+    TrainOut = DetectIn.("TrainOut"); %
 
-	VPCA = TrainOut.VPCA ;
-	VLDA = TrainOut.VLDA ;
+    VPCA = TrainOut.VPCA ;
+    VLDA = TrainOut.VLDA ;
 	
     WPCA  = TrainOut.Wpca;
     WLDA  = TrainOut.Wlda;
@@ -19,8 +19,8 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     WoPCA  = TrainOut.Wopca;
     WoLDA  = TrainOut.Wolda;
     
-	PC_NumPCA  = TrainOut.PC_NumPCA;
-	PC_NumLDA  = TrainOut.PC_NumLDA;
+    PC_NumPCA  = TrainOut.PC_NumPCA;
+    PC_NumLDA  = TrainOut.PC_NumLDA;
 
     if (preProjectedFlag == 0)
 
@@ -51,6 +51,9 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     TargetsLDA="Unknown";
     TargetsPCA="Unknown";
 
+    ClassPCA = 0;
+    ClassLDA = 0;
+
     % apply LDA method to the features
     if(LDAFLag == 1)
         if (preProjectedFlag == 1)
@@ -63,8 +66,10 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
         y += WoLDA;
         if(y > 0) 
             TargetsLDA = "RIGHT"
+            ClassLDA = 1;
         elseif(y < 0)
             TargetsLDA = "LEFT"
+            ClassLDA = 2;
         end
     endif
     
@@ -79,15 +84,20 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
 		y += WoPCA;
         if(y > 0) 
             TargetsPCA = "RIGHT";
-		elseif(y < 0)
+            ClassPCA = 1;
+	elseif(y < 0)
             TargetsPCA = "LEFT";
-		end
+            ClassPCA = 2;
+	end
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
 	
 
     %DetectOut
-	DetectOut.LDAresult = TargetsLDA;
-	DetectOut.PCAresult = TargetsPCA;
+    DetectOut.LDAresult = TargetsLDA;
+    DetectOut.PCAresult = TargetsPCA;
+
+    DetectOut.LDAResultClass = ClassLDA;
+    DetectOut.PCAResultClass = ClassPCA;
 end

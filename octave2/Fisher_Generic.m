@@ -117,6 +117,8 @@ endD = end of trial signal
         TrainOut.LDAData = ZLDA;
         TrainOut.datalength = datalength;
 
+        TrainOut.ClassesTypes = HDR.Classlabel;
+
 end
 
 

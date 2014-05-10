@@ -138,6 +138,8 @@ endD = end of trial signal
         TrainOut.LDAData = ZLDA;
         TrainOut.datalength = datalength;
 
+        TrainOut.ClassesTypes = HDR.Classlabel;
+
 end
 function accuracy = getAccuracy(projected, HDR)
     accuracy = [];
