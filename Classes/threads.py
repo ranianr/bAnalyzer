@@ -5,6 +5,8 @@ import oct2py
 import thread
 from PyQt4 import QtCore, QtGui
 
+from AccuracyStats import AccuracyUtilities as AU
+
 #check http://stackoverflow.com/questions/2827623/python-create-object-and-add-attributes-to-it
 class Object(object):
     pass
@@ -203,7 +205,6 @@ class readDataThread(QtCore.QThread):
 
 		if (self.PCAFlag == 1):
 		    self.classifierResult.append(self.knnResult.PCAResultClass)
-		    print "bingo"
 		elif (self.LDAFlag == 1):
 		    self.classifierResult.append(self.knnResult.LDAResultClass)
 
@@ -234,7 +235,6 @@ class readDataThread(QtCore.QThread):
 		#TODO move into a separate function
 		if (self.PCAFlag == 1):
 		    self.classifierResult.append(self.fisherResult.PCAResultClass)
-		    print "bingo"
 		elif (self.LDAFlag == 1):
 		    self.classifierResult.append(self.fisherResult.LDAResultClass)
 
@@ -261,7 +261,6 @@ class readDataThread(QtCore.QThread):
 
 		if (self.PCAFlag == 1):
 		    self.classifierResult.append(self.likelihoodResult.PCAResultClass)
-		    print "bingo"
 		elif (self.LDAFlag == 1):
 		    self.classifierResult.append(self.likelihoodResult.LDAResultClass)
 
@@ -296,6 +295,8 @@ class readDataThread(QtCore.QThread):
 
 	self.trialStatues(indexWindow)
 	print self.comparisonResults
+	accTest = AU()
+	accTest.correctPercentAccuracy(self.comparisonResults)
 
     #for all the trials, compare and get the results into comparisonResults
     def trialStatues(self, indexWindow):
