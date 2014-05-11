@@ -6,21 +6,76 @@ import oct2py
 import thread
 import signal
 
-
-
 from Analyzer import Ui_MainWindow
 from TrainingFileClass import TrainingFileClass
 from threads import readDataThread
+import AppConfig
 
 from PyQt4 import *
 from PyQt4 import QtCore, QtGui
 
-
 class Ui_MainWindow_Extended(Ui_MainWindow):
+
+    def SetGUIOptionsByAppConfig(self):
+
+	#PS: we're overwriting both the internal values and GUI fields
+	# train file path
+        self.trainFilePath = AppConfig.TrainingFile
+	self.datafile.setText(self.trainFilePath)
+
+	# detectFilePath
+	if (AppConfig.SameFileFlag == False):
+            self.detectFilePath = AppConfig.DetectionFile
+	    self.DetectDataFile.setText(self.detectFilePath)
+
+	# trial options
+	self.SignalStart = AppConfig.SampleStart
+	self.SampleStart.setText(str(AppConfig.SampleStart))
+
+	self.SignalEnd = AppConfig.SampleEnd
+	self.SampleEnd.setText(str(AppConfig.SampleEnd))
+
+	# noise removal
+	self.removeNoiseFlag = AppConfig.NoiseRemoval
+	if (AppConfig.NoiseRemoval):
+	    self.removeNoiseChecked.setChecked(True)
+	else:
+	    self.removeNoiseUnchecked.setChecked(True)
+
+	# extraction method
+	#TODO fix the naming convention
+	self.selectedFeatureExtractionMethod = AppConfig.ExtractionMethod
+	self.featureSelectionMethodBox.setCurrentIndex(AppConfig.ExtractionMethod)
+
+	# enhancement method
+	self.FeatureEnhancementSelectedMethod = AppConfig.FeatureEnhancementMethod
+	self.FeatureEnhancementMethod.setCurrentIndex(AppConfig.FeatureEnhancementMethod)
+
+	# classification method
+	self.classifierSelected = AppConfig.ClassificationMethod
+	self.ClassifierBox.setCurrentIndex(AppConfig.ClassificationMethod)
+
+	# preprocessing method
+	self.selectedPreprocessingMethod = AppConfig.PreprocessingMethod
+	self.preprocessingBox.setCurrentIndex(AppConfig.PreprocessingMethod)
+
+	# detection source file
+	self.setSameFileFlag(AppConfig.SameFileFlag)
+	self.sameFileFlag.setChecked(AppConfig.SameFileFlag)
+
+	# same file options
+	#set only the GUI, as we get the internal values from the GUI directly everytime!
+	self.allData2080.setChecked(AppConfig.All)
+
+	self.offset_0_2080.setChecked(AppConfig.Offset0)
+	self.offset_1_2080.setChecked(AppConfig.Offset1)
+	self.offset_2_2080.setChecked(AppConfig.Offset2)
+	self.offset_3_2080.setChecked(AppConfig.Offset3)
+	self.offset_4_2080.setChecked(AppConfig.Offset4)
+
     def InitializeUI(self):
         self.addComboBoxesData()
-	self.trainFilePath = None
-	
+	self.SetGUIOptionsByAppConfig()
 	#EVENTS
 	#detectionBrowseButton
 	
