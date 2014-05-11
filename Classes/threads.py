@@ -339,7 +339,7 @@ class readDataThread(QtCore.QThread):
 	elif (self.sameFile == 0):
 	    #read data from self.detectFile
 	    #set trialnum
-	    octTrials = oct2py.Struct()
+	    #TODO change 0 and 4 to the sampleStart and sampleEnd
 	    octTrials = self.octave.call('getTrialsData.m', self.detectFile, 0, 4)
 
 	    self.dataLength = int(octTrials.shape[2])
