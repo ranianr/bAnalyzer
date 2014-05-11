@@ -27,6 +27,9 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	if (AppConfig.SameFileFlag == False):
             self.detectFilePath = AppConfig.DetectionFile
 	    self.DetectDataFile.setText(self.detectFilePath)
+	else:
+	    self.detectFilePath = None
+	    self.DetectDataFile.setText(self.detectFilePath)
 
 	# trial options
 	self.SignalStart = AppConfig.SampleStart
@@ -158,8 +161,6 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 		 selectedData["off3"] = True
 	    elif(self.offset_4_2080.isChecked()):
 		 selectedData["off4"] = True
-
-	    self.detectFilePath = None
 
 	else:
 	    print("Detection from a different file than training")

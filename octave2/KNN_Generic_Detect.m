@@ -114,7 +114,8 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
         endif
         
         Z = Z(:,1:PC_NumPCA);
-        ZtrainPCA = ZtrainPCA';
+        %removed to fix mul dimensions
+        %ZtrainPCA = ZtrainPCA';
         ZtrainPCA = ZtrainPCA(:,1:PC_NumPCA);
 
         % apply the classifier here
