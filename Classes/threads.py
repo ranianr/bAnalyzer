@@ -168,6 +168,12 @@ class readDataThread(QtCore.QThread):
 	    elif(selD["off4"] == True):
 		index.start = 0.8 * trialnum
 		index.end = trialnum #forced in case we have a missing final trial
+	    else:
+		#that could be implemented as an exception: check
+		#and we could even make an asserting function to detect any unexpected behavior
+		print "ops, offset checkbox isn't selected for detection from the samefile"
+		index.start = -1
+		index.end = -1
 	else:
 	    #take the whole file in case its a new one
 	    index.start = 0

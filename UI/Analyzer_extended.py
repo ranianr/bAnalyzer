@@ -7,6 +7,7 @@ import thread
 import signal
 
 from Analyzer import Ui_MainWindow
+from assertions import Ui_MainWindow_assertions
 from TrainingFileClass import TrainingFileClass
 from threads import readDataThread
 import AppConfig
@@ -14,7 +15,7 @@ import AppConfig
 from PyQt4 import *
 from PyQt4 import QtCore, QtGui
 
-class Ui_MainWindow_Extended(Ui_MainWindow):
+class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 
     def SetGUIOptionsByAppConfig(self):
 
@@ -134,7 +135,9 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	Details["SubjectName"]          = TrainingFileClass.getName(self.detectFilePath)
 	Details["Classes"]              = TrainingFileClass.getClasses(self.detectFilePath)
 	self.testDataSubjectName.setText(Details["SubjectName"]) #subject name label
-    
+
+    #PS: sample start/end and processing parameters are changed by the training! so that it would remain consistent over the different detection trials, even if the GUI
+    #got manipulated by mistake
     def TestButton_Clicked(self):
 	#check all files flag then offset else read from new file
 	selectedData={}
@@ -165,6 +168,16 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	else:
 	    print("Detection from a different file than training")
 
+	localArgs = {}
+	localArgs["selectedData"] = selectedData
+	#TODO: fix this mess
+	if self.preDetectCheck(self.trainFilePath, self.detectFilePath, self.SignalStart, self.SignalEnd, \
+			       self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.selectedFeatureExtractionMethod, self.classifierSelected, \
+			       self.sameFile, self.allData2080, self.offset_0_2080, self.offset_1_2080, self.offset_2_2080, self.offset_3_2080, self.offset_4_2080, \
+			       True, False, localArgs):
+	    print "One/Some of the necessary checks failed! :'("
+	    return
+
 	self.readThread1 = readDataThread(self.trainFilePath, self.detectFilePath, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, False, selectedData, self.sameFile)
 	self.readThread1.start()
 
@@ -172,7 +185,8 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
     #used by "browseButtonClicked" function to get the selected file path          
     def getFileName(self):
         return self.fileDialog.getOpenFileName()
-    
+
+
     def TrainButton_Clicked(self):
 
 	print("Training Started...")
@@ -180,6 +194,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow):
 	    self.removeNoiseFlag = 1;
 	elif(self.removeNoiseUnchecked.isChecked()):
 	    self.removeNoiseFlag = 0;
+	#TODO: change SampleStart to a more meaningful name, ie: sampleStartTextBox
 	self.SignalStart = self.SampleStart.toPlainText()
 	self.SignalEnd   = self.SampleEnd.toPlainText()
 	self.selectedFeatureExtractionMethod  = self.featureSelectionMethodBox.currentText()
