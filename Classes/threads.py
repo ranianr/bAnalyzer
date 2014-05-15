@@ -150,34 +150,37 @@ class readDataThread(QtCore.QThread):
 	index = Object()
 	if (self.sameFile == True):
 	    if(selD["All"] == True):
-		index.start = 0
-		index.end = trialnum
+		start = 0
+		end = trialnum
 		
 	    elif(selD["off0"] == True):
-		index.start = 0
-		index.end = window
+		start = 0
+		end = window
 	    elif(selD["off1"] == True):
-		index.start = 0.2 * trialnum
-		index.end = index.start + window
+		start = 0.2 * trialnum
+		end = start + window
 	    elif(selD["off2"] == True):
-		index.start = 0.4 * trialnum
-		index.end = index.start + window
+		start = 0.4 * trialnum
+		end = start + window
 	    elif(selD["off3"] == True):
-		index.start = 0.6 * trialnum
-		index.end = index.start + window
+		start = 0.6 * trialnum
+		end = start + window
 	    elif(selD["off4"] == True):
-		index.start = 0.8 * trialnum
-		index.end = trialnum #forced in case we have a missing final trial
+		start = 0.8 * trialnum
+		end = trialnum #forced in case we have a missing final trial
 	    else:
 		#that could be implemented as an exception: check
 		#and we could even make an asserting function to detect any unexpected behavior
 		print "ops, offset checkbox isn't selected for detection from the samefile"
-		index.start = -1
-		index.end = -1
+		start = -1
+		end = -1
 	else:
 	    #take the whole file in case its a new one
-	    index.start = 0
-	    index.end = trialnum
+	    start = 0
+	    end = trialnum
+
+	index.start = int(start)
+	index.end = int(end)
 
 	return index
     
@@ -196,7 +199,7 @@ class readDataThread(QtCore.QThread):
 	    indexWindow = index.end - index.start
 	    self.knnResultInput["TrainOut"] =  self.knnTrainOut
 
-	    for i in range (int(indexWindow)):
+	    for i in range (indexWindow):
 
 		if (self.sameFile == True):
 		    trial = trials["trials"][i]
@@ -223,7 +226,7 @@ class readDataThread(QtCore.QThread):
 	    indexWindow = index.end - index.start
 	    self.fisherResultInput["TrainOut"] =  self.fisherTrainOut
 
-	    for i in range (int(indexWindow)):
+	    for i in range (indexWindow):
 
 		if (self.sameFile == True):
 		    # this condition implies wer had a preprocessed data ie: 1x28 trials
@@ -252,7 +255,7 @@ class readDataThread(QtCore.QThread):
 	    indexWindow = index.end - index.start
 	    self.likelihoodResultInput["TrainOut"] =  self.likelihoodTrainOut
 
-	    for i in range (int(indexWindow)):
+	    for i in range (indexWindow):
 
 		if (self.sameFile == True):
 		    trial = trials["trials"][i]
@@ -278,7 +281,7 @@ class readDataThread(QtCore.QThread):
 	    indexWindow = index.end - index.start
 	    self.leastSquaresResultInput["TrainOut"] =  self.leastSquaresTrainOut
 
-	    for i in range (int(indexWindow)):
+	    for i in range (indexWindow):
 
 		if (self.sameFile == True):
 		    trial = trials["trials"][i]
