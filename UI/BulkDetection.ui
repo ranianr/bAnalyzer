@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BulkDetectionWindow</class>
+ <widget class="QDialog" name="BulkDetectionWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>841</width>
+    <height>325</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Bulk Detection</string>
+  </property>
+  <widget class="QDialogButtonBox" name="BulkDetectBtnBox">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>250</y>
+     <width>341</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>40</y>
+     <width>771</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="noiseHL">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="NoiseLbl">
+      <property name="text">
+       <string>Noise:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>57</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="allNoiseRb">
+      <property name="text">
+       <string>All</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="noiseRemRawCB">
+      <property name="text">
+       <string>Raw</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="noiseRemCB">
+      <property name="text">
+       <string>Remove</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>142</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>80</y>
+     <width>771</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="featuresHL">
+    <item>
+     <widget class="QLabel" name="featuresLbl">
+      <property name="text">
+       <string>Features:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_6">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>36</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="allFeaturesRb">
+      <property name="text">
+       <string>All</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="meanCB">
+      <property name="text">
+       <string>Mean</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="lMhBCB">
+      <property name="text">
+       <string>LMhB</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="lMhBmCB">
+      <property name="text">
+       <string>LMhBmean</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="lMBhMBCB">
+      <property name="text">
+       <string>LMBhMB</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="lMBhMBmCB">
+      <property name="text">
+       <string>LMBhMBm</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_7">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>435</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_3">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>110</y>
+     <width>771</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="preprocHL">
+    <item>
+     <widget class="QLabel" name="allPreprocessingRb">
+      <property name="text">
+       <string>Preproc:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>41</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="radioButton_3">
+      <property name="text">
+       <string>All</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="method1CB">
+      <property name="text">
+       <string>Method1</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>435</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_4">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>140</y>
+     <width>771</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="enhancementHL">
+    <item>
+     <widget class="QLabel" name="allEnhancementRb">
+      <property name="text">
+       <string>Enhance:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>38</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="radioButton_4">
+      <property name="text">
+       <string>All</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="PCACB">
+      <property name="text">
+       <string>PCA</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="LDACB">
+      <property name="text">
+       <string>LDA</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="CSPCB">
+      <property name="text">
+       <string>CSP</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_7">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>220</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_5">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>170</y>
+     <width>771</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="classifiersHL">
+    <item>
+     <widget class="QLabel" name="allClassifiersRb">
+      <property name="text">
+       <string>Classifiers:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_8">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>27</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="radioButton_5">
+      <property name="text">
+       <string>All</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="fisherCB">
+      <property name="text">
+       <string>Fisher</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="KNNCB">
+      <property name="text">
+       <string>KNN</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="likelhoodCB">
+      <property name="text">
+       <string>Likelhood</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="leastSquaresCB">
+      <property name="text">
+       <string>LeastSq</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_8">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Expanding</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>107</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <zorder>BulkDetectBtnBox</zorder>
+  <zorder>horizontalLayoutWidget</zorder>
+  <zorder>horizontalLayoutWidget_2</zorder>
+  <zorder>horizontalLayoutWidget_3</zorder>
+  <zorder>horizontalLayoutWidget_4</zorder>
+  <zorder>horizontalLayoutWidget_5</zorder>
+  <zorder>noiseRemRawCB</zorder>
+  <zorder>noiseRemRawCB</zorder>
+  <zorder>noiseRemRawCB</zorder>
+  <zorder>noiseRemRawCB</zorder>
+  <zorder>noiseRemRawCB</zorder>
+  <zorder>noiseRemRawCB</zorder>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>BulkDetectBtnBox</sender>
+   <signal>accepted()</signal>
+   <receiver>BulkDetectionWindow</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BulkDetectBtnBox</sender>
+   <signal>rejected()</signal>
+   <receiver>BulkDetectionWindow</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

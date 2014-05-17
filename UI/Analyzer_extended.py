@@ -12,6 +12,8 @@ from TrainingFileClass import TrainingFileClass
 from threads import readDataThread
 import AppConfig
 
+from BulkDetection import Ui_BulkDetectionWindow
+
 from PyQt4 import *
 from PyQt4 import QtCore, QtGui
 
@@ -82,15 +84,17 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	self.SetGUIOptionsByAppConfig()
 	#EVENTS
 	#detectionBrowseButton
-	
+
 	QtCore.QObject.connect(self.BrowseButton, QtCore.SIGNAL(("clicked()")), self.browseButtonClicked) #Train browse button
-	
+
 	QtCore.QObject.connect(self.TrainButton, QtCore.SIGNAL(("clicked()")), self.TrainButton_Clicked) #Train button
-	
+
 	QtCore.QObject.connect(self.detectionBrowseButton, QtCore.SIGNAL(("clicked()")), self.testBrowseButtonClicked) #Test browse button
-	
+
 	QtCore.QObject.connect(self.testButton, QtCore.SIGNAL(("clicked()")), self.TestButton_Clicked) #Test button
-	
+
+	QtCore.QObject.connect(self.bulkDetectModeBtn, QtCore.SIGNAL(("clicked()")), self.bulkDetectModeBtn_Clicked) #Test button
+
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     def addComboBoxesData(self):
@@ -181,7 +185,13 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	self.readThread1 = readDataThread(self.trainFilePath, self.detectFilePath, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, False, selectedData, self.sameFile)
 	self.readThread1.start()
 
-    
+    def bulkDetectModeBtn_Clicked(self):
+	dialog = QtGui.QDialog()
+        dialog.ui = Ui_BulkDetectionWindow()
+        dialog.ui.setupUi(dialog)
+        dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        dialog.exec_()
+
     #used by "browseButtonClicked" function to get the selected file path          
     def getFileName(self):
         return self.fileDialog.getOpenFileName()
