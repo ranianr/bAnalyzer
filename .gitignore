@@ -21,6 +21,9 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
+	## auto generated ##
+UI/Analyzer.py
+UI/BulkDetection.py
 
 	## recorded data ##
 ##not available yet
