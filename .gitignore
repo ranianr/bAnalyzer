@@ -14,7 +14,7 @@ __pycache__/
 *.swp
 *.swo
 *#
-
+*.ui.autosave
 
 	## windows ##
 Thumbs.db
