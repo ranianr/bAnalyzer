@@ -21,7 +21,8 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
     WoLDA  = TrainOut.Wolda;
     
     PC_NumPCA  = TrainOut.PC_NumPCA;
-    PC_NumLDA  = TrainOut.PC_NumLDA;
+    PC_NumLDA  = TrainOut.PC_NumLDA
+    
 
     if (preProjectedFlag == 0)
         % do pre-processing here please
@@ -75,14 +76,14 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
 
     if(PCAFlag == 1)
         if (preProjectedFlag == 1)
-            Z =TrialData;
+            Z =TrialData';
         else
             size([Mu Beta])
-            Z = [Mu Beta]*real(VPCA);
+            Z = VPCA'*[Mu Beta]';
         endif
         
-        Z = Z(:,1:PC_NumPCA);
-        y = TrainOut.Wpca'*Z';
+        Z = Z(1:PC_NumPCA,:);
+        y = TrainOut.Wpca'*Z;
         y += WoPCA;
         if(y > 0) 
             TargetsPCA = "RIGHT";

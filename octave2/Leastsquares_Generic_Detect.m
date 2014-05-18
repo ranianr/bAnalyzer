@@ -59,7 +59,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
         if (preProjectedFlag == 1)
             Z =TrialData;
         else
-            Z = [Mu Beta]*real(VLDA(:,1:PC_NumLDA));
+            Z = [Mu Beta]*real(VLDA);
         endif
         Z = Z(:,1:PC_NumLDA);
         y = TrainOut.Wlda'*Z';

@@ -38,7 +38,9 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
         % do pre-processing here please
         if(noiseFlag == 1)
             noise = mean(TrialData')';
-            TrialData =  TrialData -noise;
+           % TrialData =  TrialData -noise;
+            TrialData = bsxfun(@minus, TrialData, noise);
+
         endif
 
 	% Get features (mu & beta) according to the selected method
@@ -73,20 +75,24 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
         else
             Z = [Mu Beta]*real(VLDA);
         endif
-
+        size(Z)
+        size(mu1LDA)
+        size(segmaLDA)
+        size(mu2LDA)
+        size(segmaLDA)
         Z = Z(:,1:PC_NumLDA);
         N1 = PILDA;
         N2 = 1-PILDA;
         P_comparison = [];
-        
-        for s = 1:size(Z)(1)
-            P_XgivenC1_expTerm1 = -0.5*(Z(s,:)-mu1LDA')*(inv(segmaLDA))*(Z(s,:)-mu1LDA')' ;
-            P_XgivenC2_expTerm2 = -0.5*(Z(s,:)-mu2LDA')*(inv(segmaLDA))*(Z(s,:)-mu2LDA')' ;
-            ModifiedClass1_Ratio = log(N1/N2) + (P_XgivenC1_expTerm1 - P_XgivenC2_expTerm2);
-            ModifiedClass2_Ratio = log(N2/N1) + (P_XgivenC2_expTerm2 - P_XgivenC1_expTerm1); 
-            P_comparison = [P_comparison; ModifiedClass1_Ratio > ModifiedClass2_Ratio];
-        end
-
+        %Z=Z';
+        %for s = 1:size(Z)(1)
+        P_XgivenC1_expTerm1 = -0.5*(Z-mu1LDA')*(inv(segmaLDA))*(Z-mu1LDA')' ;
+        P_XgivenC2_expTerm2 = -0.5*(Z-mu2LDA')*(inv(segmaLDA))*(Z-mu2LDA')' ;
+        ModifiedClass1_Ratio = log(N1/N2) + (P_XgivenC1_expTerm1 - P_XgivenC2_expTerm2);
+        ModifiedClass2_Ratio = log(N2/N1) + (P_XgivenC2_expTerm2 - P_XgivenC1_expTerm1); 
+        P_comparison = [P_comparison; ModifiedClass1_Ratio > ModifiedClass2_Ratio];
+        %end
+       
         if(P_comparison == 1)
             TargetsLDA = 'RIGHT';
             ClassLDA = 1;
@@ -98,22 +104,23 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     
     if(PCAFlag == 1)
         if (preProjectedFlag == 1)
-            Z =TrialData;
+            Z =TrialData';
         else
-            Z = [Mu Beta]*real(VPCA);
+            Z = VPCA'*[Mu Beta]';
         endif
-        Z = Z(:,1:PC_NumPCA);
+        Z = Z(1:PC_NumPCA,:);
+       
         N1 = PIPCA;
         N2 = 1-PIPCA;
         P_comparison = [];
         
-        for s = 1:size(Z)(1)
-            P_XgivenC1_expTerm1 = -0.5*(Z(s,:)-mu1PCA')*(inv(segmaPCA))*(Z(s,:)-mu1PCA')' ;
-            P_XgivenC2_expTerm2 = -0.5*(Z(s,:)-mu2PCA')*(inv(segmaPCA))*(Z(s,:)-mu2PCA')' ;
+        %for s = 1:size(Z)(1)
+            P_XgivenC1_expTerm1 = -0.5*(Z-mu1PCA')*(inv(segmaPCA))*(Z-mu1PCA')' ;
+            P_XgivenC2_expTerm2 = -0.5*(Z-mu2PCA')*(inv(segmaPCA))*(Z-mu2PCA')' ;
             ModifiedClass1_Ratio = log(N1/N2) + (P_XgivenC1_expTerm1 - P_XgivenC2_expTerm2);
             ModifiedClass2_Ratio = log(N2/N1) + (P_XgivenC2_expTerm2 - P_XgivenC1_expTerm1); 
             P_comparison = [P_comparison; ModifiedClass1_Ratio > ModifiedClass2_Ratio];
-        end
+        %end
 
         if(P_comparison == 1)
             TargetsPCA = 'RIGHT';

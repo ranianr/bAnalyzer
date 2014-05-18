@@ -27,7 +27,7 @@ endD = end of trial signal
 
         startD = int32(startD);
         endD = int32(endD);
-
+        %warnings('off');
 	% Get Raw Data from the file 
 	[data, HDR] = getRawData(directory);
         
@@ -86,6 +86,7 @@ endD = end of trial signal
 		ZLDA = [C1; C2];
 		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
 		accuracy = likelihoodResults(C1, C2, t);
+                
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumLDA = min(AccIndex);
 		[PILDA segmaLDA mu1LDA mu2LDA] = Likeli_Classifier_Parameters(PC_NumLDA, ZLDA, t);
