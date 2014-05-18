@@ -31,7 +31,10 @@ projected : is a MXN matrix containing the output dimensions which
 
 	[ eigVec Lamda] = eig(s_channel');
 
+	%{
 	for k = 1:length(eigVec)
 		projected(k,:) = eigVec(:,end-k+1)'* pureData';
 	end
+        %}
+	projected = eigVec'* pureData';
 end

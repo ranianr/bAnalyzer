@@ -5,7 +5,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
  
  %}  
     warning('off');
- 	
+    
     % Get inputs from python
     TrialData = DetectIn.("TrialData"); %data to be sent from python
     TrainOut = DetectIn.("TrainOut"); %
@@ -19,15 +19,15 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     WoPCA  = TrainOut.Wopca;
     WoLDA  = TrainOut.Wolda;
     
-    PC_NumPCA  = TrainOut.PC_NumPCA;
+    PC_NumPCA  = TrainOut.PC_NumPCA
     PC_NumLDA  = TrainOut.PC_NumLDA;
 
     if (preProjectedFlag == 0)
 
         % do pre-processing here please
         if(noiseFlag == 1)
-            noise = mean(TrialData')';
-            TrialData =  TrialData -noise;
+            noise = mean(TrialData);
+            TrialData = bsxfun(@minus, TrialData, noise);
         endif
 
 	% Get features (mu & beta) according to the selected method
@@ -59,7 +59,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
         if (preProjectedFlag == 1)
             Z =TrialData;
         else
-            Z = [Mu Beta]*real(VLDA);
+            Z = [Mu Beta]*real(VLDA(:,1:PC_NumLDA));
         endif
         Z = Z(:,1:PC_NumLDA);
         y = TrainOut.Wlda'*Z';
@@ -75,13 +75,15 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     
     if(PCAFlag == 1)
         if (preProjectedFlag == 1)
-            Z =TrialData;
+            Z =TrialData';
         else
-            Z = [Mu Beta]*real(VPCA);
+            Z = VPCA'*[Mu Beta]';
         endif
-        Z = Z(:,1:PC_NumPCA);
-		y = TrainOut.Wpca'*Z';
-		y += WoPCA;
+       
+        Z = Z(1:PC_NumPCA,:);
+       
+	y = TrainOut.Wpca'*Z;
+	y += WoPCA;
         if(y > 0) 
             TargetsPCA = "RIGHT";
             ClassPCA = 1;
