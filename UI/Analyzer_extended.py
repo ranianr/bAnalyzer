@@ -12,7 +12,7 @@ from TrainingFileClass import TrainingFileClass
 from threads import readDataThread
 import AppConfig
 
-from BulkDetection import Ui_BulkDetectionWindow
+from BulkDetection_extended import Ui_BulkDetectionWindow_Extended
 
 from PyQt4 import *
 from PyQt4 import QtCore, QtGui
@@ -32,6 +32,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	    self.DetectDataFile.setText(self.detectFilePath)
 	else:
 	    self.detectFilePath = None
+	    #shouldn't this be set to an empty string ""?
 	    self.DetectDataFile.setText(self.detectFilePath)
 
 	# trial options
@@ -187,9 +188,10 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 
     def bulkDetectModeBtn_Clicked(self):
 	dialog = QtGui.QDialog()
-        dialog.ui = Ui_BulkDetectionWindow()
+        dialog.ui = Ui_BulkDetectionWindow_Extended()
         dialog.ui.setupUi(dialog)
         dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+	dialog.ui.InitializeUI()
         dialog.exec_()
 
     #used by "browseButtonClicked" function to get the selected file path          

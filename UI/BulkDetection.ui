@@ -66,7 +66,7 @@
      </spacer>
     </item>
     <item>
-     <widget class="QRadioButton" name="allNoiseRb">
+     <widget class="QRadioButton" name="allNoiseRB">
       <property name="text">
        <string>All</string>
       </property>
@@ -141,7 +141,7 @@
      </spacer>
     </item>
     <item>
-     <widget class="QRadioButton" name="allFeaturesRb">
+     <widget class="QRadioButton" name="allFeaturesRB">
       <property name="text">
        <string>All</string>
       </property>
@@ -211,7 +211,7 @@
    </property>
    <layout class="QHBoxLayout" name="preprocHL">
     <item>
-     <widget class="QLabel" name="allPreprocessingRb">
+     <widget class="QLabel" name="preprocessingLbl">
       <property name="text">
        <string>Preproc:</string>
       </property>
@@ -234,7 +234,7 @@
      </spacer>
     </item>
     <item>
-     <widget class="QRadioButton" name="radioButton_3">
+     <widget class="QRadioButton" name="allPreprocessingRB">
       <property name="text">
        <string>All</string>
       </property>
@@ -288,7 +288,7 @@
    </property>
    <layout class="QHBoxLayout" name="enhancementHL">
     <item>
-     <widget class="QLabel" name="allEnhancementRb">
+     <widget class="QLabel" name="enhancementLbl">
       <property name="text">
        <string>Enhance:</string>
       </property>
@@ -311,7 +311,7 @@
      </spacer>
     </item>
     <item>
-     <widget class="QRadioButton" name="radioButton_4">
+     <widget class="QRadioButton" name="allEnhancementRB">
       <property name="text">
        <string>All</string>
       </property>
@@ -367,7 +367,7 @@
    </property>
    <layout class="QHBoxLayout" name="classifiersHL">
     <item>
-     <widget class="QLabel" name="allClassifiersRb">
+     <widget class="QLabel" name="classifiersLbl">
       <property name="text">
        <string>Classifiers:</string>
       </property>
@@ -390,7 +390,7 @@
      </spacer>
     </item>
     <item>
-     <widget class="QRadioButton" name="radioButton_5">
+     <widget class="QRadioButton" name="allClassifiersRB">
       <property name="text">
        <string>All</string>
       </property>
@@ -411,9 +411,9 @@
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="likelhoodCB">
+     <widget class="QCheckBox" name="likelihoodCB">
       <property name="text">
-       <string>Likelhood</string>
+       <string>Likelihood</string>
       </property>
      </widget>
     </item>
@@ -442,18 +442,6 @@
     </item>
    </layout>
   </widget>
-  <zorder>BulkDetectBtnBox</zorder>
-  <zorder>horizontalLayoutWidget</zorder>
-  <zorder>horizontalLayoutWidget_2</zorder>
-  <zorder>horizontalLayoutWidget_3</zorder>
-  <zorder>horizontalLayoutWidget_4</zorder>
-  <zorder>horizontalLayoutWidget_5</zorder>
-  <zorder>noiseRemRawCB</zorder>
-  <zorder>noiseRemRawCB</zorder>
-  <zorder>noiseRemRawCB</zorder>
-  <zorder>noiseRemRawCB</zorder>
-  <zorder>noiseRemRawCB</zorder>
-  <zorder>noiseRemRawCB</zorder>
  </widget>
  <resources/>
  <connections>
