@@ -1,12 +1,14 @@
 bAnalyzer
 =========
 Description: 
+============
 What does this project do and who does it serve?
 bAnalyzer is a machine learning tool that provides simple UI enabling the user to easily select the feature extraction, 
 feature selection, feature enhancement and classification method. This tool then provides statistics about different compinations 
 between classifiers and pre-processing methods. according to the resulted accuracy in each path. 
 
 Supported methods: 
+==================
 - Apply CAR or not (noise removal)
 - Feature Extraction methos :
     * Mean Mu and Beta
@@ -27,9 +29,11 @@ Supported methods:
 this tools allows the user to test classifers on the same training file or new detection file (ALL FILES MUST BE .CSV)
 
 Project Setup: 
+==============
 install all dependancies by running ./Install.sh
 
 Testing: 
+=========
 Run bAnalyzer by ./bAnalyzer.sh
 select the training file path and your prefered path then click Train to create the classifier parameters, Select the detection data 
 then click detect to check the accuracy of the given path 
