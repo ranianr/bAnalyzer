@@ -14,12 +14,21 @@ class Object(object):
 class readDataThread(QtCore.QThread):
     def __init__(self,  dataFile,detectFile, removeNoiseFlag,SignalStart, SignalEnd, \
 		 selectedFeatureExtractionMethod,selectedPreprocessingMethod,FeatureEnhancementSelectedMethod, classifierSelected, \
-		 trainTestFlag = True, selectedData=None, sameFile = True):
+		 trainTestFlag = True, selectedData=None, sameFile = True, verbose = False):
         QtCore.QThread.__init__(self)
         self.path = dataFile
+	self.sameFile = sameFile
         #write any initialization here
         self.dataFile = str(dataFile)
 	self.detectFile = str(detectFile)
+
+	if (self.detectFile == None):
+	    if (self.sameFile):
+		self.detectFile = self.path
+	    else:
+		#detectFile is None while samefile is False !
+		print "detectFile is set to None while we're detecting from another file!"
+
         self.removeNoiseFlag = removeNoiseFlag
         self.SignalStart = int(SignalStart)
         self.SignalEnd = int(SignalEnd)
@@ -34,7 +43,7 @@ class readDataThread(QtCore.QThread):
 	self.PCAData = []
         self.octave = oct2py.Oct2Py()
         self.octave.addpath('octave2')
-	self.sameFile = sameFile
+	self.verbose = verbose
 	
 
     def run(self): 
@@ -42,6 +51,7 @@ class readDataThread(QtCore.QThread):
 	
 	#TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag,startD,endD)
 
+	#TODO: change f*FLag to f*Flag!
 	#settig the feature selection method flags
 	if(self.selectedFeatureExtractionMethod =="mean"):
 	    self.f1FLag = 1
@@ -142,7 +152,10 @@ class readDataThread(QtCore.QThread):
 	
 	    
 	if (self.trainTestFlag == False):
-	    self.detectData()
+	    if (self.detectFile != None):
+		self.detectData()
+	    else:
+		print "Detection failed cause of a missing detection file!"
     
     def getIndexFromTo(self):
 	selD = self.selectedData;
@@ -193,6 +206,18 @@ class readDataThread(QtCore.QThread):
 	self.classifierResult = []
 	self.realClasses = []
 
+	if (self.sameFile):
+	    #print a convenient detection path to avoid the user getting confused
+	    #if he has a selection of a different path even while selecting the sameFile checkbox
+	    convDetectPath = self.path
+	else:
+	    convDetectPath = self.detectFile
+
+	#we may be later interested in providing a feedback for the signal start and end too! but for now, that's definitely not!
+	detectionDescription = "Train = " + self.path + "\r\nNoise Removal = " + str(self.removeNoiseFlag)+ "\r\nSame File" + str(self.sameFile) + "\r\nDetect" + convDetectPath + \
+	"\r\nExtraction Flags = " + str(self.f1FLag) + str(self.f2FLag) + str(self.f3FLag) + str(self.f4FLag) + str(self.f5FLag) + str(self.f6FLag) + \
+	"\r\nPreprocessing only method 1 for now\r\nEnhancement flags " + str(self.LDAFlag) + str(self.PCAFlag) + str(self.CSP_LDAFlag) + str(self.CSPFlag) + "\r\nClassifier " + cf
+
 	indexWindow = 0
 
 	if (cf == "KNN"):
@@ -210,9 +235,9 @@ class readDataThread(QtCore.QThread):
 
 		self.knnResultInput["TrialData"] = trial
 		self.knnResult = self.octave.call('KNN_Generic_Detect.m',self.knnResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
-		print self.knnResult.PCAresult
-		print self.knnResult.LDAresult		
-		print "trial " + str(i) + " passed ;)"
+		if (self.verbose):
+		    feedback = "trial " + str(i) + ": PCA " + str(self.knnResult.PCAresult) + ", LDA " + str(self.knnResult.LDAresult)
+		    print feedback
 
 		if (self.PCAFlag == 1):
 		    self.classifierResult.append(self.knnResult.PCAResultClass)
@@ -239,9 +264,9 @@ class readDataThread(QtCore.QThread):
 		
 		self.fisherResultInput["TrialData"] = trial
 		self.fisherResult = self.octave.call('Fisher_Generic_Detect.m',self.fisherResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
-		print self.fisherResult.PCAresult
-		print self.fisherResult.LDAresult
-		print "trial " + str(i) + " passed ;)"
+		if (self.verbose):
+		    feedback = "trial " + str(i) + ": PCA " + str(self.fisherResult.PCAresult) + ", LDA " + str(self.fisherResult.LDAresult)
+		    print feedback
 
 		#TODO move into a separate function
 		if (self.PCAFlag == 1):
@@ -266,9 +291,9 @@ class readDataThread(QtCore.QThread):
 
 		self.likelihoodResultInput["TrialData"] = trial
 		self.likelihoodResult = self.octave.call('Likelihood_Generic_Detect.m',self.likelihoodResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
-		print self.likelihoodResult.PCAresult
-		print self.likelihoodResult.LDAresult		
-		print "trial " + str(i) + " passed ;)"
+		if (self.verbose):
+		    feedback = "trial " + str(i) + ": PCA " + str(self.likelihoodResult.PCAresult) + ", LDA " + str(self.likelihoodResult.LDAresult)
+		    print feedback
 
 		if (self.PCAFlag == 1):
 		    self.classifierResult.append(self.likelihoodResult.PCAResultClass)
@@ -292,9 +317,9 @@ class readDataThread(QtCore.QThread):
 
 		self.leastSquaresResultInput["TrialData"] = trial
 		self.leastSquaresResult = self.octave.call('Leastsquares_Generic_Detect.m',self.leastSquaresResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
-		print self.leastSquaresResult.PCAresult
-		print self.leastSquaresResult.LDAresult		
-		print "trial " + str(i) + " passed ;)"
+		if (self.verbose):
+		    feedback = "trial " + str(i) + ": PCA " + str(self.leastSquaresResult.PCAresult) + ", LDA " + str(self.leastSquaresResult.LDAresult)
+		    print feedback
 
 		if (self.PCAFlag == 1):
 		    self.classifierResult.append(self.leastSquaresResult.PCAResultClass)
@@ -305,9 +330,12 @@ class readDataThread(QtCore.QThread):
 
 
 	self.trialStatues(indexWindow)
-	print self.comparisonResults
+	if (self.verbose):
+	    print self.comparisonResults
 	accTest = AU()
-	accTest.correctPercentAccuracy(self.comparisonResults)
+	accTestResult = accTest.correctPercentAccuracy(self.comparisonResults, self.verbose)
+	summary = detectionDescription + "\r\n" + str(accTestResult) + "\r\n"
+	print summary
 
     #for all the trials, compare and get the results into comparisonResults
     def trialStatues(self, indexWindow):

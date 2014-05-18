@@ -53,6 +53,7 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 	    #self.DetectDataFile.setText("")
 
 	# same file options
+	self.sameFile = AppConfig.SameFileFlag
         self.selectedData["All"] = AppConfig.All
         self.selectedData["off0"] = AppConfig.Offset0
         self.selectedData["off1"] = AppConfig.Offset1
@@ -138,9 +139,9 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
                         for classItem, classValue in classDict.items():
 
                             print "Path " + str(i) + ": " +noiseItem + ", " + featItem + ", " + preprocItem + ", " + enhanceItem + ", " + classItem
-                            thread = readDataThread(self.trainFilePath, None, noiseValue, self.sampleStart, self.sampleEnd, \
+                            thread = readDataThread(self.trainFilePath, self.detectFilePath, noiseValue, self.sampleStart, self.sampleEnd, \
                                                     featValue, preprocValue, enhanceValue, classValue, \
-						    True)
+						    False, self.selectedData, self.sameFile)
                             self.threadList.append(thread)
                             self.threadList[i].start()
                             i += 1
@@ -152,7 +153,6 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         for j in range(threadNum):
             thread = self.threadList[j]
             thread.wait()
-            print str(j) + " path(s) is/are done."
 
         print "-----------------------"
         print "Finished bulk detection"

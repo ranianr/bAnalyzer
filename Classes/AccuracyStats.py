@@ -1,5 +1,5 @@
 class AccuracyUtilities():
-    def correctPercentAccuracy(self, comparisonArray):
+    def correctPercentAccuracy(self, comparisonArray, verbose):
 
         correctTrials = 0
         wrongTrials = 0
@@ -14,6 +14,7 @@ class AccuracyUtilities():
         correctness = (correctTrials / float(len(comparisonArray))) * 100
         wrongness = (wrongTrials / float(len(comparisonArray))) * 100
 
-        print correctness, wrongness
+        if (verbose):
+            print correctness, wrongness
 
         return correctness

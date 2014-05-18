@@ -185,7 +185,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 
 	self.readThread1 = readDataThread(self.trainFilePath, self.detectFilePath, self.removeNoiseFlag, self.SignalStart,self.SignalEnd, \
 					  self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, \
-					  False, selectedData, self.sameFile)
+					  False, selectedData, self.sameFile, True)
 	self.readThread1.start()
 
     def bulkDetectModeBtn_Clicked(self):
@@ -219,7 +219,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	#calling the octave thread
 	self.readThread = readDataThread(self.trainFilePath, None, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, \
 					 self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, \
-					 True)
+					 True, verbose=True)
 	
 	#done signals calling
 	#enhancment is done
