@@ -139,7 +139,8 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 
                             print "Path " + str(i) + ": " +noiseItem + ", " + featItem + ", " + preprocItem + ", " + enhanceItem + ", " + classItem
                             thread = readDataThread(self.trainFilePath, None, noiseValue, self.sampleStart, self.sampleEnd, \
-                                                    featValue, preprocValue, enhanceValue, classValue, True)
+                                                    featValue, preprocValue, enhanceValue, classValue, \
+						    True)
                             self.threadList.append(thread)
                             self.threadList[i].start()
                             i += 1

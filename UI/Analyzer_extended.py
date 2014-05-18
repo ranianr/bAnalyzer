@@ -176,14 +176,16 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	localArgs = {}
 	localArgs["selectedData"] = selectedData
 	#TODO: fix this mess
-	if self.preDetectCheck(self.trainFilePath, self.detectFilePath, self.SignalStart, self.SignalEnd, \
+	if self.preDetectCheck(self.trainFilePath, self.detectFilePath, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, \
 			       self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.selectedFeatureExtractionMethod, self.classifierSelected, \
 			       self.sameFile, self.allData2080, self.offset_0_2080, self.offset_1_2080, self.offset_2_2080, self.offset_3_2080, self.offset_4_2080, \
 			       True, False, localArgs):
 	    print "One/Some of the necessary checks failed! :'("
 	    return
 
-	self.readThread1 = readDataThread(self.trainFilePath, self.detectFilePath, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, False, selectedData, self.sameFile)
+	self.readThread1 = readDataThread(self.trainFilePath, self.detectFilePath, self.removeNoiseFlag, self.SignalStart,self.SignalEnd, \
+					  self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, \
+					  False, selectedData, self.sameFile)
 	self.readThread1.start()
 
     def bulkDetectModeBtn_Clicked(self):
@@ -215,7 +217,9 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	self.classifierSelected = self.ClassifierBox.currentText()
 	
 	#calling the octave thread
-	self.readThread = readDataThread(self.trainFilePath, None, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, True)
+	self.readThread = readDataThread(self.trainFilePath, None, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, \
+					 self.selectedFeatureExtractionMethod, self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.classifierSelected, \
+					 True)
 	
 	#done signals calling
 	#enhancment is done

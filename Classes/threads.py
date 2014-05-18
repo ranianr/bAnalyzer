@@ -12,7 +12,9 @@ class Object(object):
     pass
 
 class readDataThread(QtCore.QThread):
-    def __init__(self,  dataFile,detectFile, removeNoiseFlag,SignalStart, SignalEnd, selectedFeatureExtractionMethod,selectedPreprocessingMethod,FeatureEnhancementSelectedMethod, classifierSelected, trainTestFlag = True, selectedData=None, sameFile = True):
+    def __init__(self,  dataFile,detectFile, removeNoiseFlag,SignalStart, SignalEnd, \
+		 selectedFeatureExtractionMethod,selectedPreprocessingMethod,FeatureEnhancementSelectedMethod, classifierSelected, \
+		 trainTestFlag = True, selectedData=None, sameFile = True):
         QtCore.QThread.__init__(self)
         self.path = dataFile
         #write any initialization here

@@ -1,7 +1,7 @@
 class Ui_MainWindow_assertions():
 
     #Some checks may be made upon the the text box entering ie: start-end check
-    def preDetectCheck(self, trainFilePath, detectFilePath, sampleStart, sampleEnd,\
+    def preDetectCheck(self, trainFilePath, detectFilePath, removeNoiseFlag, sampleStart, sampleEnd,\
 		     preprocessing, featureEnhancement, featureExtraction, classifier, \
 		     sameFile, allData2080, offset_0_2080, offset_1_2080, offset_2_2080, offset_3_2080, offset_4_2080, \
 		     printChecksFlag = True, printArgsFlag = False, localArgs = None):
