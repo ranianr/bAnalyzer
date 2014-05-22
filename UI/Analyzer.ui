@@ -486,12 +486,25 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>440</x>
       <y>470</y>
-      <width>111</width>
+      <width>131</width>
       <height>27</height>
      </rect>
     </property>
     <property name="text">
      <string>Bulk Detect ...</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="PreviewFeaturesbtn">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>500</y>
+      <width>131</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Preview Features</string>
     </property>
    </widget>
   </widget>

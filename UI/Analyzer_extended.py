@@ -5,6 +5,7 @@ import numpy as np
 import oct2py 
 import thread
 import signal
+import subprocess
 
 from Analyzer import Ui_MainWindow
 from assertions import Ui_MainWindow_assertions
@@ -95,6 +96,8 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	QtCore.QObject.connect(self.testButton, QtCore.SIGNAL(("clicked()")), self.TestButton_Clicked) #Test button
 
 	QtCore.QObject.connect(self.bulkDetectModeBtn, QtCore.SIGNAL(("clicked()")), self.bulkDetectModeBtn_Clicked) #Test button
+
+	QtCore.QObject.connect(self.PreviewFeaturesbtn, QtCore.SIGNAL(("clicked()")), self.PreviewFeaturesbtn_Clicked) #Test button
 
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -199,7 +202,15 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
     #used by "browseButtonClicked" function to get the selected file path          
     def getFileName(self):
         return self.fileDialog.getOpenFileName()
-
+    
+    #TODO: #IMP when preview btn is clicked it should call the features UI ! 
+    def PreviewFeaturesbtn_Clicked(self):
+	root = '../Feature/'
+	for directory, subdirectories, files in os.walk(root):
+	    for file in files:
+		   if os.path.splitext(file)[-1].lower() == '.sh':
+		       os.system('sh ' + os.path.join(directory, file))
+    	subprocess.call("./../Feature/run.sh")
 
     def TrainButton_Clicked(self):
 
