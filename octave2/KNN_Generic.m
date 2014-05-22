@@ -141,6 +141,7 @@ endD = end of trial signal
         TrainOut.datalength = datalength;
 
         TrainOut.ClassesTypes = HDR.Classlabel;
+        TrainOut.ClassesTypesSameFile = t';
 
 end
 function accuracy = getAccuracy(projected, HDR)

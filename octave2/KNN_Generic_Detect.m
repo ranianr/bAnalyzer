@@ -160,8 +160,7 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
-    DetectOut.voteLDA = vote;
-    DetectOut.Ktargets=nearestPointsIndex;
+   
     %DetectOut
     DetectOut.LDAresult = TargetsLDA;
     DetectOut.PCAresult = TargetsPCA;

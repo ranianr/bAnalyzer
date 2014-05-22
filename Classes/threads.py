@@ -237,16 +237,19 @@ class readDataThread(QtCore.QThread):
 		self.knnResult = self.octave.call('KNN_Generic_Detect.m',self.knnResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
 		if (self.verbose):
 		    feedback = "trial " + str(i) + ": PCA " + str(self.knnResult.PCAresult) + ", LDA " + str(self.knnResult.LDAresult)
-		 
 		    print feedback
 
 		if (self.PCAFlag == 1):
 		    self.classifierResult.append(self.knnResult.PCAResultClass)
+		    
 		elif (self.LDAFlag == 1):
 		    self.classifierResult.append(self.knnResult.LDAResultClass)
-
-		self.realClasses = self.knnTrainOut.ClassesTypes
-
+		
+		if((self.sameFile==1) and (self.LDAFlag ==1)):
+		    self.realClasses = self.knnTrainOut.ClassesTypesSameFile
+		else:
+		    self.realClasses = self.knnTrainOut.ClassesTypes
+		
 
 	elif (cf == "Fisher"):
 	    trials = self.captureTrialData()
