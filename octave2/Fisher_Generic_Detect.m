@@ -1,4 +1,4 @@
-function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFlag,PCAFlag,CSP_LDAFlag,CSPFlag, preProjectedFlag)
+function [DetectOut Debug] = Fisher_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFlag,PCAFlag,CSP_LDAFlag,CSPFlag, preProjectedFlag)
    
  %{
  [DetectOut Debug] = Fisher_Generic_Detect(1, 1,0,0,0,0,0,1,0,0,0);
@@ -28,7 +28,7 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
         % do pre-processing here please
         if(noiseFlag == 1)
             noise = mean(TrialData')';
-            TrialData =  TrialData -noise;
+	TrialData =  TrialData -noise;
         endif
 
         % Get features (mu & beta) according to the selected method
@@ -59,11 +59,21 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
     if(LDAFlag == 1)
         if (preProjectedFlag == 1)
             Z =TrialData;
+            Z = Z(:,1:PC_NumLDA);
         else
             Z = [Mu Beta]*real(VLDA);
         endif
+        TrialData
+        size(TrialData)
+        %Mu
+        %Beta
+        %VLDA
+        size(Z)
+        Z
+        %bug
         Z = Z(:,1:PC_NumLDA);
-        y = TrainOut.Wlda'*Z';
+        
+        y = TrainOut.Wlda'*Z;
         y += WoLDA;
         if(y > 0)
             TargetsLDA = "RIGHT";
@@ -78,7 +88,6 @@ function [DetectOut Debug] = KNN_Generic_Detect(DetectIn, directory, noiseFlag, 
         if (preProjectedFlag == 1)
             Z =TrialData';
         else
-            size([Mu Beta])
             Z = VPCA'*[Mu Beta]';
         endif
         

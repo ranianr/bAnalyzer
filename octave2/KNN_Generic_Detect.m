@@ -30,8 +30,8 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
     if (preProjectedFlag == 0)
         % do pre-processing here please
         if(noiseFlag == 1)
-                    noise = mean(TrialData')';
-                    TrialData =  TrialData -noise;
+            noise = mean(TrialData);
+            TrialData = bsxfun(@minus, TrialData, noise);
         endif
 
         % Get features (mu & beta) according to the selected method
@@ -65,25 +65,29 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
     if(LDAFLag == 1)
         if (preProjectedFlag == 1)
             Z =TrialData;
+            Z = Z(:,1:PC_NumLDA);
         else
-            Z = [Mu Beta]*real(VLDA);
+
+            Z = [Mu Beta]*real(VLDA(:,1:PC_NumLDA));
         endif
-        Z = Z(:,1:PC_NumLDA);
+  
         ZtrainLDA = ZtrainLDA(:,1:PC_NumLDA);
-
-		% apply the classifier here
-		if(size(Z)(2) == 1)
-			ZtrainLDA = [ZtrainLDA, ZtrainLDA];
-			Z = [Z, Z];
-		end 
-
-		pointDistance = distancePoints(Z, ZtrainLDA); 
-		distance = pointDistance';
-		[dist index1] = sort(distance);
+        
+% appy the classifier here
+        if(size(Z)(2) == 1)
+            ZtrainLDA = [ZtrainLDA, ZtrainLDA];
+            Z = [Z, Z];
+        end 
+        
+        pointDistance = distancePoints(Z, ZtrainLDA); 
+        distance = pointDistance';
+        [dist index1] = sort(distance);
         nearestK = dist(2:KLDA+1);
         nearestPointsIndex = index1(2:KLDA+1);
         Ktargets = ClassLabels(nearestPointsIndex);
+        
         vote = sum(Ktargets);
+     
         Yp = 0;%add else error = error +1
         
         if(vote > 0)
@@ -108,27 +112,30 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
     
     if(PCAFlag == 1)
         if (preProjectedFlag == 1)
-            Z =TrialData;
+            Z =TrialData';
         else
-            Z = [Mu Beta]*real(VPCA);
+            Z = VPCA'*[Mu Beta]';
         endif
         
-        Z = Z(:,1:PC_NumPCA);
+        Z = Z(1:PC_NumPCA,:);
         %removed to fix mul dimensions
-        %ZtrainPCA = ZtrainPCA';
-        ZtrainPCA = ZtrainPCA(:,1:PC_NumPCA);
-
+        ZtrainPCA = ZtrainPCA';
+        ZtrainPCA = ZtrainPCA(1:PC_NumPCA,:);
+        ZtrainPCA = ZtrainPCA';
+        Z = Z';
         % apply the classifier here
         if(size(Z)(2) == 1)
                 ZtrainPCA = [ZtrainPCA, ZtrainPCA];
                 Z = [Z, Z];
         end
-        
+       
         pointDistance = distancePoints(Z, ZtrainPCA); 
         distance = pointDistance';
+        
         [dist index1] = sort(distance);
-        %dist = dist';
+        dist = dist';
         nearestK = dist(2:KPCA+1);
+        
         nearestPointsIndex = index1(2:KPCA+1);
         Ktargets = ClassLabels(nearestPointsIndex);
         vote = sum(Ktargets);
@@ -153,7 +160,8 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
-	
+    DetectOut.voteLDA = vote;
+    DetectOut.Ktargets=nearestPointsIndex;
     %DetectOut
     DetectOut.LDAresult = TargetsLDA;
     DetectOut.PCAresult = TargetsPCA;

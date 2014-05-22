@@ -237,6 +237,9 @@ class readDataThread(QtCore.QThread):
 		self.knnResult = self.octave.call('KNN_Generic_Detect.m',self.knnResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
 		if (self.verbose):
 		    feedback = "trial " + str(i) + ": PCA " + str(self.knnResult.PCAresult) + ", LDA " + str(self.knnResult.LDAresult)
+		    print "test"
+		    print self.knnResult.voteLDA
+		    print str(self.knnResult.Ktargets)
 		    print feedback
 
 		if (self.PCAFlag == 1):

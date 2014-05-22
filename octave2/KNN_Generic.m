@@ -63,6 +63,7 @@ endD = end of trial signal
 	VLDA = [];
 	PC_NumLDA = 0;
 	PC_NumPCA = 0;
+        
 	
 	if(LDAFLag == 1)
 		%LDA
@@ -80,7 +81,8 @@ endD = end of trial signal
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
-		[VPCA, ZPCA]= pcaProject(pureData); 
+		[VPCA, ZPCA]= pcaProject(pureData);
+                t=HDR.Classlabel;
 		[accuracy k_total] = knnResults(ZPCA', HDR.Classlabel);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);
@@ -132,7 +134,7 @@ endD = end of trial signal
 	TrainOut.PC_NumPCA = PC_NumPCA;
 	TrainOut.PC_NumLDA = PC_NumLDA;
 	
-        TrainOut.ClassLabels = HDR.Classlabel;
+        TrainOut.ClassLabels = t;
         
         TrainOut.PCAData = ZPCA;
         TrainOut.LDAData = ZLDA;
