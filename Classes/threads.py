@@ -298,13 +298,22 @@ class readDataThread(QtCore.QThread):
 		if (self.verbose):
 		    feedback = "trial " + str(i) + ": PCA " + str(self.likelihoodResult.PCAresult) + ", LDA " + str(self.likelihoodResult.LDAresult)
 		    print feedback
+		    #print self.likelihoodResult.vote
+		    
+
 
 		if (self.PCAFlag == 1):
 		    self.classifierResult.append(self.likelihoodResult.PCAResultClass)
+		    
 		elif (self.LDAFlag == 1):
 		    self.classifierResult.append(self.likelihoodResult.LDAResultClass)
-
-		self.realClasses = self.likelihoodTrainOut.ClassesTypes
+		
+		if((self.sameFile==1) and ((self.LDAFlag ==1) or (self.PCAFlag ==1) )):
+		    self.realClasses = self.likelihoodTrainOut.ClassesTypesSameFile
+		else:
+	    	    self.realClasses = self.likelihoodTrainOut.ClassesTypes
+	    
+	   
 
 	elif (cf == "Least Squares"):
 	    trials = self.captureTrialData()
@@ -347,12 +356,14 @@ class readDataThread(QtCore.QThread):
 	self.comparisonResults = []
 
 	for i in range (indexWindow):
+	    if (self.realClasses[i] == -1):
+		self.realClasses[i] = 2
 	    if (self.classifierResult[i] == int(self.realClasses[i])):
-
+		
 		self.comparisonResults.append(True)
 
 	    else:
-
+		
 		self.comparisonResults.append(False)
 	
 	return self.comparisonResults

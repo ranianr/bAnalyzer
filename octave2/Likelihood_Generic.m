@@ -76,7 +76,8 @@ endD = end of trial signal
 
 	ZLDA = [];
 	ZPCA = [];
-
+        
+        
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];
@@ -84,14 +85,15 @@ endD = end of trial signal
 		C1 = ZLDA((HDR.Classlabel==1),:);
 		C2 = ZLDA((HDR.Classlabel==2),:);
 		ZLDA = [C1; C2];
-		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
-		accuracy = likelihoodResults(C1, C2, t);
+                t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]'
                 
+                accuracy = likelihoodResults(C1, C2, t);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumLDA = min(AccIndex);
 		[PILDA segmaLDA mu1LDA mu2LDA] = Likeli_Classifier_Parameters(PC_NumLDA, ZLDA, t);
         	datalength = size(ZLDA)(1);                
-	elseif(PCAFlag == 1)
+	
+        elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
 		[VPCA, ZPCA]= pcaProject(pureData);
@@ -144,6 +146,7 @@ endD = end of trial signal
         TrainOut.datalength = datalength;
 
         TrainOut.ClassesTypes = HDR.Classlabel;
+        TrainOut.ClassesTypesSameFile = t';
 
 end
 

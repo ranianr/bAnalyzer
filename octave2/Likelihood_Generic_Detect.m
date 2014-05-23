@@ -37,8 +37,8 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     if (preProjectedFlag == 0)
         % do pre-processing here please
         if(noiseFlag == 1)
-            noise = mean(TrialData')';
-            TrialData =  TrialData -noise;
+            noise = mean(TrialData);
+            TrialData = bsxfun(@minus, TrialData, noise);
         endif
 
 	% Get features (mu & beta) according to the selected method
@@ -70,10 +70,11 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     if(LDAFLag == 1)
         if (preProjectedFlag == 1)
             Z =TrialData;
+            Z = Z(:,1:PC_NumLDA);  
         else
-            Z = [Mu Beta]*real(VLDA);
+            Z = [Mu Beta]*real(VLDA(:,1:PC_NumLDA));
         endif
-        Z = Z(:,1:PC_NumLDA);       
+        %Z = Z(:,1:PC_NumLDA);       
         N1 = PILDA;
         N2 = 1-PILDA;
         P_comparison = [];
@@ -102,11 +103,11 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
             Z = VPCA'*[Mu Beta]';
         endif
         Z = Z(1:PC_NumPCA,:);
-       
+        Z=Z';
         N1 = PIPCA;
         N2 = 1-PIPCA;
         P_comparison = [];
-        
+        %bug
         %for s = 1:size(Z)(1)
             P_XgivenC1_expTerm1 = -0.5*(Z-mu1PCA')*(inv(segmaPCA))*(Z-mu1PCA')' ;
             P_XgivenC2_expTerm2 = -0.5*(Z-mu2PCA')*(inv(segmaPCA))*(Z-mu2PCA')' ;
@@ -125,7 +126,8 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
-	
+    DetectOut.vote = P_comparison;
+    DetectOut.Z = Z;
 
     %DetectOut
     DetectOut.LDAresult = TargetsLDA;

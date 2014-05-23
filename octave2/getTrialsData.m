@@ -25,7 +25,7 @@ function trialsData = getTrialsData(directory, startTime=0, endTime=4, type = 'O
 
         else
             trialsData(:,:,k)   = Data(Dstart:Dend,:)';
-            
+           
            
         end
     end
