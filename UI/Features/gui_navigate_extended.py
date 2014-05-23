@@ -1,6 +1,7 @@
 import os
 import oct2py
 import AppConfig
+import FeatureAnalysisConfig as FeatAConfig
 
 from PyQt4 import QtCore, QtGui
 from gui_navigate import Ui_NavigateWindow
@@ -54,7 +55,7 @@ class Ui_NavigateWindow_Extended(Ui_NavigateWindow):
     
     def getPlottingFunctions(self):
         # Get PlottingFunctions-Path
-        PlottingFunctionsPath = AppConfig.PlottingFunctionsPath
+        PlottingFunctionsPath = FeatAConfig.PlottingFunctionsPath            
         
         # Get PlottingFunctions
         PlottingFunctionsFiles = os.listdir(PlottingFunctionsPath)

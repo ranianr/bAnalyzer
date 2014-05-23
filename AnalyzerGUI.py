@@ -1,5 +1,6 @@
 import sys
 sys.path.append('UI')
+sys.path.append('UI/Features')
 sys.path.append('Classes')
 sys.path.append('octave2')
 sys.path.append('Configurations')

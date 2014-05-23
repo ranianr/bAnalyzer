@@ -24,6 +24,8 @@ Desktop.ini
 	## auto generated ##
 UI/Analyzer.py
 UI/BulkDetection.py
+UI/Features/gui_main.py
+UI/Features/gui_navigate.py
 
 	## recorded data ##
 ##not available yet

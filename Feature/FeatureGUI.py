@@ -1,14 +1,14 @@
 import signal
 import sys
-sys.path.append('../UI/MainUI')
+sys.path.append('../UI/Features')
 sys.path.append('../UI/NavigateUI')
 
 import os
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from gui_main_extended import Ui_MainWindow_Extended
-import AppConfig
+from gui_main_extended import Ui_FeatureAnalysisWindow_Extended
+import FeatureAnalysisConfig
 
 if __name__ == "__main__":
     import sys
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     
     #MainUI
     MainWindow = QtGui.QMainWindow()
-    ui_main = Ui_MainWindow_Extended()
+    ui_main = Ui_FeatureAnalysisWindow_Extended()
     ui_main.setupUi(MainWindow)
     ui_main.InitializeUI(MainWindow, app)
     

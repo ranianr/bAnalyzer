@@ -1,7 +1,12 @@
 import os
 
-#Scripts
-ScrpitsFolder           =  "../octave2/FeaturePlottingScripts"
-PlottingFunctionsPath   = ScrpitsFolder + "/" + "PlottingFunctions"
-OctaveDataFunction      = "GetDataAnalysis"
-RawDataFunctions        =  "../octave2"
+MainFolder = os.getcwd()
+
+#Debugging Configuration
+TrainingFile = MainFolder + "/../Osama Mohamed.csv"
+
+#Default Session's Options
+#Single trials
+SampleStart = 0
+SampleEnd = 4
+

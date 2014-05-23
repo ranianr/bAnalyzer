@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>FeatureAnalysisWindow</class>
+ <widget class="QMainWindow" name="FeatureAnalysisWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -178,7 +178,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/TrainingData/Session_2014_04_17_82423/[T][2014-04-17 23-06-15] Ahmed Hemaly.csv</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label_17">

@@ -4,7 +4,7 @@ function DataOut = test1( FilePath = "/home/rho/Documents/GP/[2014-03-23] Braing
                                     Mu_Max = 11,    %12
                                     Beta_Min = 15,  %16
                                     Beta_Max = 17)  %24
-    
+    %TODO: remove/replace this path with a dynamic one
     addpath("/home/medo/Work/GP/[2014-03-23] Braingizer/Detector/Classifiers/RawDataFunctions");
     
     [data, HDR] = getRawData(FilePath);

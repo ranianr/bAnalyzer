@@ -12,8 +12,11 @@ from assertions import Ui_MainWindow_assertions
 from TrainingFileClass import TrainingFileClass
 from threads import readDataThread
 import AppConfig
+import FeatureAnalysisConfig as FeatAConfig
 
 from BulkDetection_extended import Ui_BulkDetectionWindow_Extended
+from gui_main_extended import Ui_FeatureAnalysisWindow_Extended
+#from gui_navigate_extended import Ui_NavigateWindow_Extended
 
 from PyQt4 import *
 from PyQt4 import QtCore, QtGui
@@ -205,12 +208,15 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
     
     #TODO: #IMP when preview btn is clicked it should call the features UI ! 
     def PreviewFeaturesbtn_Clicked(self):
-	root = '../Feature/'
-	for directory, subdirectories, files in os.walk(root):
-	    for file in files:
-		   if os.path.splitext(file)[-1].lower() == '.sh':
-		       os.system('sh ' + os.path.join(directory, file))
-    	subprocess.call("./../Feature/run.sh")
+	app = QtGui.QApplication(sys.argv)
+        app.setWindowIcon(QtGui.QIcon('Feature/Resources/IMGs/app_icon_64.png'))
+
+	window = QtGui.QMainWindow()
+        window.ui = Ui_FeatureAnalysisWindow_Extended()
+        window.ui.setupUi(window)
+        window.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+	window.ui.InitializeUI(window, app)
+        window.show()
 
     def TrainButton_Clicked(self):
 
