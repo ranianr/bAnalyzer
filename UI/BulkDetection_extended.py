@@ -133,13 +133,20 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         print "-------------------------"
 
         for noiseItem,noiseValue in noiseDict.items():
+	    #TODO: remove this hack! a hack till we propagate the noise removal to be an unified variable(enum or struct) throughout all the code!
+	    wrappingNoiseValue = False
+	    if (noiseItem == "Remove") & (noiseValue & True):
+		wrappingNoiseValue = True
+	    elif (noiseItem == "Raw") & (noiseValue & True):
+		wrappingNoiseValue = False
+
             for featItem, featValue in featDict.items():
                 for preprocItem, preprocValue in preprocDict.items():
                     for enhanceItem, enhanceValue in enhanceDict.items():
                         for classItem, classValue in classDict.items():
 
                             print "Path " + str(i) + ": " +noiseItem + ", " + featItem + ", " + preprocItem + ", " + enhanceItem + ", " + classItem
-                            thread = readDataThread(self.trainFilePath, self.detectFilePath, noiseValue, self.sampleStart, self.sampleEnd, \
+                            thread = readDataThread(self.trainFilePath, self.detectFilePath, wrappingNoiseValue, self.sampleStart, self.sampleEnd, \
                                                     featValue, preprocValue, enhanceValue, classValue, \
 						    False, self.selectedData, self.sameFile)
                             self.threadList.append(thread)
@@ -160,8 +167,10 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
     ######## helping functions #########
     def DictOfNoiseCB(self):
         noiseDict = {}
-        noiseDict["Remove"] = self.CBGetter(self.noiseRemCB)
-        noiseDict["Raw"] = self.CBGetter(self.noiseRemRawCB)
+	if(self.CBGetter(self.noiseRemCB)):
+            noiseDict["Remove"] = True
+	if(self.CBGetter(self.noiseRemRawCB)):
+            noiseDict["Raw"] = True
         return noiseDict
 
     #TODO: change the binding into global enum
