@@ -151,15 +151,8 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 						    False, self.selectedData, self.sameFile)
                             self.threadList.append(thread)
                             self.threadList[i].start()
+                            self.threadList[i].wait()
                             i += 1
-
-        threadNum = i 
-
-        #wait till threads finish
-        # self.readThreadList isn't iterable! :/
-        for j in range(threadNum):
-            thread = self.threadList[j]
-            thread.wait()
 
         print "-----------------------"
         print "Finished bulk detection"
