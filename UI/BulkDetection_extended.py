@@ -196,12 +196,13 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 	print self.accumelatedAcc    
 	self.sorted = sorted(self.accumelatedAcc)
 	print self.sorted
-	worksheet.update_cell(self.rowIndex, 4 , self.sorted[1])
+	worksheet.update_cell(self.rowIndex, 4 , self.sorted[0])
 	worksheet.update_cell(self.rowIndex, 5 , self.sorted[i-1])
 	temp = 0
-	for o in range(i-1):
+	for o in range(0, i-1):
 	    temp = temp + self.accumelatedAcc[o]
-	    
+	    print temp
+	print temp    
 	avrg = temp / len(self.accumelatedAcc)
 	worksheet.update_cell(self.rowIndex, 6 , self.accumelatedAcc[1])
 	
