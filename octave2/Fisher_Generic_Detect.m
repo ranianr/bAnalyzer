@@ -90,21 +90,22 @@ function [DetectOut Debug] = Fisher_Generic_Detect(DetectIn, directory, noiseFla
         else
             Z = VPCA'*[Mu Beta]';
         endif
-        
+       
         Z = Z(1:PC_NumPCA,:);
-        y = TrainOut.Wpca'*Z;
-        y += WoPCA;
+       
+	y = TrainOut.Wpca'*Z;
+	y += WoPCA;
         if(y > 0) 
             TargetsPCA = "RIGHT";
             ClassPCA = 1;
 	elseif(y < 0)
             TargetsPCA = "LEFT";
-            ClassPCA = 1;
+            ClassPCA = 2;
 	end
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
-
+    DetectOut.Z = Z;
     %DetectOut
     DetectOut.LDAresult = TargetsLDA;
     DetectOut.PCAresult = TargetsPCA;

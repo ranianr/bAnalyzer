@@ -18,5 +18,8 @@ sudo apt-get install python-pycryptopp python-numpy python-scipy python-matplotl
 echo -e "\e[1;31m\nInstalling pyqt4-dev-tools ...\n\e[0m"
 sudo apt-get install pyqt4-dev-tools
 
+echo -e "\e[1;31m\nInstalling gspread ...\n\e[0m"
+sudo pip install gspread
+
 echo -e "\e[1;31m\nDependencies are successfully installed.\n\e[0m"
 cd "$_currentDir"

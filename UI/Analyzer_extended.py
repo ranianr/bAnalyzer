@@ -14,6 +14,7 @@ from threads import readDataThread
 import AppConfig
 import FeatureAnalysisConfig as FeatAConfig
 
+
 from BulkDetection_extended import Ui_BulkDetectionWindow_Extended
 from gui_main_extended import Ui_FeatureAnalysisWindow_Extended
 #from gui_navigate_extended import Ui_NavigateWindow_Extended

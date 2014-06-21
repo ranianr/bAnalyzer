@@ -1,7 +1,9 @@
 import os
 import thread
-
+import gspread
 from PyQt4 import QtCore
+from TrainingFileClass import TrainingFileClass
+from multiprocessing.pool import ThreadPool
 
 #select multiple buttons
 #select all button for each bar
@@ -14,6 +16,7 @@ from BulkDetection import Ui_BulkDetectionWindow
 #from assertions import Ui_MainWindow_assertions
 import AppConfig
 import BulkDetectionConfig as BDConfig
+import GooglespreadSheetConfig as GSC
 
 class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 
@@ -115,7 +118,17 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         self.BulkDetectExec()
         
     ######## end of signaling functions ######
-
+    def getEmptyRowIndex(self):
+	gc = gspread.login( GSC.email , GSC.password)
+	sh = gc.open(GSC.title) 
+	worksheet = sh.get_worksheet(0)
+	values_list = worksheet.col_values(2)
+	index = len(values_list)
+	return index+1
+	
+	
+	
+	
     ######## Bulk
     def BulkDetectExec(self):
         #TODO: add assertions -> there must be at least a single selected checkbox for each column
@@ -125,10 +138,27 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         preprocDict = self.DictOfPreprocessingCB()
         enhanceDict = self.DictOfEnhancementCB()
         classDict = self.DictOfClassifiersCB()
+	
+	#n3ml function tgeb a5er mkan mlyan/fady
+	
+	##Writing statistics into Googl spread sheet
+	gc = gspread.login( GSC.email , GSC.password)
+	sh = gc.open(GSC.title) 
+	worksheet = sh.get_worksheet(0)
+	self.rowIndex = self.getEmptyRowIndex()
 
         self.threadList = []
         i = 0
-
+	j = 0
+	print "Traing File: " + self.trainFilePath
+	print "Detection File: " + self.detectFilePath
+	desc = TrainingFileClass.getDescription(self.trainFilePath)
+	#write el kalam dh fel sheet
+	worksheet.update_cell(self.rowIndex, 3, desc)
+	name = TrainingFileClass.getName(self.trainFilePath)
+	worksheet.update_cell(self.rowIndex, 2, name)
+	#write el name fel sheet 
+	self.accumelatedAcc = []
         print "Creating Detection Paths:"
         print "-------------------------"
 
@@ -145,15 +175,36 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
                     for enhanceItem, enhanceValue in enhanceDict.items():
                         for classItem, classValue in classDict.items():
 
-                            print "Path " + str(i) + ": " +noiseItem + ", " + featItem + ", " + preprocItem + ", " + enhanceItem + ", " + classItem
+                            Path = "Path " + str(i) + ": " +noiseItem + ", " + featItem + ", " + preprocItem + ", " + enhanceItem + ", " + classItem
+			    print Path 
                             thread = readDataThread(self.trainFilePath, self.detectFilePath, wrappingNoiseValue, self.sampleStart, self.sampleEnd, \
                                                     featValue, preprocValue, enhanceValue, classValue, \
 						    False, self.selectedData, self.sameFile)
                             self.threadList.append(thread)
                             self.threadList[i].start()
                             self.threadList[i].wait()
-                            i += 1
+			    Acc = self.threadList[i].getAcc()
+			    worksheet.update_cell(self.rowIndex, 7+j , Path)
+			    worksheet.update_cell(self.rowIndex, 8+j , Acc)
 
+			    #write el path fe mkano bel acc bta3to 
+			    self.accumelatedAcc.append(Acc)
+			    
+                            i += 1
+			    j += 2
+			    
+	print self.accumelatedAcc    
+	self.sorted = sorted(self.accumelatedAcc)
+	print self.sorted
+	worksheet.update_cell(self.rowIndex, 4 , self.sorted[1])
+	worksheet.update_cell(self.rowIndex, 5 , self.sorted[i-1])
+	temp = 0
+	for o in range(i-1):
+	    temp = temp + self.accumelatedAcc[o]
+	    
+	avrg = temp / len(self.accumelatedAcc)
+	worksheet.update_cell(self.rowIndex, 6 , self.accumelatedAcc[1])
+	
         print "-----------------------"
         print "Finished bulk detection"
 

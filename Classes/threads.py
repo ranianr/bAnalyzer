@@ -4,12 +4,27 @@ import numpy as np
 import oct2py 
 import thread
 from PyQt4 import QtCore, QtGui
+import gspread
+import GooglespreadSheetConfig as GSC
 
 from AccuracyStats import AccuracyUtilities as AU
 
 #check http://stackoverflow.com/questions/2827623/python-create-object-and-add-attributes-to-it
 class Object(object):
     pass
+
+
+class color:
+   PURPLE = '\033[95m'
+   CYAN = '\033[96m'
+   DARKCYAN = '\033[36m'
+   BLUE = '\033[94m'
+   GREEN = '\033[92m'
+   YELLOW = '\033[93m'
+   RED = '\033[91m'
+   BOLD = '\033[1m'
+   UNDERLINE = '\033[4m'
+   END = '\033[0m'
 
 class readDataThread(QtCore.QThread):
     def __init__(self,  dataFile,detectFile, removeNoiseFlag,SignalStart, SignalEnd, \
@@ -21,6 +36,7 @@ class readDataThread(QtCore.QThread):
         #write any initialization here
         self.dataFile = str(dataFile)
 	self.detectFile = str(detectFile)
+	self.accTestResult = 010101
 
 	if (self.detectFile == None):
 	    if (self.sameFile):
@@ -205,6 +221,8 @@ class readDataThread(QtCore.QThread):
 
 	self.classifierResult = []
 	self.realClasses = []
+	
+	
 
 	if (self.sameFile):
 	    #print a convenient detection path to avoid the user getting confused
@@ -271,6 +289,7 @@ class readDataThread(QtCore.QThread):
 		if (self.verbose):
 		    feedback = "trial " + str(i) + ": PCA " + str(self.fisherResult.PCAresult) + ", LDA " + str(self.fisherResult.LDAresult)
 		    print feedback
+		    print self.fisherResult.Z
 
 		#TODO move into a separate function
 		if (self.PCAFlag == 1):
@@ -346,9 +365,18 @@ class readDataThread(QtCore.QThread):
 	if (self.verbose):
 	    print self.comparisonResults
 	accTest = AU()
-	accTestResult = accTest.correctPercentAccuracy(self.comparisonResults, self.verbose)
-	summary = detectionDescription + "\r\n" + str(accTestResult) + "\r\n"
-	print summary
+	self.accTestResult = accTest.correctPercentAccuracy(self.comparisonResults, self.verbose)
+	 
+	summary = detectionDescription + "\r\n" + str(self.accTestResult) + "\r\n"
+	#print summary
+	print color.BOLD + color.YELLOW + summary + color.END  + color.END
+        #worksheet.update_cell(i, 2, "Bingo!.. "+str(i))
+	#return each turen accuracy
+	return self.accTestResult
+
+	
+    def getAcc(self):
+	return self.accTestResult
 
     #for all the trials, compare and get the results into comparisonResults
     def trialStatues(self, indexWindow):

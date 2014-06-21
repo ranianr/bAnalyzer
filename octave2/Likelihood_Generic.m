@@ -102,6 +102,7 @@ endD = end of trial signal
 		C2 = ZPCA((HDR.Classlabel==2),:);
 		ZPCA = [C1; C2];
 		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+                
 		accuracy = likelihoodResults(C1, C2, t);
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_NumPCA = min(AccIndex);

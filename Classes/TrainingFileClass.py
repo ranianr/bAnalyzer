@@ -7,6 +7,15 @@ class TrainingFileClass(object):
             words = line.split(':')
             if(words[0] == "Name"):
                 return words[1].strip()
+   
+    @staticmethod
+    def getDescription(filepath):
+        logfile = open(filepath, "r").readlines()
+        
+        for line in logfile:
+            words = line.split(':')
+            if(words[0] == "Comments"):
+                return words[1].strip()
 
     @staticmethod
     def getClasses(filepath):
