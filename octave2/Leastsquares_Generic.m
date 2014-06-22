@@ -42,7 +42,8 @@ endD = end of trial signal
 
 	% Get features (mu & beta) according to the selected method
 	if(f1FLag == 1)
-		[Mu,Beta] =  GetMuBeta(startD, endD, data, HDR);
+		[Mu,Beta] =  idealFilter_Train( data, HDR,startD, endD);
+                
 	elseif (f2FLag == 1)
 		[Mu,Beta] =  GetMuBeta_more_feature(startD, endD, data, HDR);
 	elseif (f3FLag == 1)

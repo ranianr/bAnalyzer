@@ -28,11 +28,12 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
         if(noiseFlag == 1)
             noise = mean(TrialData);
             TrialData = bsxfun(@minus, TrialData, noise);
+            
         endif
 
 	% Get features (mu & beta) according to the selected method
 	if(f1FLag == 1)
-            [Mu,Beta] =  GetMuBeta_detect(TrialData);
+            [Mu,Beta] =  idealFilter(TrialData);
 	elseif (f2FLag == 1)
             [Mu,Beta] =  GetMuBeta_detect_more_feature(TrialData);
 	elseif (f3FLag == 1)

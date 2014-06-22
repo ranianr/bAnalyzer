@@ -118,16 +118,7 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         self.BulkDetectExec()
         
     ######## end of signaling functions ######
-    def getEmptyRowIndex(self):
-	gc = gspread.login( GSC.email , GSC.password)
-	sh = gc.open(GSC.title) 
-	worksheet = sh.get_worksheet(0)
-	values_list = worksheet.col_values(2)
-	index = len(values_list)
-	return index+1
-	
-	
-	
+    
 	
     ######## Bulk
     def BulkDetectExec(self):
@@ -139,9 +130,9 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         enhanceDict = self.DictOfEnhancementCB()
         classDict = self.DictOfClassifiersCB()
 	
-	#n3ml function tgeb a5er mkan mlyan/fady
 	
-	##Writing statistics into Googl spread sheet
+	
+	##Connect to google spreadsheet 
 	gc = gspread.login( GSC.email , GSC.password)
 	sh = gc.open(GSC.title) 
 	worksheet = sh.get_worksheet(0)
@@ -151,13 +142,17 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         i = 0
 	j = 0
 	print "Traing File: " + self.trainFilePath
+	print "************"
+
 	print "Detection File: " + self.detectFilePath
+	print "************"
+	
 	desc = TrainingFileClass.getDescription(self.trainFilePath)
-	#write el kalam dh fel sheet
-	worksheet.update_cell(self.rowIndex, 3, desc)
 	name = TrainingFileClass.getName(self.trainFilePath)
+	
+	worksheet.update_cell(self.rowIndex, 3, desc)
 	worksheet.update_cell(self.rowIndex, 2, name)
-	#write el name fel sheet 
+	
 	self.accumelatedAcc = []
         print "Creating Detection Paths:"
         print "-------------------------"
@@ -184,27 +179,25 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
                             self.threadList[i].start()
                             self.threadList[i].wait()
 			    Acc = self.threadList[i].getAcc()
+			    #Write the path description and it's accuracy 
 			    worksheet.update_cell(self.rowIndex, 7+j , Path)
 			    worksheet.update_cell(self.rowIndex, 8+j , Acc)
 
-			    #write el path fe mkano bel acc bta3to 
+			    #Array to hold accurcies of all paths
 			    self.accumelatedAcc.append(Acc)
 			    
                             i += 1
 			    j += 2
 			    
-	print self.accumelatedAcc    
+	#Get the Min, Max and avrg accuracy then write them 
 	self.sorted = sorted(self.accumelatedAcc)
-	print self.sorted
 	worksheet.update_cell(self.rowIndex, 4 , self.sorted[0])
 	worksheet.update_cell(self.rowIndex, 5 , self.sorted[i-1])
 	temp = 0
-	for o in range(0, i-1):
+	for o in range(0, i):
 	    temp = temp + self.accumelatedAcc[o]
-	    print temp
-	print temp    
 	avrg = temp / len(self.accumelatedAcc)
-	worksheet.update_cell(self.rowIndex, 6 , self.accumelatedAcc[1])
+	worksheet.update_cell(self.rowIndex, 6 , avrg)
 	
         print "-----------------------"
         print "Finished bulk detection"
@@ -291,4 +284,12 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
     #generic Checkbox getter
     def CBGetter(self, checkBox):
         return checkBox.isChecked()
+    
+    def getEmptyRowIndex(self):
+	gc = gspread.login( GSC.email , GSC.password)
+	sh = gc.open(GSC.title) 
+	worksheet = sh.get_worksheet(0)
+	values_list = worksheet.col_values(2)
+	index = len(values_list)
+	return index+1
     ######## end of helping functions #########

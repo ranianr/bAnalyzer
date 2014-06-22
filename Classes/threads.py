@@ -339,6 +339,7 @@ class readDataThread(QtCore.QThread):
 	    index = trials["index"]
 	    indexWindow = index.end - index.start
 	    self.leastSquaresResultInput["TrainOut"] =  self.leastSquaresTrainOut
+	    self.realClasses = self.leastSquaresTrainOut.ClassesTypes
 
 	    for i in range (indexWindow):
 
@@ -350,7 +351,7 @@ class readDataThread(QtCore.QThread):
 		self.leastSquaresResultInput["TrialData"] = trial
 		self.leastSquaresResult = self.octave.call('Leastsquares_Generic_Detect.m',self.leastSquaresResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
 		if (self.verbose):
-		    feedback = "trial " + str(i) + ": PCA " + str(self.leastSquaresResult.PCAresult) + ", LDA " + str(self.leastSquaresResult.LDAresult)
+		    feedback = "trial " + str(i) + ": PCA " + str(self.leastSquaresResult.PCAresult) + ", LDA " + str(self.leastSquaresResult.LDAresult) + str(self.realClasses[i])
 		    print feedback
 
 		if (self.PCAFlag == 1):
@@ -358,8 +359,7 @@ class readDataThread(QtCore.QThread):
 		elif (self.LDAFlag == 1):
 		    self.classifierResult.append(self.leastSquaresResult.LDAResultClass)
 
-		self.realClasses = self.leastSquaresTrainOut.ClassesTypes
-
+		
 
 	self.trialStatues(indexWindow)
 	if (self.verbose):
