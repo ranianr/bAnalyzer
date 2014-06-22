@@ -113,7 +113,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	self.preprocessingBoxContent = ("method1","method2")
 	self.preprocessingBox.addItems(self.preprocessingBoxContent)
 	
-	self.featureEnhancementMethods = ("PCA","LDA","CSP")
+	self.featureEnhancementMethods = ("PCA","LDA","None")
 	self.FeatureEnhancementMethod.addItems(self.featureEnhancementMethods)
         
 	self.classifiers = ("Fisher","KNN","Likelihood","Least Squares") #add classifiers manually !
@@ -186,7 +186,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	if self.preDetectCheck(self.trainFilePath, self.detectFilePath, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, \
 			       self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.selectedFeatureExtractionMethod, self.classifierSelected, \
 			       self.sameFile, self.allData2080, self.offset_0_2080, self.offset_1_2080, self.offset_2_2080, self.offset_3_2080, self.offset_4_2080, \
-			       True, False, localArgs):
+			       True, True, localArgs):
 	    print "One/Some of the necessary checks failed! :'("
 	    return
 

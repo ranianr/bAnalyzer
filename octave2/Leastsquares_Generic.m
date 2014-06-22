@@ -1,4 +1,4 @@
-function TrainOut = Leastsquares_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag,startD,endD)
+function TrainOut = Leastsquares_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
 %{
 
 example call
@@ -17,7 +17,7 @@ f6Flag = GetMuBeta_more_feature5 -> get min Mu, max Mu, min Beta, max Bita, mean
 LDAFLag = use LDA
 PCAFlag = use PCA
 CSP_LDAFlag = use CSP then LDA
-CSPFlag = use CSP 
+NoneFlag = use CSP 
 
 
 signal starts at 3 and ends at 7 (4 seconds)
@@ -31,6 +31,7 @@ endD = end of trial signal
 	% Get Raw Data from the file 
 	[data, HDR] = getRawData(directory);
         
+        
 	% Intial values
 	classes_no = [ getClassNumber(HDR,'RIGHT')  getClassNumber(HDR,'LEFT') ];
         
@@ -42,7 +43,7 @@ endD = end of trial signal
 
 	% Get features (mu & beta) according to the selected method
 	if(f1FLag == 1)
-		[Mu,Beta] =  idealFilter_Train( data, HDR,startD, endD);
+		[Mu,Beta] =  GetMuBeta(startD, endD, data, HDR);
                 
 	elseif (f2FLag == 1)
 		[Mu,Beta] =  GetMuBeta_more_feature(startD, endD, data, HDR);
@@ -63,7 +64,10 @@ endD = end of trial signal
 	VPCA = [];
 	PC_NumPCA = 0;
 	PC_NumLDA = 0;
-
+        W=0;
+        V=0;
+        PC_Num=0;
+        Z=[];
         ZLDA = [];
 	ZPCA = [];
 
@@ -93,11 +97,25 @@ endD = end of trial signal
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
 		
-	elseif(CSPFlag == 1)
-		%not tested
+	elseif(NoneFlag == 1)
+		X = [Mu Beta];
+                Z = X;
+                V=1;
+                accuracy = leastSquaresResults(Z, HDR.Classlabel);
+                [AccSelected, AccIndex] = max(accuracy);
+                PC_Num = min(AccIndex);
+                W  = Least_Classifier_Parameters(PC_Num, Z, HDR.Classlabel);
+                datalength = size(Z)(1);
 	endif
         
 	% Returing output structure
+        
+	TrainOut.V = V;
+	TrainOut.W = W(1:end-1);
+	TrainOut.Wo = W(end);
+	TrainOut.PC_Num = PC_Num;
+        
+        
 	TrainOut.VPCA = VPCA;
 	TrainOut.VLDA = VLDA;
 	

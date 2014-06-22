@@ -6,10 +6,11 @@ OctaveFolder = MainFolder + "/octave2"
 
 #Debugging Configuration
 
-#TrainingFile = "/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/TrainingData/Session_2014_05_18_65914/[T][2014-05-18 18-22-30] Ahmed Hemaly.csv"
-#DetectionFile = "/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/DetectionData/[D][2014-05-18 18-28-03] Ahmed Hemaly.csv"
-TrainingFile = MainFolder + "/Osama Mohamed.csv"
-DetectionFile = MainFolder + "/Osama Mohamed.csv"
+TrainingFile = "/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/TrainingData/Session_2014_05_18_65914/[T][2014-05-18 18-22-30] Ahmed Hemaly.csv"
+DetectionFile ="/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/DetectionData/[D][2014-05-18 18-28-03] Ahmed Hemaly2.csv"
+
+#TrainingFile = MainFolder + "/Osama Mohamed.csv"
+#DetectionFile = MainFolder + "/Osama Mohamed.csv"
 
 
 #Default Session's Options

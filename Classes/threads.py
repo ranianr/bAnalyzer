@@ -65,7 +65,7 @@ class readDataThread(QtCore.QThread):
     def run(self): 
 	#"../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4
 	
-	#TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag,startD,endD)
+	#TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
 
 	#TODO: change f*FLag to f*Flag!
 	#settig the feature selection method flags
@@ -103,10 +103,10 @@ class readDataThread(QtCore.QThread):
 	    self.LDAFlag = 1
 	else:
 	    self.LDAFlag = 0
-	if(self.FeatureEnhancementSelectedMethod == "CSP"):
-	    self.CSPFlag = 1
+	if(self.FeatureEnhancementSelectedMethod == "None"):
+	    self.NoneFlag = 1
 	else:
-	    self.CSPFlag = 0
+	    self.NoneFlag = 0
 	    
 	#unused flags for now
 	self.CSP_LDAFlag =0
@@ -135,7 +135,7 @@ class readDataThread(QtCore.QThread):
 	#if (self.trainTestFlag == True):
 
 	if(self.classifierFile == "KNN"):
-	    self.knnTrainOut = self.octave.call('KNN_Generic.m', self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag,self.SignalStart,self.SignalEnd)
+	    self.knnTrainOut = self.octave.call('KNN_Generic.m', self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.knnTrainOut.LDAData
 	    self.PCAData = self.knnTrainOut.PCAData
 	    self.dataLength = self.knnTrainOut.datalength
@@ -146,21 +146,21 @@ class readDataThread(QtCore.QThread):
 	    #print(self.knnTrainOut['KPCA'])
 
 	elif (self.classifierFile == "Fisher"):
-	    self.fisherTrainOut = self.octave.call('Fisher_Generic.m', self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag,self.SignalStart,self.SignalEnd)
+	    self.fisherTrainOut = self.octave.call('Fisher_Generic.m', self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.fisherTrainOut.LDAData
 	    self.PCAData = self.fisherTrainOut.PCAData
 	    self.dataLength = self.fisherTrainOut.datalength
 	    print("Fisher training done!")
     
 	elif(self.classifierFile == "Likelihood"):
-	    self.likelihoodTrainOut = self.octave.call('Likelihood_Generic.m', self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag,self.SignalStart,self.SignalEnd)
+	    self.likelihoodTrainOut = self.octave.call('Likelihood_Generic.m', self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.likelihoodTrainOut.LDAData
 	    self.PCAData = self.likelihoodTrainOut.PCAData
 	    self.dataLength = self.likelihoodTrainOut.datalength
 	    print("Likelihood training done!")
     
 	elif(self.classifierFile == "Least Squares"):
-	    self.leastSquaresTrainOut = self.octave.call('Leastsquares_Generic.m', self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag,self.SignalStart,self.SignalEnd)
+	    self.leastSquaresTrainOut = self.octave.call('Leastsquares_Generic.m', self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.leastSquaresTrainOut.LDAData
 	    self.PCAData = self.leastSquaresTrainOut.PCAData
 	    self.dataLength = self.leastSquaresTrainOut.datalength
@@ -234,7 +234,7 @@ class readDataThread(QtCore.QThread):
 	#we may be later interested in providing a feedback for the signal start and end too! but for now, that's definitely not!
 	detectionDescription = "Train = " + self.path + "\r\nNoise Removal = " + str(self.removeNoiseFlag)+ "\r\nSame File" + str(self.sameFile) + "\r\nDetect" + convDetectPath + \
 	"\r\nExtraction Flags = " + str(self.f1FLag) + str(self.f2FLag) + str(self.f3FLag) + str(self.f4FLag) + str(self.f5FLag) + str(self.f6FLag) + \
-	"\r\nPreprocessing only method 1 for now\r\nEnhancement flags " + str(self.LDAFlag) + str(self.PCAFlag) + str(self.CSP_LDAFlag) + str(self.CSPFlag) + "\r\nClassifier " + cf
+	"\r\nPreprocessing only method 1 for now\r\nEnhancement flags " + str(self.LDAFlag) + str(self.PCAFlag) + str(self.CSP_LDAFlag) + str(self.NoneFlag) + "\r\nClassifier " + cf
 
 	indexWindow = 0
 
@@ -252,7 +252,7 @@ class readDataThread(QtCore.QThread):
 		    trial = trials["trials"][:,:,i]
 
 		self.knnResultInput["TrialData"] = trial
-		self.knnResult = self.octave.call('KNN_Generic_Detect.m',self.knnResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
+		self.knnResult = self.octave.call('KNN_Generic_Detect.m',self.knnResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag, self.preProjectedFlag)
 		if (self.verbose):
 		    feedback = "trial " + str(i) + ": PCA " + str(self.knnResult.PCAresult) + ", LDA " + str(self.knnResult.LDAresult)
 		    print feedback
@@ -285,7 +285,7 @@ class readDataThread(QtCore.QThread):
 		    trial = trials["trials"][:,:,i]
 		
 		self.fisherResultInput["TrialData"] = trial
-		self.fisherResult = self.octave.call('Fisher_Generic_Detect.m',self.fisherResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
+		self.fisherResult = self.octave.call('Fisher_Generic_Detect.m',self.fisherResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag, self.preProjectedFlag)
 		if (self.verbose):
 		    feedback = "trial " + str(i) + ": PCA " + str(self.fisherResult.PCAresult) + ", LDA " + str(self.fisherResult.LDAresult)
 		    print feedback
@@ -313,7 +313,7 @@ class readDataThread(QtCore.QThread):
 		    trial = trials["trials"][:,:,i]
 
 		self.likelihoodResultInput["TrialData"] = trial
-		self.likelihoodResult = self.octave.call('Likelihood_Generic_Detect.m',self.likelihoodResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
+		self.likelihoodResult = self.octave.call('Likelihood_Generic_Detect.m',self.likelihoodResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag, self.preProjectedFlag)
 		if (self.verbose):
 		    feedback = "trial " + str(i) + ": PCA " + str(self.likelihoodResult.PCAresult) + ", LDA " + str(self.likelihoodResult.LDAresult)
 		    print feedback
@@ -339,26 +339,33 @@ class readDataThread(QtCore.QThread):
 	    index = trials["index"]
 	    indexWindow = index.end - index.start
 	    self.leastSquaresResultInput["TrainOut"] =  self.leastSquaresTrainOut
-	    self.realClasses = self.leastSquaresTrainOut.ClassesTypes
-
+	    
+	    
 	    for i in range (indexWindow):
 
 		if (self.sameFile == True):
 		    trial = trials["trials"][i]
 		elif (self.sameFile == False):
 		    trial = trials["trials"][:,:,i]
+		   
 
 		self.leastSquaresResultInput["TrialData"] = trial
-		self.leastSquaresResult = self.octave.call('Leastsquares_Generic_Detect.m',self.leastSquaresResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.CSPFlag, self.preProjectedFlag)
+		self.leastSquaresResult = self.octave.call('Leastsquares_Generic_Detect.m',self.leastSquaresResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag, self.preProjectedFlag)
 		if (self.verbose):
-		    feedback = "trial " + str(i) + ": PCA " + str(self.leastSquaresResult.PCAresult) + ", LDA " + str(self.leastSquaresResult.LDAresult) + str(self.realClasses[i])
+		    feedback = "trial " + str(i) + ": PCA " + str(self.leastSquaresResult.PCAresult) + ", LDA " + str(self.leastSquaresResult.LDAresult) + ", None " + str(self.leastSquaresResult.NoneResult) 
 		    print feedback
 
 		if (self.PCAFlag == 1):
 		    self.classifierResult.append(self.leastSquaresResult.PCAResultClass)
 		elif (self.LDAFlag == 1):
 		    self.classifierResult.append(self.leastSquaresResult.LDAResultClass)
-
+		elif (self.NoneFlag == 1):
+		    self.classifierResult.append(self.leastSquaresResult.NoneResultClass)
+	    
+	    if (self.sameFile == True):
+		self.realClasses = self.leastSquaresTrainOut.ClassesTypes
+	    elif (self.sameFile == False):
+		self.realClasses = self.octave.call('getRealClass.m', self.detectFile)#function tgeb HDR.classlabel ll detection file elly m3ana kolo 
 		
 
 	self.trialStatues(indexWindow)
@@ -384,8 +391,10 @@ class readDataThread(QtCore.QThread):
 	self.comparisonResults = []
 
 	for i in range (indexWindow):
+	  
 	    if (self.realClasses[i] == -1):
 		self.realClasses[i] = 2
+
 	    if (self.classifierResult[i] == int(self.realClasses[i])):
 		
 		self.comparisonResults.append(True)

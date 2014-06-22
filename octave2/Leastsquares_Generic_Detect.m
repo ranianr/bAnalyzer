@@ -1,4 +1,4 @@
-function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag, preProjectedFlag)
+function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag, preProjectedFlag)
    
  %{
  [DetectOut Debug] = Leastsquares_Generic_Detect(1, 1,0,0,0,0,0,1,0,0,0);
@@ -9,7 +9,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     % Get inputs from python
     TrialData = DetectIn.("TrialData"); %data to be sent from python
     TrainOut = DetectIn.("TrainOut"); %
-
+    size(TrialData)
     VPCA = TrainOut.VPCA ;
     VLDA = TrainOut.VLDA ;
 	
@@ -21,6 +21,11 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     
     PC_NumPCA  = TrainOut.PC_NumPCA
     PC_NumLDA  = TrainOut.PC_NumLDA;
+    
+    V       = TrainOut.V;
+    W       = TrainOut.W;
+    Wo      = TrainOut.Wo;
+    PC_Num  = TrainOut.PC_Num;
 
     if (preProjectedFlag == 0)
 
@@ -33,7 +38,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
 
 	% Get features (mu & beta) according to the selected method
 	if(f1FLag == 1)
-            [Mu,Beta] =  idealFilter(TrialData);
+            [Mu,Beta] =  GetMuBeta_detect(TrialData);
 	elseif (f2FLag == 1)
             [Mu,Beta] =  GetMuBeta_detect_more_feature(TrialData);
 	elseif (f3FLag == 1)
@@ -51,9 +56,11 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     %default return
     TargetsLDA="Unknown";
     TargetsPCA="Unknown";
+    Target="Unknown";
 
     ClassPCA = 0;
     ClassLDA = 0;
+    ClassNone = 0;
 
     % apply LDA method to the features
     if(LDAFLag == 1)
@@ -93,11 +100,34 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
             ClassPCA = 2;
 	end
     endif
+    
+    if(NoneFlag == 1)
+        if (preProjectedFlag == 1)
+            Z =TrialData';
+        else
+            Z = [Mu Beta];
+        endif
+        Z = Z(:,1:PC_Num);
+	y = TrainOut.W'*Z';
+	y += Wo;
+    	% getting the class label here 
+	Target = "NONE";
+        if(y > 0) 
+            Target = "RIGHT";
+            ClassNone = 1;
+	elseif(y < 0)
+            Target = "LEFT";
+            ClassNone = 2;
+	end
+    endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
 	
 
     %DetectOut
+    DetectOut.NoneResult = Target;
+    DetectOut.NoneResultClass = ClassNone;
+    
     DetectOut.LDAresult = TargetsLDA;
     DetectOut.PCAresult = TargetsPCA;
 
