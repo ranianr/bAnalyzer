@@ -5,7 +5,7 @@ import os
 #Noise
 _Remove =	1<<0
 _Raw = 		1<<1
-NoiseRemoval = _Remove | _Raw
+NoiseRemoval = _Remove 
 NoiseRemovalAll = True
 
 #Extraction
@@ -20,7 +20,7 @@ FeaturesAll = False
 #Enhancement
 _PCA = 1<<0
 _LDA = 1<<1
-_CSP = 1<<2
+_None = 1<<2
 EnhancementMethod = _PCA | _LDA
 EnhancementAll = True
 
@@ -29,12 +29,12 @@ _Fisher = 	1<<0
 _KNN = 		1<<1
 _Likelihood = 	1<<2
 _LeastSquares = 1<<3
-ClassificationMethod = _Fisher
+ClassificationMethod = _LeastSquares
 ClassificationAll = False
 
 #Processing
-_Method1 = 1<<0
-_Method2 = 1<<1
-PreprocessingMethod = _Method1
+_Butter = 1<<0
+_Ideal = 1<<1
+PreprocessingMethod = _Ideal | _Butter
 PreprocessingAll = True
 

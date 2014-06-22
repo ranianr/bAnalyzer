@@ -1,4 +1,4 @@
-function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag, preProjectedFlag)
+function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag, preProjectedFlag)
    
  %{
  [DetectOut Debug] = Leastsquares_Generic_Detect(1, 1,0,0,0,0,0,1,0,0,0);
@@ -35,21 +35,32 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
             TrialData = bsxfun(@minus, TrialData, noise);
             
         endif
-
-	% Get features (mu & beta) according to the selected method
-	if(f1FLag == 1)
-            [Mu,Beta] =  GetMuBeta_detect(TrialData);
-	elseif (f2FLag == 1)
-            [Mu,Beta] =  GetMuBeta_detect_more_feature(TrialData);
-	elseif (f3FLag == 1)
-            [Mu,Beta] =  GetMuBeta_detect_more_feature2(TrialData);
-	elseif (f4FLag == 1)
-            [Mu,Beta] =  GetMuBeta_detect_more_feature3(TrialData);
-	elseif (f5FLag == 1)
-            [Mu,Beta] =  GetMuBeta_detect_more_feature4(TrialData);
-	elseif (f6FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect_more_feature5(TrialData);
-	endif
+        
+        if(idealFlag == 1)
+            if(f1FLag == 1)
+                [Mu,Beta] = idealFilter(TrialData);
+            elseif(f2FLag == 1)
+                [Mu,temp] = idealFilter(TrialData, @min);
+                [temp,Beta] = idealFilter(TrialData, @max);
+            %TODO: support F3 to F6 flags
+            endif
+        endif
+        if(butterFlag == 1)
+            % Get features (mu & beta) according to the selected method
+            if(f1FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect(TrialData);
+            elseif (f2FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature(TrialData);
+            elseif (f3FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature2(TrialData);
+            elseif (f4FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature3(TrialData);
+            elseif (f5FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature4(TrialData);
+            elseif (f6FLag == 1)
+                [Mu,Beta] = GetMuBeta_detect_more_feature5(TrialData);
+            endif
+        endif
         %else we've got preprojected data
     endif
 	

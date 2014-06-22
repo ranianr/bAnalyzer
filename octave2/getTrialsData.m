@@ -2,6 +2,8 @@ function trialsData = getTrialsData(directory, startTime=0, endTime=4, type = '1
     % use size(trialsData)(1) to get channel number     ie: 14  channels
     % use size(trialsData)(2) to get samples/trial      ie: 512 samples
     % use size(trialsData)(3) to get the trials number  ie: 100 trials
+    % type = 0 -> old files
+    % type = 1 -> new files
 
     startTime = int32(startTime)
     endTime = int32(endTime)

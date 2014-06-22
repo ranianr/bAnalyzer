@@ -111,7 +111,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>80</y>
+     <y>110</y>
      <width>771</width>
      <height>31</height>
     </rect>
@@ -204,7 +204,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>110</y>
+     <y>80</y>
      <width>771</width>
      <height>31</height>
     </rect>
@@ -244,9 +244,31 @@
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="method1CB">
+     <widget class="QCheckBox" name="butterCB">
+      <property name="toolTip">
+       <string extracomment="butterworth filter"/>
+      </property>
       <property name="text">
-       <string>Method1</string>
+       <string>Butter</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="idealCB">
+      <property name="toolTip">
+       <string extracomment="ideal filter"/>
+      </property>
+      <property name="text">
+       <string>Ideal</string>
       </property>
       <property name="checkable">
        <bool>true</bool>

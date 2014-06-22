@@ -1,4 +1,4 @@
-function TrainOut = Leastsquares_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
+function TrainOut = Leastsquares_Generic(directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
 %{
 
 example call
@@ -42,21 +42,32 @@ endD = end of trial signal
 	endif	
 
 	% Get features (mu & beta) according to the selected method
-	if(f1FLag == 1)
-		[Mu,Beta] =  GetMuBeta(startD, endD, data, HDR);
-                
-	elseif (f2FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature(startD, endD, data, HDR);
-	elseif (f3FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature2(startD, endD, data, HDR);
-	elseif (f4FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature3(startD, endD, data, HDR);
-	elseif (f5FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature4(startD, endD, data, HDR);
-	elseif (f6FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature5(startD, endD, data, HDR);
-	endif
-
+        if(idealFlag == 1)
+            if(f1FLag == 1)
+                [Mu,Beta] = idealFilter_Train(data, HDR,startD, endD);
+            elseif(f2FLag == 1)
+                [Mu,temp] = idealFilter_Train(data, HDR,startD, endD, @min);
+                [temp,Beta] = idealFilter_Train(data, HDR,startD, endD, @max);
+            %TODO: support F3 to F6 flags
+            endif
+        endif
+        
+        if(butterFlag == 1)
+            if(f1FLag == 1)
+                    x = "before filter"
+                    [Mu,Beta] =  GetMuBeta(startD, endD, data, HDR);
+            elseif (f2FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature(startD, endD, data, HDR);
+            elseif (f3FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature2(startD, endD, data, HDR);
+            elseif (f4FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature3(startD, endD, data, HDR);
+            elseif (f5FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature4(startD, endD, data, HDR);
+            elseif (f6FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature5(startD, endD, data, HDR);
+            endif
+        endif
 	% apply LDA or PCA or CSP
 	Wlda=0;
 	Wpca =0;
@@ -70,7 +81,7 @@ endD = end of trial signal
         Z=[];
         ZLDA = [];
 	ZPCA = [];
-
+        
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];

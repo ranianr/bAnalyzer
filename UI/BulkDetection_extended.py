@@ -83,13 +83,13 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         self.lMBhMBmCB.setChecked(BDConfig.FeaturesMethod & BDConfig._LMBhMBm)
 
         self.allPreprocessingRB.setChecked(BDConfig.PreprocessingAll)
-        self.method1CB.setChecked(BDConfig.PreprocessingMethod & BDConfig._Method1)
-        #self.method2CB.setChecked(BDConfig.PreprocessingMethod & BDConfig._Method2)
+        self.butterCB.setChecked(BDConfig.PreprocessingMethod & BDConfig._Butter)
+        self.idealCB.setChecked(BDConfig.PreprocessingMethod & BDConfig._Ideal)
 
         self.allEnhancementRB.setChecked(BDConfig.EnhancementAll)
         self.PCACB.setChecked(BDConfig.EnhancementMethod & BDConfig._PCA)
         self.LDACB.setChecked(BDConfig.EnhancementMethod & BDConfig._LDA)
-        self.NoneCB.setChecked(BDConfig.EnhancementMethod & BDConfig._CSP)
+        self.NoneCB.setChecked(BDConfig.EnhancementMethod & BDConfig._None)
 
         self.allClassifiersRB.setChecked(BDConfig.ClassificationAll)
         self.fisherCB.setChecked(BDConfig.ClassificationMethod & BDConfig._Fisher)
@@ -163,8 +163,9 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 	    elif (noiseItem == "Raw") & (noiseValue & True):
 		wrappingNoiseValue = False
 
-            for featItem, featValue in featDict.items():
-                for preprocItem, preprocValue in preprocDict.items():
+            for preprocItem, preprocValue in preprocDict.items():
+		#get feature dictionary 
+		for featItem, featValue in featDict.items():
                     for enhanceItem, enhanceValue in enhanceDict.items():
                         for classItem, classValue in classDict.items():
 
@@ -172,7 +173,7 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 			    print Path 
                             thread = readDataThread(self.trainFilePath, self.detectFilePath, wrappingNoiseValue, self.sampleStart, self.sampleEnd, \
                                                     featValue, preprocValue, enhanceValue, classValue, \
-						    False, self.selectedData, self.sameFile)
+						    False, self.selectedData, self.sameFile,True)
                             self.threadList.append(thread)
                             self.threadList[i].start()
                             self.threadList[i].wait()
@@ -201,6 +202,7 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         print "Finished bulk detection"
 
     ######## helping functions #########
+    
     def DictOfNoiseCB(self):
         noiseDict = {}
 	if(self.CBGetter(self.noiseRemCB)):
@@ -211,23 +213,34 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 
     #TODO: change the binding into global enum
     def DictOfFeaturesCB(self):
-        featDict = {}
-        if(self.CBGetter(self.meanCB)):
-            featDict["mean"] = "mean"
-        if(self.CBGetter(self.lMhBCB)):
-            featDict["lMhB"] = "Min MU and Max Beta"
-        if(self.CBGetter(self.lMhBmCB)):
-            featDict["lMhBm"] = "Min Mu, Max Beta, Mean Mu, Mean Beta"
-        if(self.CBGetter(self.lMBhMBCB)):
-            featDict["lMBhMB"] = "Min Mu Max Mu Min Beta Max Beta"
-        if(self.CBGetter(self.lMBhMBmCB)):
-            featDict["lMBhMBm"] = "Min Mu, max Mu, Min Beta, Max Beta, Mean Mu, Mean Beta"
-        return featDict
+	if(self.CBGetter(self.butterCB)):
+	    featDict = {}
+	    if(self.CBGetter(self.meanCB)):
+		featDict["mean"] = "mean"
+	    if(self.CBGetter(self.lMhBCB)):
+		featDict["lMhB"] = "Min MU and Max Beta"
+	    if(self.CBGetter(self.lMhBmCB)):
+		featDict["lMhBm"] = "Min Mu, Max Beta, Mean Mu, Mean Beta"
+	    if(self.CBGetter(self.lMBhMBCB)):
+		featDict["lMBhMB"] = "Min Mu Max Mu Min Beta Max Beta"
+	    if(self.CBGetter(self.lMBhMBmCB)):
+		featDict["lMBhMBm"] = "Min Mu, max Mu, Min Beta, Max Beta, Mean Mu, Mean Beta"
+	    return featDict
+	
+	elif(self.CBGetter(self.idealCB)):
+	    if(self.CBGetter(self.meanCB)):
+		featDict["mean"] = "mean"
+	    if(self.CBGetter(self.lMhCB)):
+		featDict["min"] = "min"
+	    if(self.CBGetter(self.lMhBmCB)):
+		featDict["max"] = "max"
 
     def DictOfPreprocessingCB(self):
         preprocDict = {}
-        if(self.CBGetter(self.method1CB)):
-            preprocDict["method1"] = "method1"
+        if(self.CBGetter(self.butterCB)):
+            preprocDict["butter"] = "butter"
+	if(self.CBGetter(self.idealCB)):
+            preprocDict["ideal"] = "ideal"
         return preprocDict
 
     def DictOfEnhancementCB(self):
@@ -264,7 +277,8 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         self.CBSetter(self.lMBhMBmCB, value)
 
     def PreprocessingCBSetter(self, value):
-        self.CBSetter(self.method1CB, value)
+        self.CBSetter(self.butterCB, value)
+	self.CBSetter(self.idealCB, value)
 
     def EnhancementCBSetter(self, value):
         self.CBSetter(self.PCACB, value)
