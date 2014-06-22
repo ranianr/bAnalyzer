@@ -1,4 +1,4 @@
-function TrainOut = Likelihood_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag,startD,endD)
+function TrainOut = Likelihood_Generic(directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
 %{
 
 example call
@@ -60,22 +60,25 @@ endD = end of trial signal
 	Wpca =0;
 	VLDA = [];
 	VPCA = [];
+        V = [];
 	PC_NumPCA = 0;
 	PC_NumLDA = 0;
-
+        PC_Num = 0;
 	mu1PCA = [];
 	mu2PCA = [];
 	mu1LDA = [];
 	mu2LDA = [];
-
+        mu1 = [];
+        mu2 = [];
 	PIPCA = [];
 	PILDA = [];
-
+        PI = [];
 	segmaPCA = [];
 	segmaLDA = [];
-
+        segma = [];
 	ZLDA = [];
 	ZPCA = [];
+        Z =[];
         
         
 	if(LDAFLag == 1)
@@ -112,13 +115,25 @@ endD = end of trial signal
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
 		
-	elseif(CSPFlag == 1)
-		%not tested
+	elseif(NoneFlag == 1)
+		X = [Mu Beta];
+                Z = X;
+                V=1;
+                C1 = Z((HDR.Classlabel==1),:);
+		C2 = Z((HDR.Classlabel==2),:);
+                Z = [C1; C2];
+		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+                accuracy = likelihoodResults(C1, C2, t);
+                [AccSelected, AccIndex] = max(accuracy);
+		PC_Num = min(AccIndex);
+                [PI segma mu1 mu2] = Likeli_Classifier_Parameters(PC_Num, Z, t);
+        	datalength = size(Z)(1);
 	endif
         
 	% Returing output structure
 	TrainOut.VPCA = VPCA;
 	TrainOut.VLDA = VLDA;
+        TrainOut.V = V;
 	
 	TrainOut.Wlda = Wlda(1:end-1);
 	TrainOut.Wolda = Wlda(end);
@@ -128,17 +143,22 @@ endD = end of trial signal
 
 	TrainOut.PC_NumPCA = PC_NumPCA;
 	TrainOut.PC_NumLDA = PC_NumLDA;
+        TrainOut.PC_Num = PC_Num;
 
 	TrainOut.mu1PCA = mu1PCA;
 	TrainOut.mu2PCA = mu2PCA;
 	TrainOut.mu1LDA = mu1LDA;
 	TrainOut.mu2LDA = mu2LDA;
+        TrainOut.mu1 = mu1;
+	TrainOut.mu2 = mu2;
 
 	TrainOut.PIPCA = PIPCA;
 	TrainOut.PILDA = PILDA;
+        TrainOut.PI = PI;
 
 	TrainOut.segmaPCA = segmaPCA;
 	TrainOut.segmaLDA = segmaLDA;
+        TrainOut.segma = segma;
 
 	TrainOut.HDR = HDR;
 

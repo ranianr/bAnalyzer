@@ -110,13 +110,13 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	self.getFeaturesMethods = ("mean", "Min MU and Max Beta","Min Mu, Max Beta, Mean Mu, Mean Beta","Min Mu Max Mu Min Beta Max Beta","Min Mu, max Mu, Min Beta, Max Beta, Mean Mu, Mean Beta")
 	self.featureSelectionMethodBox.addItems(self.getFeaturesMethods)
         
-	self.preprocessingBoxContent = ("method1","method2")
+	self.preprocessingBoxContent = ("ideal","butter")
 	self.preprocessingBox.addItems(self.preprocessingBoxContent)
 	
-	self.featureEnhancementMethods = ("PCA","LDA","None")
+	self.featureEnhancementMethods = ("None","PCA","LDA")
 	self.FeatureEnhancementMethod.addItems(self.featureEnhancementMethods)
         
-	self.classifiers = ("Fisher","KNN","Likelihood","Least Squares") #add classifiers manually !
+	self.classifiers = ("Least Squares","KNN","Likelihood", "Fisher") #add classifiers manually !
 	self.ClassifierBox.addItems(self.classifiers )
 	
      
@@ -182,6 +182,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 
 	localArgs = {}
 	localArgs["selectedData"] = selectedData
+	
 	#TODO: fix this mess
 	if self.preDetectCheck(self.trainFilePath, self.detectFilePath, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, \
 			       self.selectedPreprocessingMethod, self.FeatureEnhancementSelectedMethod, self.selectedFeatureExtractionMethod, self.classifierSelected, \
@@ -211,7 +212,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
     def PreviewFeaturesbtn_Clicked(self):
 	app = QtGui.QApplication(sys.argv)
         app.setWindowIcon(QtGui.QIcon('Feature/Resources/IMGs/app_icon_64.png'))
-
+	
 	window = QtGui.QMainWindow()
         window.ui = Ui_FeatureAnalysisWindow_Extended()
         window.ui.setupUi(window)
@@ -233,6 +234,7 @@ class Ui_MainWindow_Extended(Ui_MainWindow, Ui_MainWindow_assertions):
 	self.selectedPreprocessingMethod  = self.preprocessingBox.currentText()
 	self.FeatureEnhancementSelectedMethod = self.FeatureEnhancementMethod.currentText()
 	self.classifierSelected = self.ClassifierBox.currentText()
+	
 	
 	#calling the octave thread
 	self.readThread = readDataThread(self.trainFilePath, None, self.removeNoiseFlag, self.SignalStart, self.SignalEnd, \

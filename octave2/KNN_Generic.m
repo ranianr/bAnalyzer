@@ -1,4 +1,4 @@
-function TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
+function TrainOut = KNN_Generic(directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
 %{
 
 example call
@@ -38,27 +38,43 @@ endD = end of trial signal
 	if(noiseFlag == 1)
 		noise = mean(data')';
 		data =  data -noise;	
-	endif	
-	% Get features (mu & beta) according to the selected method
-	if(f1FLag == 1)
-		[Mu,Beta] =  GetMuBeta(startD, endD, data, HDR);
-	elseif (f2FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature(startD, endD, data, HDR);
-	elseif (f3FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature2(startD, endD, data, HDR);
-	elseif (f4FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature3(startD, endD, data, HDR);
-	elseif (f5FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature4(startD, endD, data, HDR);
-	elseif (f6FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature5(startD, endD, data, HDR);
 	endif
-
+        
+	% Get features (mu & beta) according to the selected method
+	if(idealFlag == 1)
+            if(f1FLag == 1)
+                [Mu,Beta] = idealFilter_Train(data, HDR,startD, endD);
+            elseif(f2FLag == 1)
+                [Mu,temp] = idealFilter_Train(data, HDR,startD, endD, @min);
+                [temp,Beta] = idealFilter_Train(data, HDR,startD, endD, @max);
+            %TODO: support F3 to F6 flags
+            endif
+        endif
+        
+        if(butterFlag == 1)
+            if(f1FLag == 1)
+                    x = "before filter"
+                    [Mu,Beta] =  GetMuBeta(startD, endD, data, HDR);
+                     	
+            elseif (f2FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature(startD, endD, data, HDR);
+            elseif (f3FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature2(startD, endD, data, HDR);
+            elseif (f4FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature3(startD, endD, data, HDR);
+            elseif (f5FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature4(startD, endD, data, HDR);
+            elseif (f6FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature5(startD, endD, data, HDR);
+            endif
+        endif
+        
 	% apply LDA or PCA or CSP
 	KLDA = 0;
 	KPCA = 0;
         K=0;
-        X=[]
+        X=[];
+        t=[];
 	ZLDA = [];
 	ZPCA = [];
 	VPCA = [];
@@ -66,6 +82,7 @@ endD = end of trial signal
 	PC_NumLDA = 0;
 	PC_NumPCA = 0;
         PC_Num = 0;
+        datalength = 0;
 	
 	if(LDAFLag == 1)
 		%LDA
@@ -92,22 +109,25 @@ endD = end of trial signal
                 % make zpca consistent with zlda!
                 ZPCA = ZPCA';
         	datalength = size(ZPCA)(1);		
-	 elseif(CSP_LDAFlag == 1)
+	
+        elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
 		
-       	        
+      
 	elseif(NoneFlag == 1)
-		X = [Mu Beta];
-                C1 = X((HDR.Classlabel==1),:);
-		C2 = X((HDR.Classlabel==2),:);
-                X = [C1; C2];
-                t = [ones(size(C1)(1),1) ; 2*ones(size(C2)(1),1)]';
-                [accuracy k_total] = knnResults(X, t);
+                
+		X = [Mu Beta]';
+                t=HDR.Classlabel;
+                [accuracy k_total] = knnResults(X', HDR.Classlabel);
+              
 		[AccSelected, AccIndex] = max(accuracy);
 		PC_Num = min(AccIndex);
-		K = k_total(PC_Num)
-        	datalength = size(X)(1);
+		K = k_total(PC_Num);
+                % make zpca consistent with zlda!
+                
+        	datalength = size(X)(1)
+                
 	endif
         
 	% Returing output structure
@@ -141,24 +161,5 @@ endD = end of trial signal
         TrainOut.ClassesTypes = HDR.Classlabel;
         TrainOut.ClassesTypesSameFile = t';
 
-end
-function accuracy = getAccuracy(projected, HDR)
-    accuracy = [];
-    projected = real(projected)';
-    
-    for n = 1:size(projected)(1)
-        C1=[];
-        C2=[];
-        
-        for k = 1:n
-            C1 = [ C1 ; projected(k, :)(HDR.Classlabel==1)];
-            C2 = [ C2 ; projected(k, :)(HDR.Classlabel==2)];
-        end     
-        t = [ones(size(C1)(2),1) ; -1*ones(size(C2)(2),1)];
-        dataTotal = [C1,  C2]';
-        k = KNNtrain(dataTotal, t)
-	acc = KNNtest (k, dataTotal, t, dataTotal, t);
-    	accuracy = [accuracy , acc];
-    end
 end
 

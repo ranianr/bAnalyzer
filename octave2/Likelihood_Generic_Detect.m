@@ -1,4 +1,4 @@
-function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag, preProjectedFlag)
+function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag, preProjectedFlag)
    
  %{
  [DetectOut Debug] =Likelihood_Generic_Detect(1, 1,0,0,0,0,0,1,0,0,0);
@@ -12,6 +12,7 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
 
     VPCA = TrainOut.VPCA ;
     VLDA = TrainOut.VLDA ;
+    V = TrainOut.V ;
     
     WPCA  = TrainOut.Wpca;
     WLDA  = TrainOut.Wlda;
@@ -21,17 +22,22 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     
 	PC_NumPCA  = TrainOut.PC_NumPCA;
 	PC_NumLDA  = TrainOut.PC_NumLDA;
+        PC_Num  = TrainOut.PC_Num;
  
 	mu1PCA = TrainOut.mu1PCA;
 	mu2PCA = TrainOut.mu2PCA;
 	mu1LDA = TrainOut.mu1LDA;
 	mu2LDA = TrainOut.mu2LDA;
+        mu1 = TrainOut.mu1;
+	mu2 = TrainOut.mu2;
 
 	PIPCA = TrainOut.PIPCA;
 	PILDA = TrainOut.PILDA;
+        PI = TrainOut.PI;
 
 	segmaPCA = TrainOut.segmaPCA;
 	segmaLDA = TrainOut.segmaLDA;
+        segma = TrainOut.segma;
 
     %TODO according to the preprojectionflag, validate TrialData/VLDA/VPCA matrices
     if (preProjectedFlag == 0)
@@ -62,9 +68,11 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     %default return
     TargetsLDA="Unknown";
     TargetsPCA="Unknown";
+    Targets = "Unknown";
 
     ClassPCA = 0;
     ClassLDA = 0;
+    Class = 0;
 
     % apply LDA method to the features
     if(LDAFLag == 1)
@@ -93,6 +101,34 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
         elseif(P_comparison == 0)
             TargetsLDA = 'LEFT';
             ClassLDA = 2;
+        end
+    endif
+    if(NoneFlag == 1)
+        if (preProjectedFlag == 1)
+            Z =TrialData;
+            Z = Z(:,1:PC_Num);  
+        else
+            Z = [Mu Beta];
+        endif
+        Z = Z(:,1:PC_Num);       
+        N1 = PI;
+        N2 = 1-PI;
+        P_comparison = [];
+        
+        for s = 1:size(Z)(1)
+            P_XgivenC1_expTerm1 = -0.5*(Z(s,:)-mu1')*(inv(segma))*(Z(s,:)-mu1')' ;
+            P_XgivenC2_expTerm2 = -0.5*(Z(s,:)-mu2')*(inv(segma))*(Z(s,:)-mu2')' ;
+            ModifiedClass1_Ratio = log(N1/N2) + (P_XgivenC1_expTerm1 - P_XgivenC2_expTerm2);
+            ModifiedClass2_Ratio = log(N2/N1) + (P_XgivenC2_expTerm2 - P_XgivenC1_expTerm1); 
+            P_comparison = [P_comparison; ModifiedClass1_Ratio > ModifiedClass2_Ratio];
+	end
+       
+        if(P_comparison == 1)
+            Targets = 'RIGHT';
+            Class = 1;
+        elseif(P_comparison == 0)
+            Targets = 'LEFT';
+            Class = 2;
         end
     endif
     
@@ -132,7 +168,9 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     %DetectOut
     DetectOut.LDAresult = TargetsLDA;
     DetectOut.PCAresult = TargetsPCA;
+    DetectOut.Noneresult = Targets;
 
     DetectOut.LDAResultClass = ClassLDA;
     DetectOut.PCAResultClass = ClassPCA;
+    DetectOut.NoneResultClass = Class;
 end

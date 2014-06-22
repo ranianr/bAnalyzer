@@ -1,4 +1,4 @@
-function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag, preProjectedFlag)
+function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag, preProjectedFlag)
    
  %{
  [DetectOut Debug] = KNN_Generic_Detect(1, 1,0,0,0,0,0,0,1,0,0);
@@ -17,6 +17,7 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
 
     VPCA = TrainOut.VPCA ;
     VLDA = TrainOut.VLDA ;
+    
 	
     ZtrainPCA  = TrainOut.ZtrainPCA;
     ZtrainLDA  = TrainOut.ZtrainLDA;
@@ -30,32 +31,43 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
 
     ClassLabels(ClassLabels == 2) = -1;
 
-    if (preProjectedFlag == 0)
+     if (preProjectedFlag == 0)
+
         % do pre-processing here please
         if(noiseFlag == 1)
             noise = mean(TrialData);
             TrialData = bsxfun(@minus, TrialData, noise);
+            
         endif
-
-        % Get features (mu & beta) according to the selected method
-        if(f1FLag == 1)
-            [Mu,Beta] =  GetMuBeta_detect(TrialData);
-        elseif (f2FLag == 1)
-            % a stub is being used here, should implemented first before calling
-            % reason: inconsistant filename with fn name
-            [Mu,Beta] = GetMuBeta_detect_more_feature(TrialData);
-        elseif (f3FLag == 1)
-            % a stub is being used here, should implemented first before calling            
-            [Mu,Beta] = GetMuBeta_detect_more_feature2(TrialData);
-        elseif (f4FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect_more_feature3(TrialData);
-        elseif (f5FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect_more_feature4(TrialData);
-        elseif (f6FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect_more_feature5(TrialData);
+        
+        if(idealFlag == 1)
+            if(f1FLag == 1)
+                [Mu,Beta] = idealFilter(TrialData);
+            elseif(f2FLag == 1)
+                [Mu,temp] = idealFilter(TrialData, @min);
+                [temp,Beta] = idealFilter(TrialData, @max);
+            %TODO: support F3 to F6 flags
+            endif
         endif
-        %else we've got preprojected already
+        if(butterFlag == 1)
+            % Get features (mu & beta) according to the selected method
+            if(f1FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect(TrialData);
+            elseif (f2FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature(TrialData);
+            elseif (f3FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature2(TrialData);
+            elseif (f4FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature3(TrialData);
+            elseif (f5FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature4(TrialData);
+            elseif (f6FLag == 1)
+                [Mu,Beta] = GetMuBeta_detect_more_feature5(TrialData);
+            endif
+        endif
+        %else we've got preprojected data
     endif
+	
         
     %default return
     TargetsLDA="Unknown";
@@ -162,6 +174,7 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
             end
         end
     endif
+    
     if(NoneFlag == 1)
         if (preProjectedFlag == 1)
             Z =TrialData;
@@ -169,7 +182,7 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
         else
             Z = [Mu Beta];
         endif
-  
+        
         Ztrain = Ztrain(:,1:PC_Num);
         
 % appy the classifier here

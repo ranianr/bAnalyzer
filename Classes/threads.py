@@ -166,8 +166,6 @@ class readDataThread(QtCore.QThread):
 	    print("Likelihood training done!")
     
 	elif(self.classifierFile == "Least Squares"):
-	    print self.idealFlag
-	    print self.butterFlag
 	    self.leastSquaresTrainOut = self.octave.call('Leastsquares_Generic.m', self.dataFile, self.removeNoiseFlag,self.idealFlag, self.butterFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.leastSquaresTrainOut.LDAData
 	    self.PCAData = self.leastSquaresTrainOut.PCAData
@@ -327,7 +325,7 @@ class readDataThread(QtCore.QThread):
 		self.likelihoodResultInput["TrialData"] = trial
 		self.likelihoodResult = self.octave.call('Likelihood_Generic_Detect.m',self.likelihoodResultInput,  self.dataFile, self.removeNoiseFlag, self.idealFlag, self.butterFlag,self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag, self.preProjectedFlag)
 		if (self.verbose):
-		    feedback = "trial " + str(i) + ": PCA " + str(self.likelihoodResult.PCAresult) + ", LDA " + str(self.likelihoodResult.LDAresult)
+		    feedback = "trial " + str(i) + ": PCA " + str(self.likelihoodResult.PCAresult) + ", LDA " + str(self.likelihoodResult.LDAresult) + ", None " + str(self.likelihoodResult.Noneresult)
 		    print feedback
 		    #print self.likelihoodResult.vote
 		    
@@ -339,11 +337,16 @@ class readDataThread(QtCore.QThread):
 		elif (self.LDAFlag == 1):
 		    self.classifierResult.append(self.likelihoodResult.LDAResultClass)
 		
+		elif (self.NoneFlag == 1):
+		    self.classifierResult.append(self.likelihoodResult.NoneResultClass)
+		
 		if((self.sameFile==1) and ((self.LDAFlag ==1) or (self.PCAFlag ==1) )):
 		    self.realClasses = self.likelihoodTrainOut.ClassesTypesSameFile
 		else:
 	    	    self.realClasses = self.likelihoodTrainOut.ClassesTypes
-	    
+	   
+	    if (self.sameFile == False):
+		self.realClasses = self.octave.call('getRealClass.m', self.detectFile)
 	   
 
 	elif (cf == "Least Squares"):
