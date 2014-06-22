@@ -332,9 +332,9 @@
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="CSPCB">
+     <widget class="QCheckBox" name="NoneCB">
       <property name="text">
-       <string>CSP</string>
+       <string>None</string>
       </property>
      </widget>
     </item>

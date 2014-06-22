@@ -1,4 +1,4 @@
-function TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag,startD,endD)
+function TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
 %{
 
 example call
@@ -17,7 +17,7 @@ f6Flag = GetMuBeta_more_feature5 -> get min Mu, max Mu, min Beta, max Beta, mean
 LDAFLag = use LDA
 PCAFlag = use PCA
 CSP_LDAFlag = use CSP then LDA
-CSPFlag = use CSP 
+NoneFlag = use CSP 
 
 
 signal starts at 3 and ends at 7 (4 seconds)
@@ -57,13 +57,15 @@ endD = end of trial signal
 	% apply LDA or PCA or CSP
 	KLDA = 0;
 	KPCA = 0;
+        K=0;
+        X=[]
 	ZLDA = [];
 	ZPCA = [];
 	VPCA = [];
 	VLDA = [];
 	PC_NumLDA = 0;
 	PC_NumPCA = 0;
-        
+        PC_Num = 0;
 	
 	if(LDAFLag == 1)
 		%LDA
@@ -93,26 +95,19 @@ endD = end of trial signal
 	 elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
 		%CSP then LDA
-		Trials_Mu   = getTrials(Mu, HDR);
-	        Trials_Beta = getTrials(Beta, HDR);
-		RIGHT_ClassNumber   = getClassNumber(HDR, "RIGHT");
-		LEFT_ClassNumber    = getClassNumber(HDR, "LEFT");
-	       	ClassLabels = [RIGHT_ClassNumber; LEFT_ClassNumber];
-	    	c = HDR.Classlabel;
-	    	Xoriginal = [Trials_Mu , Trials_Beta];
-	    	%% LDA function calling
-	    	C1 = Xoriginal(HDR.Classlabel==1,:);
-		C2 = Xoriginal(HDR.Classlabel==2,:);
-	    	[Z, W] = CSP_fn(C1, C2);
-	        [VLDA, Xm, Vproj]  = LDA_fn(c, Z, ClassLabels);
-		z1 = V(:,1);
-		z2 = V(:,2);
-		z3 = V(:,4);
-		Z = V;
-       	        accuracy = getAccuracy(Z, HDR);	
+		
        	        
-	elseif(CSPFlag == 1)
-		%not tested
+	elseif(NoneFlag == 1)
+		X = [Mu Beta];
+                C1 = X((HDR.Classlabel==1),:);
+		C2 = X((HDR.Classlabel==2),:);
+                X = [C1; C2];
+                t = [ones(size(C1)(1),1) ; 2*ones(size(C2)(1),1)]';
+                [accuracy k_total] = knnResults(X, t);
+		[AccSelected, AccIndex] = max(accuracy);
+		PC_Num = min(AccIndex);
+		K = k_total(PC_Num)
+        	datalength = size(X)(1);
 	endif
         
 	% Returing output structure
@@ -123,16 +118,19 @@ endD = end of trial signal
         
 	TrainOut.KPCA = KPCA;
 	TrainOut.KLDA = KLDA;
+        TrainOut.K = K;
 	
         % is this used anywhere!?
 	TrainOut.ZtrainLDA = ZLDA;
 	TrainOut.ZtrainPCA = ZPCA;
+        TrainOut.Z = X;
 	
 	TrainOut.VPCA = VPCA;
 	TrainOut.VLDA = VLDA;
 	
 	TrainOut.PC_NumPCA = PC_NumPCA;
 	TrainOut.PC_NumLDA = PC_NumLDA;
+        TrainOut.PC_Num = PC_Num;
 	
         TrainOut.ClassLabels = t;
         

@@ -89,7 +89,7 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         self.allEnhancementRB.setChecked(BDConfig.EnhancementAll)
         self.PCACB.setChecked(BDConfig.EnhancementMethod & BDConfig._PCA)
         self.LDACB.setChecked(BDConfig.EnhancementMethod & BDConfig._LDA)
-        self.CSPCB.setChecked(BDConfig.EnhancementMethod & BDConfig._CSP)
+        self.NoneCB.setChecked(BDConfig.EnhancementMethod & BDConfig._CSP)
 
         self.allClassifiersRB.setChecked(BDConfig.ClassificationAll)
         self.fisherCB.setChecked(BDConfig.ClassificationMethod & BDConfig._Fisher)
@@ -129,8 +129,6 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         preprocDict = self.DictOfPreprocessingCB()
         enhanceDict = self.DictOfEnhancementCB()
         classDict = self.DictOfClassifiersCB()
-	
-	
 	
 	##Connect to google spreadsheet 
 	gc = gspread.login( GSC.email , GSC.password)
@@ -238,6 +236,8 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
             EnhanceDict["PCA"] = "PCA"
         if(self.CBGetter(self.LDACB)):
             EnhanceDict["LDA"] = "LDA"
+	if(self.CBGetter(self.NoneCB)):
+            EnhanceDict["None"] = "None"
         return EnhanceDict
 
     def DictOfClassifiersCB(self):
@@ -269,7 +269,7 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
     def EnhancementCBSetter(self, value):
         self.CBSetter(self.PCACB, value)
         self.CBSetter(self.LDACB, value)
-        #CBSetter(CSPCB, value)
+        self.CBSetter(self.NoneCB, value)
     
     def ClassifiersCBSetter(self, value):
         self.CBSetter(self.fisherCB, value)

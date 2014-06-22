@@ -254,7 +254,7 @@ class readDataThread(QtCore.QThread):
 		self.knnResultInput["TrialData"] = trial
 		self.knnResult = self.octave.call('KNN_Generic_Detect.m',self.knnResultInput,  self.dataFile, self.removeNoiseFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag, self.preProjectedFlag)
 		if (self.verbose):
-		    feedback = "trial " + str(i) + ": PCA " + str(self.knnResult.PCAresult) + ", LDA " + str(self.knnResult.LDAresult)
+		    feedback = "trial " + str(i) + ": PCA " + str(self.knnResult.PCAresult) + ", None " + str(self.knnResult.Noneresult) + ", LDA " + str(self.knnResult.LDAresult)
 		    print feedback
 
 		if (self.PCAFlag == 1):
@@ -262,12 +262,16 @@ class readDataThread(QtCore.QThread):
 		    
 		elif (self.LDAFlag == 1):
 		    self.classifierResult.append(self.knnResult.LDAResultClass)
+		elif (self.NoneFlag == 1):
+		    self.classifierResult.append(self.knnResult.NoneResultClass)
 		
 		if((self.sameFile==1) and (self.LDAFlag ==1)):
 		    self.realClasses = self.knnTrainOut.ClassesTypesSameFile
 		else:
 		    self.realClasses = self.knnTrainOut.ClassesTypes
-		
+
+	    if (self.sameFile == False):
+		self.realClasses = self.octave.call('getRealClass.m', self.detectFile)
 
 	elif (cf == "Fisher"):
 	    trials = self.captureTrialData()
@@ -394,7 +398,8 @@ class readDataThread(QtCore.QThread):
 	  
 	    if (self.realClasses[i] == -1):
 		self.realClasses[i] = 2
-
+	    print self.realClasses
+	    print self.classifierResult
 	    if (self.classifierResult[i] == int(self.realClasses[i])):
 		
 		self.comparisonResults.append(True)

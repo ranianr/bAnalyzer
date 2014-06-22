@@ -1,4 +1,4 @@
-function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,CSPFlag, preProjectedFlag)
+function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag, preProjectedFlag)
    
  %{
  [DetectOut Debug] = KNN_Generic_Detect(1, 1,0,0,0,0,0,0,1,0,0);
@@ -13,15 +13,18 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
 
     KPCA = TrainOut.KPCA;
     KLDA = TrainOut.KLDA;
+    K = TrainOut.K;
 
     VPCA = TrainOut.VPCA ;
     VLDA = TrainOut.VLDA ;
 	
     ZtrainPCA  = TrainOut.ZtrainPCA;
     ZtrainLDA  = TrainOut.ZtrainLDA;
+    Ztrain  = TrainOut.Z;
     
     PC_NumPCA  = TrainOut.PC_NumPCA;
     PC_NumLDA  = TrainOut.PC_NumLDA;
+    PC_Num  = TrainOut.PC_Num;
 
     ClassLabels = TrainOut.ClassLabels;%class labels
 
@@ -57,9 +60,10 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
     %default return
     TargetsLDA="Unknown";
     TargetsPCA="Unknown";
-
+    Targets="Unknown";
     ClassPCA = 0;
     ClassLDA = 0;
+    Class=0;
 
     % apply LDA method to the features
     if(LDAFLag == 1)
@@ -158,13 +162,62 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, f1FLag,f
             end
         end
     endif
+    if(NoneFlag == 1)
+        if (preProjectedFlag == 1)
+            Z =TrialData;
+            Z = Z(:,1:PC_Num);
+        else
+            Z = [Mu Beta];
+        endif
+  
+        Ztrain = Ztrain(:,1:PC_Num);
+        
+% appy the classifier here
+        if(size(Z)(2) == 1)
+            Ztrain = [Ztrain, Ztrain];
+            Z = [Z, Z];
+        end 
+        
+        pointDistance = distancePoints(Z, Ztrain); 
+        distance = pointDistance';
+        [dist index1] = sort(distance);
+        nearestK = dist(2:K+1);
+        nearestPointsIndex = index1(2:K+1);
+        Ktargets = ClassLabels(nearestPointsIndex);
+        K
+        vote = sum(Ktargets)
+        
+        Yp = 0;%add else error = error +1
+        
+        if(vote > 0)
+            Targets =  'RIGHT';
+            Class = 1;
+
+        elseif(vote < 0)
+            Targets = 'LEFT';
+            Class = 2;
+            
+        else 
+            single_target = ClassLabels( distance == min(distance(2:KLDA+1)));
+
+            if(single_target > 0)
+                Targets =  'RIGHT';
+                Class = 1;
+            else
+                Targets = 'LEFT';
+                Class = 2;
+            end
+        end
+    endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
     DetectOut.Z = Z;
     %DetectOut
     DetectOut.LDAresult = TargetsLDA;
+    DetectOut.Noneresult = Targets
     DetectOut.PCAresult = TargetsPCA;
 
     DetectOut.LDAResultClass = ClassLDA;
+    DetectOut.NoneResultClass = Class;
     DetectOut.PCAResultClass = ClassPCA;
 end
