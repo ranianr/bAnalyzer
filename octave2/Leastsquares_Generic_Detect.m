@@ -19,7 +19,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     WoPCA  = TrainOut.Wopca;
     WoLDA  = TrainOut.Wolda;
     
-    PC_NumPCA  = TrainOut.PC_NumPCA
+    PC_NumPCA  = TrainOut.PC_NumPCA;
     PC_NumLDA  = TrainOut.PC_NumLDA;
     
     V       = TrainOut.V;
@@ -81,6 +81,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
             Z = [Mu Beta]*real(VLDA);
         endif
         Z = Z(:,1:PC_NumLDA);
+        
         y = TrainOut.Wlda'*Z';
         y += WoLDA;
         if(y > 0) 
@@ -99,8 +100,9 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
             Z = VPCA'*[Mu Beta]';
         endif
        
-        Z = Z(1:PC_NumPCA,:);
-       
+        Z = Z(1:PC_NumPCA,:)
+        
+        
 	y = TrainOut.Wpca'*Z;
 	y += WoPCA;
         if(y > 0) 
@@ -114,7 +116,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     
     if(NoneFlag == 1)
         if (preProjectedFlag == 1)
-            Z =TrialData';
+            Z =TrialData;
         else
             Z = [Mu Beta];
         endif

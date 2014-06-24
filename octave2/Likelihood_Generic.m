@@ -98,6 +98,7 @@ endD = end of trial signal
 	
         elseif(PCAFlag == 1)
 		%PCA
+                
 		pureData = [Mu, Beta];
 		[VPCA, ZPCA]= pcaProject(pureData);
 		ZPCA=ZPCA';
@@ -164,6 +165,7 @@ endD = end of trial signal
 
         TrainOut.PCAData = ZPCA;
         TrainOut.LDAData = ZLDA;
+        TrainOut.NoneData = Z;
         TrainOut.datalength = datalength;
 
         TrainOut.ClassesTypes = HDR.Classlabel;

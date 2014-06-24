@@ -96,9 +96,12 @@ endD = end of trial signal
 		%PCA
 		pureData = [Mu, Beta];
 		[VPCA, ZPCA]= pcaProject(pureData);
-		accuracy = leastSquaresResults(ZPCA', HDR.Classlabel);
-		[AccSelected, AccIndex] = max(accuracy);
-		PC_NumPCA = min(AccIndex);
+                ZPCA(1,2)
+                ZPCA(1,1)
+		accuracy = leastSquaresResults(ZPCA', HDR.Classlabel)
+		[AccSelected, AccIndex] = max(accuracy)
+		PC_NumPCA = min(AccIndex)
+                
 		Wpca  = Least_Classifier_Parameters(PC_NumPCA, ZPCA', HDR.Classlabel);
                 % make zpca consistent with zlda!
                 ZPCA = ZPCA';
@@ -137,12 +140,14 @@ endD = end of trial signal
 	TrainOut.Wopca = Wpca(end);
 
 	TrainOut.PC_NumPCA = PC_NumPCA;
+        
 	TrainOut.PC_NumLDA = PC_NumLDA;
 	
 	TrainOut.HDR = HDR;
 
         TrainOut.PCAData = ZPCA;
         TrainOut.LDAData = ZLDA;
+        TrainOut.NoneData = Z;
         TrainOut.datalength = datalength;
 
         TrainOut.ClassesTypes = HDR.Classlabel;

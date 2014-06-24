@@ -6,8 +6,11 @@ OctaveFolder = MainFolder + "/octave2"
 
 #Debugging Configuration
 
-TrainingFile = "/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/TrainingData/Session_2014_05_06_84005/[T][2014-05-10 19-25-38] Osama Mohamed.csv"
-DetectionFile ="/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/DetectionData/[D][2014-05-10 19-39-12] Osama Mohamed.csv"
+TrainingFile = "/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/TrainingData/Session_2014_04_17_82423/[T][2014-04-17 23-06-15] Ahmed Hemaly.csv"
+DetectionFile ="/home/rho/Documents/GP/[2014-03-23] Braingizer/Data//DetectionData/[D][2014-04-17 23-13-28] Ahmed Hemaly.csv"
+
+#TrainingFile = "/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/TrainingData/Session_2014_05_06_84005/[T][2014-05-10 19-25-38] Osama Mohamed.csv"
+#DetectionFile ="/home/rho/Documents/GP/[2014-03-23] Braingizer/Data//DetectionData/[D][2014-05-10 19-34-11] Osama Mohamed.csv"
 
 #TrainingFile = MainFolder + "/Osama Mohamed.csv"
 #DetectionFile = MainFolder + "/Osama Mohamed.csv"

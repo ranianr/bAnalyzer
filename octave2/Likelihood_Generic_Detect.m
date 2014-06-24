@@ -164,6 +164,7 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     % Debug
     DetectOut.vote = P_comparison;
     DetectOut.Z = Z;
+    
 
     %DetectOut
     DetectOut.LDAresult = TargetsLDA;

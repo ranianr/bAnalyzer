@@ -144,6 +144,7 @@ class readDataThread(QtCore.QThread):
 	    self.knnTrainOut = self.octave.call('KNN_Generic.m', self.dataFile, self.removeNoiseFlag, self.idealFlag, self.butterFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.knnTrainOut.LDAData
 	    self.PCAData = self.knnTrainOut.PCAData
+	    self.NoneData = self.knnTrainOut.NoneData
 	    self.dataLength = self.knnTrainOut.datalength
 	    print("KNN training done!")
 	    
@@ -155,6 +156,7 @@ class readDataThread(QtCore.QThread):
 	    self.fisherTrainOut = self.octave.call('Fisher_Generic.m', self.dataFile, self.removeNoiseFlag,self.idealFlag, self.butterFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.fisherTrainOut.LDAData
 	    self.PCAData = self.fisherTrainOut.PCAData
+	    self.NoneData = self.fisherTrainOut.NoneData
 	    self.dataLength = self.fisherTrainOut.datalength
 	    print("Fisher training done!")
     
@@ -162,6 +164,7 @@ class readDataThread(QtCore.QThread):
 	    self.likelihoodTrainOut = self.octave.call('Likelihood_Generic.m', self.dataFile, self.removeNoiseFlag,self.idealFlag, self.butterFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.likelihoodTrainOut.LDAData
 	    self.PCAData = self.likelihoodTrainOut.PCAData
+	    self.NoneData = self.likelihoodTrainOut.NoneData
 	    self.dataLength = self.likelihoodTrainOut.datalength
 	    print("Likelihood training done!")
     
@@ -169,6 +172,7 @@ class readDataThread(QtCore.QThread):
 	    self.leastSquaresTrainOut = self.octave.call('Leastsquares_Generic.m', self.dataFile, self.removeNoiseFlag,self.idealFlag, self.butterFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.leastSquaresTrainOut.LDAData
 	    self.PCAData = self.leastSquaresTrainOut.PCAData
+	    self.NoneData = self.leastSquaresTrainOut.NoneData
 	    self.dataLength = self.leastSquaresTrainOut.datalength
 	    print("Least Square training done!")
 	
@@ -439,6 +443,10 @@ class readDataThread(QtCore.QThread):
 
 		#notice that giving an upper index higher than the available no of elements, would clamp to the the number of elements
 		trials["trials"] = self.PCAData[index.start:index.end]
+		trials["index"] = index
+	    
+	    elif(self.NoneFlag == 1):
+		trials["trials"] = self.NoneData[index.start:index.end]
 		trials["index"] = index
 
 	    return trials
