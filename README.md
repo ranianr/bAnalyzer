@@ -42,6 +42,7 @@ title = 'Spreadsheet name'
 url   = 'Spreadsheet URL'
 sheet1_title ='working sheet number/name'
 
+
 Testing: 
 =========
 Run bAnalyzer by ./bAnalyzer.sh
