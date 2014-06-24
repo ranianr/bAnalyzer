@@ -31,6 +31,16 @@ this tools allows the user to test classifers on the same training file or new d
 Project Setup: 
 ==============
 install all dependancies by running ./Install.sh
+create a file named "GooglespreadSheetConfig" and place it in "/Configurations" folder the file should look like this: 
+
+#account
+email    = 'YourEmail'
+password = 'YourPassword'
+
+#Spreadsheet details
+title = 'Spreadsheet name'
+url   = 'Spreadsheet URL'
+sheet1_title ='working sheet number/name'
 
 Testing: 
 =========
