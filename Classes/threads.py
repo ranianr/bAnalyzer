@@ -244,7 +244,7 @@ class readDataThread(QtCore.QThread):
 	#we may be later interested in providing a feedback for the signal start and end too! but for now, that's definitely not!
 	detectionDescription = "Train = " + self.path + "\r\nNoise Removal = " + str(self.removeNoiseFlag)+ "\r\nSame File" + str(self.sameFile) + "\r\nDetect" + convDetectPath + \
 	"\r\nExtraction Flags = " + str(self.f1FLag) + str(self.f2FLag) + str(self.f3FLag) + str(self.f4FLag) + str(self.f5FLag) + str(self.f6FLag) + \
-	"\r\nPreprocessing only method 1 for now\r\nEnhancement flags " + str(self.LDAFlag) + str(self.PCAFlag) + str(self.CSP_LDAFlag) + str(self.NoneFlag) + "\r\nClassifier " + cf
+	"\r\nPreprocessing Flags = " + str(self.butterFlag) + str(self.idealFlag) + "\r\nEnhancement flags " + str(self.LDAFlag) + str(self.PCAFlag) + str(self.CSP_LDAFlag) + str(self.NoneFlag) + "\r\nClassifier " + cf
 
 	indexWindow = 0
 
