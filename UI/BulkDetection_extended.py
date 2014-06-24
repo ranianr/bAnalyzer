@@ -229,12 +229,14 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 	    return featDict
 	
 	elif(self.CBGetter(self.idealCB)):
+	    featDict = {}
 	    if(self.CBGetter(self.meanCB)):
 		featDict["mean"] = "mean"
-	    if(self.CBGetter(self.lMhCB)):
+	    if(self.CBGetter(self.lMhBCB)):
 		featDict["min"] = "min"
 	    if(self.CBGetter(self.lMhBmCB)):
 		featDict["max"] = "max"
+	    return featDict
 
     def DictOfPreprocessingCB(self):
         preprocDict = {}
