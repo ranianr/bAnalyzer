@@ -29,6 +29,7 @@ UI/Features/gui_navigate.py
 
 	## recorded data ##
 Data/
+Debug/
 
 	## local patches ##
 /*.patch

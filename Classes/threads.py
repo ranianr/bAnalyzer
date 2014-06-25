@@ -8,6 +8,7 @@ import gspread
 import GooglespreadSheetConfig as GSC
 
 from AccuracyStats import AccuracyUtilities as AU
+from ThreadsDebug import ThreadsDebugUtilities as TDU
 
 #check http://stackoverflow.com/questions/2827623/python-create-object-and-add-attributes-to-it
 class Object(object):
@@ -246,6 +247,8 @@ class readDataThread(QtCore.QThread):
 	"\r\nExtraction Flags = " + str(self.f1FLag) + str(self.f2FLag) + str(self.f3FLag) + str(self.f4FLag) + str(self.f5FLag) + str(self.f6FLag) + \
 	"\r\nPreprocessing Flags = " + str(self.butterFlag) + str(self.idealFlag) + "\r\nEnhancement flags " + str(self.LDAFlag) + str(self.PCAFlag) + str(self.CSP_LDAFlag) + str(self.NoneFlag) + "\r\nClassifier " + cf
 
+	briefDetectionDescription = str(self.removeNoiseFlag) + str(self.sameFile) + str(self.f1FLag) + str(self.f2FLag) + str(self.f3FLag) + str(self.f4FLag) + str(self.f5FLag) + str(self.f6FLag) + str(self.butterFlag) + str(self.idealFlag) + str(self.LDAFlag) + str(self.PCAFlag) + str(self.CSP_LDAFlag) + str(self.NoneFlag) + cf
+
 	indexWindow = 0
 
 	if (cf == "KNN"):
@@ -283,6 +286,8 @@ class readDataThread(QtCore.QThread):
 	    if (self.sameFile == False):
 		self.realClasses = self.octave.call('getRealClass.m', self.detectFile)
 
+	    TDU.printFileTrainOut(self.knnTrainOut, briefDetectionDescription, os.path.basename(self.detectFile))
+
 	elif (cf == "Fisher"):
 	    trials = self.captureTrialData()
 	    index = trials["index"]
@@ -312,6 +317,8 @@ class readDataThread(QtCore.QThread):
 		    self.classifierResult.append(self.fisherResult.LDAResultClass)
 
 		self.realClasses = self.fisherTrainOut.ClassesTypes
+
+	    TDU.printFileTrainOut(self.fisherTrainOut, briefDetectionDescription, os.path.basename(self.detectFile))
 
 	elif (cf == "Likelihood"):
 	    trials = self.captureTrialData()
@@ -344,6 +351,7 @@ class readDataThread(QtCore.QThread):
 		elif (self.NoneFlag == 1):
 		    self.classifierResult.append(self.likelihoodResult.NoneResultClass)
 		
+		#TODO: check consistency of using self.sameFile
 		if((self.sameFile==1) and ((self.LDAFlag ==1) or (self.PCAFlag ==1) )):
 		    self.realClasses = self.likelihoodTrainOut.ClassesTypesSameFile
 		else:
@@ -351,7 +359,8 @@ class readDataThread(QtCore.QThread):
 	   
 	    if (self.sameFile == False):
 		self.realClasses = self.octave.call('getRealClass.m', self.detectFile)
-	   
+
+	    TDU.printFileTrainOut(self.likelihoodTrainOut, briefDetectionDescription, os.path.basename(self.detectFile))
 
 	elif (cf == "Least Squares"):
 	    trials = self.captureTrialData()
@@ -385,7 +394,8 @@ class readDataThread(QtCore.QThread):
 		self.realClasses = self.leastSquaresTrainOut.ClassesTypes
 	    elif (self.sameFile == False):
 		self.realClasses = self.octave.call('getRealClass.m', self.detectFile)#function tgeb HDR.classlabel ll detection file elly m3ana kolo 
-		
+
+	    TDU.printFileTrainOut(self.leastSquaresTrainOut, briefDetectionDescription, os.path.basename(self.detectFile))
 
 	self.trialStatues(indexWindow)
 	if (self.verbose):
