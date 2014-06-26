@@ -1,12 +1,15 @@
 function ClassifierTest()
-    addpath([path 'RawDataFunctions']);
+   
     warning('off')
     %filename = "/home/raghda/Documents/GP/4Dclassifier/DetectorGUI/TrainingData/[2014-01-15 16-13-49] Islam Maher.csv";
-    filename = "/home/raghda/Documents/GP/[2014-03-23]Braingizer/Data/TrainingData/Session_2014_05_10_71828/[T][2014-05-10 20-01-56] Osama Mohamed.csv";
-    TrainOut =  LIKELIHOOD_nClasses_Train(filename, "");
+    
+	filename ="/home/rho/Documents/GP/bAnalyzer/master/Data/Training/Session_2014_06_23_61827/[T][2014-06-23 17-28-14] Walid Ezzat.csv";
+    TrainOut =  LIKELIHOOD_nClass_Train(filename, "");
     DetectIn.("TrainOut") = TrainOut;
     
-    [Data, HDR] = getRawData(filename);
+	filename = "/home/rho/Documents/GP/bAnalyzer/master/Data/Detection/[D][2014-06-23 17-34-09] Walid Ezzat.csv";
+    
+[Data, HDR] = getRawData(filename);
     
     %loop over data
     
@@ -14,7 +17,7 @@ function ClassifierTest()
     %for h = 1:28
         accuracy = 0;
 %        DetectIn.("TrainOut").PC_Num = 3;
-	result = [];
+		result = [];
         
         for n = 1:length(HDR.TRIG)
             TRIG = HDR.TRIG(n);

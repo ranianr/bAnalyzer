@@ -28,6 +28,10 @@ function [DetectOut Debug] = LIKELIHOOD_nClass_Detect(DetectIn, path="Classifier
             mu1 = ClassStruct.mu1;
             mu2 = ClassStruct.mu2;
             N1 = PI;
+	    size(Z)
+            size(mu1)
+	    size(segma)
+	    bug
             P_XgivenC1_expTerm1 = -0.5*(Z - mu1')*(inv(segma))*(Z - mu1')' ;
             P_XgivenC2_expTerm2 = -0.5*(Z - mu2')*(inv(segma))*(Z - mu2')' ;
             N2 = 1-PI;

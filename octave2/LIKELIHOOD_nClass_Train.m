@@ -11,7 +11,7 @@ function [TrainOut ] = LIKELIHOOD_nClass_Train(directory, path="Classifiers/")
         nClass = length(Classes);
         classes_no =[];
         for g = 1:nClass
-            classes_no = [ classes_no , getClassNumber(HDR,Classes(g)) ]
+            classes_no = [ classes_no , getClassNumber(HDR,Classes(g)) ];
         end
     
     % do pre-processing here please 
@@ -31,10 +31,10 @@ function [TrainOut ] = LIKELIHOOD_nClass_Train(directory, path="Classifiers/")
             C2 = Zo((HDR.Classlabel ~= g),:);
             Z = [C1; C2];
             t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
-            accuracy = likelihoodResults(C1, C2, t)
-            [AccSelected, AccIndex] = max(accuracy)
+            accuracy = likelihoodResults(C1, C2, t);
+            [AccSelected, AccIndex] = max(accuracy);
             PC_Num =[PC_Num; min(AccIndex)];
-            [PI segma mu1 mu2] = Likeli_Classifier_Parameters(PC_Num, Z, t);
+            [PI segma mu1 mu2] = Likeli_Classifier_Parameters(PC_Num(g), Z, t);
             S.PI = PI;
             S.segma = segma;
             S.mu1 = mu1;

@@ -136,9 +136,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
         endif
         Z = Z(:,1:PC_Num);
 	y=zeros(1,nClass);
-        for ClassNo = 1:nClass
-            size(W)
-            size(Z)
+        for ClassNo = 1:nClass    
             y(ClassNo) = W(ClassNo,1:PC_Num)*Z' + Wo(ClassNo);
         end
     	% getting the class label here

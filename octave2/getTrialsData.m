@@ -5,12 +5,12 @@ function trialsData = getTrialsData(directory, startTime=0, endTime=4, type = '1
     % type = 0 -> old files
     % type = 1 -> new files
 
-    startTime = int32(startTime)
-    endTime = int32(endTime)
+    startTime = int32(startTime);
+    endTime = int32(endTime);
 
     [Data, HDR] = getRawData(directory);
     
-    HDR.TRIG = HDR.TRIG+1
+    HDR.TRIG = HDR.TRIG+1;
     fs          = HDR.SampleRate;
     TrialNum    = length(HDR.TRIG);
     ChannelsNo  = size(Data)(2);
@@ -24,7 +24,8 @@ function trialsData = getTrialsData(directory, startTime=0, endTime=4, type = '1
         Dend    = HDR.TRIG(k) + endTime*fs-1;
 
         if(Dend > length(Data))
-            trialsData(:,:,k)   = Data(Dstart:end,:)';
+             lastTrial = Data(Dstart:end,:)';
+             trialsData(:,1:size(lastTrial)(2),k) = lastTrial ;
         else
             trialsData(:,:,k)   = Data(Dstart:Dend,:)';
            

@@ -30,30 +30,48 @@ endD = end of trial signal
         %warnings('off');
 	% Get Raw Data from the file 
 	[data, HDR] = getRawData(directory);
-        
+         HDR.TRIG = HDR.TRIG +1;
 	% Intial values
-	classes_no = [ getClassNumber(HDR,'RIGHT')  getClassNumber(HDR,'LEFT') ];
-        
+	Classes = HDR.Classnames;
+        nClass = length(Classes);
+        classes_no =[];
+        for g = 1:nClass
+            classes_no = [ classes_no , getClassNumber(HDR,Classes(g)) ]
+        end
 	% do pre-processing here please 
 	if(noiseFlag == 1)
 		noise = mean(data')';
 		data = bsxfun(@minus, data, noise);
 	endif
 	
-	% Get features (mu & beta) according to the selected method
-	if(f1FLag == 1)
-		[Mu,Beta] =  GetMuBeta(startD, endD, data, HDR);
-	elseif (f2FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature(startD, endD, data, HDR);
-	elseif (f3FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature2(startD, endD, data, HDR);
-	elseif (f4FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature3(startD, endD, data, HDR);
-	elseif (f5FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature4(startD, endD, data, HDR);
-	elseif (f6FLag == 1)
-		[Mu,Beta] =  GetMuBeta_more_feature5(startD, endD, data, HDR);
-	endif
+	if(idealFlag == 1)
+            if(f1FLag == 1)
+                
+                [Mu,Beta] = idealFilter_Train(data, HDR,startD, endD);
+                
+            elseif(f2FLag == 1)
+                [Mu,temp] = idealFilter_Train(data, HDR,startD, endD, @min);
+                [temp,Beta] = idealFilter_Train(data, HDR,startD, endD, @max);
+            %TODO: support F3 to F6 flags
+            endif
+        endif
+        
+        if(butterFlag == 1)
+            if(f1FLag == 1)
+                    x = "before filter"
+                    [Mu,Beta] =  GetMuBeta(startD, endD, data, HDR);
+            elseif (f2FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature(startD, endD, data, HDR);
+            elseif (f3FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature2(startD, endD, data, HDR);
+            elseif (f4FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature3(startD, endD, data, HDR);
+            elseif (f5FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature4(startD, endD, data, HDR);
+            elseif (f6FLag == 1)
+                    [Mu,Beta] =  GetMuBeta_more_feature5(startD, endD, data, HDR);
+            endif
+        endif
 
 	% apply LDA or PCA or CSP
 	Wlda=0;

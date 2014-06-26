@@ -3,7 +3,7 @@ function ClassifierTestHm()
 warning("off")
     filename = "/home/rho/Documents/GP/bAnalyzer/master/Data/Training/Session_2014_06_23_61827/[T][2014-06-23 17-28-14] Walid Ezzat.csv";
 
-    [TrainOut] = LEASTSQUARES_nClass_Train(filename, '');
+    [TrainOut] = LIKELIHOOD_nClass_Train(filename, '');
     DetectIn.('TrainOut') = TrainOut;
 
     filename = "/home/rho/Documents/GP/bAnalyzer/master/Data/Detection/[D][2014-06-23 17-34-09] Walid Ezzat.csv";
@@ -19,7 +19,7 @@ warning("off")
             Dend =  HDR.TRIG(k)+fs*4-1;
             DetectIn.('TrialData') =  Data(Dstart : Dend ,:)' ;
             
-            [DetectOut Debug] = LEASTSQUARES_nClass_Detect(DetectIn,'');
+            [DetectOut Debug] = LIKELIHOOD_nClass_Detect(DetectIn,'');
             
             output=getClassNumber(HDR, DetectOut);
             
