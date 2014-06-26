@@ -12,8 +12,14 @@ function [mu,Beta] = idealFilter_Train(data,HDR,startTime = 0,endTime = 4,operat
     for k =1:length(HDR.TRIG)
         Dstart  = HDR.TRIG(k) + startTime*fs;
         Dend    = HDR.TRIG(k) + endTime*fs-1;
-        tempData = data(Dstart:Dend,:)';
         
+        
+        
+		if(Dend > length(data))
+			tempData = data(Dstart:length(data),:)';
+		else
+			tempData = data(Dstart:Dend,:)';
+		endif 
         [mu(k,:) ,Beta(k,:)] = idealFilter(tempData,operation,fs,Mu_Min,Mu_Max,Beta_Min,Beta_Max);
         
         end

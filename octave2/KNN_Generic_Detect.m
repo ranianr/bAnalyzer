@@ -197,7 +197,7 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, idealFla
         nearestK = dist(2:K+1);
         nearestPointsIndex = index1(2:K+1);
         Ktargets = ClassLabels(nearestPointsIndex);
-        K
+        
         vote = sum(Ktargets)
         
         Yp = 0;%add else error = error +1

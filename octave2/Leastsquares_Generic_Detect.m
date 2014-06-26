@@ -9,7 +9,15 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     % Get inputs from python
     TrialData = DetectIn.("TrialData"); %data to be sent from python
     TrainOut = DetectIn.("TrainOut"); %
-    size(TrialData)
+    
+    [data, HDR] = getRawData(directory);
+    Classes = HDR.Classnames;
+    nClass = length(Classes);
+    classes_no =[];
+    for g = 1:nClass
+        classes_no = [ classes_no , getClassNumber(HDR,Classes(g)) ];
+    end
+    
     VPCA = TrainOut.VPCA ;
     VLDA = TrainOut.VLDA ;
 	
@@ -22,10 +30,12 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
     PC_NumPCA  = TrainOut.PC_NumPCA;
     PC_NumLDA  = TrainOut.PC_NumLDA;
     
-    V       = TrainOut.V;
-    W       = TrainOut.W;
-    Wo      = TrainOut.Wo;
-    PC_Num  = TrainOut.PC_Num;
+    V           = TrainOut.V;
+    W           = TrainOut.W;
+    Wo          = TrainOut.Wo;
+    PC_Num      = TrainOut.PC_Num;
+    nClass      = TrainOut.nClass;
+    Classnames  = TrainOut.Classnames;
 
     if (preProjectedFlag == 0)
 
@@ -33,7 +43,7 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
         if(noiseFlag == 1)
             noise = mean(TrialData);
             TrialData = bsxfun(@minus, TrialData, noise);
-            
+            size(TrialData)
         endif
         
         if(idealFlag == 1)
@@ -81,15 +91,18 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
             Z = [Mu Beta]*real(VLDA);
         endif
         Z = Z(:,1:PC_NumLDA);
+        y=zeros(1,nClass);
+        for ClassNo = 1:nClass
+            y(ClassNo) = WLDA(ClassNo,1:PC_NumLDA)*Z' + WoLDA(ClassNo);
+        end
         
-        y = TrainOut.Wlda'*Z';
-        y += WoLDA;
-        if(y > 0) 
-            TargetsLDA = "RIGHT"
-            ClassLDA = 1;
-        elseif(y < 0)
-            TargetsLDA = "LEFT"
-            ClassLDA = 2;
+    	% getting the class label here
+        [maxYvalue maxPositiveClass] = max(y);
+	TargetsLDA = Classnames(maxPositiveClass);
+        for i=1:size(classes_no)(2)
+            if(ismember(TargetsLDA{1,1}, Classes{i,1}))
+                ClassLDA = i
+            endif
         end
     endif
     
@@ -99,19 +112,20 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
         else
             Z = VPCA'*[Mu Beta]';
         endif
-       
-        Z = Z(1:PC_NumPCA,:)
+        Z = Z(1:PC_NumPCA,:);
+	y=zeros(1,nClass);
+        for ClassNo = 1:nClass
+            y(ClassNo) = WPCA(ClassNo,1:PC_NumPCA)*Z + WoPCA(ClassNo);
+        end
         
-        
-	y = TrainOut.Wpca'*Z;
-	y += WoPCA;
-        if(y > 0) 
-            TargetsPCA = "RIGHT";
-            ClassPCA = 1;
-	elseif(y < 0)
-            TargetsPCA = "LEFT";
-            ClassPCA = 2;
-	end
+    	% getting the class label here
+        [maxYvalue maxPositiveClass] = max(y);
+	TargetsPCA = Classnames(maxPositiveClass);
+        for i=1:size(classes_no)(2)
+            if(ismember(TargetsPCA{1,1}, Classes{i,1}))
+                ClassPCA = i
+            endif
+        end
     endif
     
     if(NoneFlag == 1)
@@ -121,17 +135,19 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
             Z = [Mu Beta];
         endif
         Z = Z(:,1:PC_Num);
-	y = TrainOut.W'*Z';
-	y += Wo;
-    	% getting the class label here 
-	Target = "NONE";
-        if(y > 0) 
-            Target = "RIGHT";
-            ClassNone = 1;
-	elseif(y < 0)
-            Target = "LEFT";
-            ClassNone = 2;
-	end
+	y=zeros(1,nClass);
+        for ClassNo = 1:nClass    
+            y(ClassNo) = W(ClassNo,1:PC_Num)*Z' + Wo(ClassNo);
+        end
+    	% getting the class label here
+        [maxYvalue maxPositiveClass] = max(y);
+	Target = Classnames(maxPositiveClass);
+        for i=1:size(classes_no)(2)
+            if(ismember(Target{1,1}, Classes{i,1}))
+                ClassNone = i
+            endif
+        end
+        
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug

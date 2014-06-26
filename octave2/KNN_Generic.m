@@ -121,8 +121,8 @@ endD = end of trial signal
                 t=HDR.Classlabel;
                 [accuracy k_total] = knnResults(X', HDR.Classlabel);
               
-		[AccSelected, AccIndex] = max(accuracy);
-		PC_Num = min(AccIndex);
+		[AccSelected, AccIndex] = max(accuracy)
+		PC_Num = min(AccIndex)
 		K = k_total(PC_Num);
                 % make zpca consistent with zlda!
                 

@@ -381,10 +381,10 @@ class readDataThread(QtCore.QThread):
 		elif (self.NoneFlag == 1):
 		    self.classifierResult.append(self.leastSquaresResult.NoneResultClass)
 	    
-	    if (self.sameFile == True):
-		self.realClasses = self.leastSquaresTrainOut.ClassesTypes
-	    elif (self.sameFile == False):
-		self.realClasses = self.octave.call('getRealClass.m', self.detectFile)#function tgeb HDR.classlabel ll detection file elly m3ana kolo 
+	if (self.sameFile == True):
+	    self.realClasses = self.leastSquaresTrainOut.ClassesTypes
+	elif (self.sameFile == False):
+	    self.realClasses = self.octave.call('getRealClass.m', self.detectFile)
 		
 
 	self.trialStatues(indexWindow)
@@ -413,8 +413,10 @@ class readDataThread(QtCore.QThread):
 	  
 	    if (self.realClasses[i] == -1):
 		self.realClasses[i] = 2
+	    
 	    #print self.realClasses
 	    #print self.classifierResult
+	    
 	    if (self.classifierResult[i] == int(self.realClasses[i])):
 		
 		self.comparisonResults.append(True)
