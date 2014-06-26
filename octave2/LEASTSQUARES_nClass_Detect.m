@@ -16,7 +16,6 @@ function [DetectOut Debug] = LEASTSQUARES_nClass_Detect(DetectIn, path="Classifi
 	
 	noise = mean(TrialData);
 	TrialData = bsxfun(@minus, TrialData, noise);
-
 	% Get features (mu & beta)
 
 	[Mu,Beta]  = idealFilter(TrialData);

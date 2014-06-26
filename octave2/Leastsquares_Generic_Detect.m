@@ -43,12 +43,12 @@ function [DetectOut Debug] = Leastsquares_Generic_Detect(DetectIn, directory, no
         if(noiseFlag == 1)
             noise = mean(TrialData);
             TrialData = bsxfun(@minus, TrialData, noise);
-            size(TrialData)
         endif
         
         if(idealFlag == 1)
             if(f1FLag == 1)
                 [Mu,Beta] = idealFilter(TrialData);
+                
             elseif(f2FLag == 1)
                 [Mu,temp] = idealFilter(TrialData, @min);
                 [temp,Beta] = idealFilter(TrialData, @max);

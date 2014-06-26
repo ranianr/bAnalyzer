@@ -20,7 +20,7 @@ function [mu,Beta] = idealFilter_Train(data,HDR,startTime = 0,endTime = 4,operat
 		else
 			tempData = data(Dstart:Dend,:)';
 		endif 
-        [mu(k,:) ,Beta(k,:)] = idealFilter(tempData,operation,fs,Mu_Min,Mu_Max,Beta_Min,Beta_Max);
+                [mu(k,:) ,Beta(k,:)] = idealFilter(tempData,operation,fs,Mu_Min,Mu_Max,Beta_Min,Beta_Max);
         
         end
 end

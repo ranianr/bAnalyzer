@@ -131,10 +131,11 @@ endD = end of trial signal
 		X = [Mu Beta];
                 Z = X;
                 V=1;
-                %PC_Num = 2*14;
-                accuracy = leastSquaresResults(Z, HDR.Classlabel);
-		[AccSelected, AccIndex] = max(accuracy);
-		PC_Num =min(AccIndex)
+                PC_Num = 2*14;
+                %accuracy = leastSquaresResults(Z, HDR.Classlabel);
+		%[AccSelected, AccIndex] = max(accuracy);
+		%PC_Num =min(AccIndex)
+                
                 ClassesData = zeros(size(X)(1)/nClass,PC_Num,nClass);
                 W = zeros(nClass,PC_Num+1);
                 

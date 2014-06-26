@@ -12,8 +12,8 @@ DetectionFile = "/home/rho/Documents/GP/bAnalyzer/master/Data/Detection/oldData/
 #TrainingFile = "/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/TrainingData/Session_2014_05_06_84005/[T][2014-05-10 19-25-38] Osama Mohamed.csv"
 #DetectionFile ="/home/rho/Documents/GP/[2014-03-23] Braingizer/Data//DetectionData/[D][2014-05-10 19-34-11] Osama Mohamed.csv"
 
-TrainingFile = MainFolder + "/Data/Training/Session_2014_06_23_55433/[T][2014-06-23 18-13-36] Walid Ezzat.csv"
-DetectionFile = MainFolder + "/Data/Detection/[D][2014-06-23 18-26-39] Walid Ezzat.csv"
+#TrainingFile = MainFolder + "/Data/Training/Session_2014_06_23_61827/[T][2014-06-23 17-28-14] Walid Ezzat.csv"
+#DetectionFile = MainFolder + "/Data/Detection/[D][2014-06-23 17-34-09] Walid Ezzat.csv"
 
 
 

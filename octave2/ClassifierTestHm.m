@@ -1,12 +1,12 @@
 function ClassifierTestHm()    
 #sh3'al m3 el N like - least
 warning("off")
-    filename = "/home/rho/Documents/GP/bAnalyzer/master/Data/Training/OldData/[T][2014-01-15 15-02-52] Mohamed Nour El-Din.csv";
+    filename = "/home/rho/Documents/GP/bAnalyzer/master/Data/Training/Session_2014_06_23_61827/[T][2014-06-23 17-28-14] Walid Ezzat.csv";
 
     [TrainOut] = LEASTSQUARES_nClass_Train(filename, '');
     DetectIn.('TrainOut') = TrainOut;
 
-    filename = "/home/rho/Documents/GP/bAnalyzer/master/Data/Detection/oldData/[D][2014-03-01 16-48-36] Mohamed Nour El-Din.csv";
+    filename = "/home/rho/Documents/GP/bAnalyzer/master/Data/Detection/[D][2014-06-23 17-34-09] Walid Ezzat.csv";
     
     [Data, HDR] = getRawData(filename);
     fs=HDR.SampleRate;
