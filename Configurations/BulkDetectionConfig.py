@@ -1,4 +1,5 @@
 import os
+import AppConfig as AC
 
 #TODO: generalize the compacting to all the AppConfigs
 
@@ -38,3 +39,10 @@ _Ideal = 1<<1
 PreprocessingMethod = _Ideal | _Butter
 PreprocessingAll = True
 
+#Directories
+
+TrainDir = AC.MainFolder + "/Data/Training/Session_2014_05_18_65914/"
+DetectDir = AC.MainFolder + "/Data/Detection/"
+
+#Online database update
+UpdateGDocs = True

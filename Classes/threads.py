@@ -62,7 +62,7 @@ class readDataThread(QtCore.QThread):
 	self.verbose = verbose
 	
 
-    def run(self): 
+    def run(self):
 	#"../Osama Mohamed.csv",1,1,0,0,0,0,0,0,1,0,0,0,4
 	
 	#TrainOut = KNN_Generic(directory, noiseFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)

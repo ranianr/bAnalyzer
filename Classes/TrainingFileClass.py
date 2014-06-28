@@ -18,6 +18,20 @@ class TrainingFileClass(object):
                 return words[1].strip()
 
     @staticmethod
+    def getSession(filepath):
+        logfile = open(filepath, "r").readlines()
+        
+        for line in logfile:
+            words = line.split(':')
+            if(words[0] == "Source"):
+                # Detection session
+                parts = words[1].strip().split('/')
+                return parts[0]
+            if(words[0] == "Session"):
+                # Training session
+                return words[1].strip()
+
+    @staticmethod
     def getClasses(filepath):
         logfile = open(filepath, "r").readlines()
         
