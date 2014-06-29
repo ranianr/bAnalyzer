@@ -1,4 +1,4 @@
-function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag, preProjectedFlag)
+function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn,likelihoodClass, directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag, preProjectedFlag)
    
  %{
  [DetectOut Debug] =Likelihood_Generic_Detect(1, 1,0,0,0,0,0,1,0,0,0);
@@ -9,37 +9,28 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
     % Get inputs from python
     TrialData = DetectIn.("TrialData"); %data to be sent from python
     TrainOut = DetectIn.("TrainOut"); %
-
-    VPCA = TrainOut.VPCA ;
-    VLDA = TrainOut.VLDA ;
-    V = TrainOut.V ;
-    
-    WPCA  = TrainOut.Wpca;
-    WLDA  = TrainOut.Wlda;
-    
-    WoPCA  = TrainOut.Wopca;
-    WoLDA  = TrainOut.Wolda;
-    
-	PC_NumPCA  = TrainOut.PC_NumPCA;
-	PC_NumLDA  = TrainOut.PC_NumLDA;
-        PC_Num  = TrainOut.PC_Num;
  
-	mu1PCA = TrainOut.mu1PCA;
-	mu2PCA = TrainOut.mu2PCA;
-	mu1LDA = TrainOut.mu1LDA;
-	mu2LDA = TrainOut.mu2LDA;
-        mu1 = TrainOut.mu1;
-	mu2 = TrainOut.mu2;
-
-	PIPCA = TrainOut.PIPCA;
-	PILDA = TrainOut.PILDA;
-        PI = TrainOut.PI;
-
-	segmaPCA = TrainOut.segmaPCA;
-	segmaLDA = TrainOut.segmaLDA;
-        segma = TrainOut.segma;
-
-    %TODO according to the preprojectionflag, validate TrialData/VLDA/VPCA matrices
+    [data, HDR] = getRawData(directory);
+    Classes = HDR.Classnames;
+    nClass = length(Classes);
+    classes_no =[];
+    for g = 1:nClass
+        classes_no = [ classes_no , getClassNumber(HDR,Classes(g)) ];
+    end
+    %------
+    VLDA           = TrainOut.VLDA;
+    PC_NumLDA      = TrainOut.PC_NumLDA;
+    %------
+    VPCA           = TrainOut.VPCA;
+    PC_NumPCA      = TrainOut.PC_NumPCA;
+    %------
+    V           = TrainOut.V;
+    PC_Num      = TrainOut.PC_Num;
+    %------
+    nClass      = TrainOut.nClass;
+    Classnames  = TrainOut.Classnames;
+    
+%TODO according to the preprojectionflag, validate TrialData/VLDA/VPCA matrices
     if (preProjectedFlag == 0)
 
         % do pre-processing here please
@@ -92,28 +83,69 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
             Z =TrialData;
             Z = Z(:,1:PC_NumLDA);  
         else
-            Z = [Mu Beta]*real(VLDA(:,1:PC_NumLDA));
+            Z = [Mu Beta];
         endif
-        %Z = Z(:,1:PC_NumLDA);       
-        N1 = PILDA;
-        N2 = 1-PILDA;
-        P_comparison = [];
-        
-        for s = 1:size(Z)(1)
-            P_XgivenC1_expTerm1 = -0.5*(Z(s,:)-mu1LDA')*(inv(segmaLDA))*(Z(s,:)-mu1LDA')' ;
-            P_XgivenC2_expTerm2 = -0.5*(Z(s,:)-mu2LDA')*(inv(segmaLDA))*(Z(s,:)-mu2LDA')' ;
+        features = Z ; 
+          Class_Ratio = [];
+	%Z = features(:,1:PC_Num);
+         for ClassNo = 1:nClass    
+            Z = features*real(VLDA(:,1:PC_NumLDA(ClassNo)));
+            if(ClassNo == 1)
+              PI_c1 = TrainOut.PILDA.PI_c1;
+              segma_c1 = TrainOut.SegmaLDA.segma_c1;
+              mu1_c1 = TrainOut.mu1LDA.mu1_c1;
+              mu2_c1 = TrainOut.mu2LDA.mu2_c1;
+              N1 = PI_c1;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c1')*(inv(segma_c1))*(Z - mu1_c1')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c1')*(inv(segma_c1))*(Z - mu2_c1')' ;
+            elseif(ClassNo == 2)
+              PI_c2 = TrainOut.PILDA.PI_c2;
+              segma_c2 = TrainOut.SegmaLDA.segma_c2;
+              mu1_c2 = TrainOut.mu1LDA.mu1_c2;
+              mu2_c2 = TrainOut.mu2LDA.mu2_c2;
+              N1 = PI_c2;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c2')*(inv(segma_c2))*(Z - mu1_c2')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c2')*(inv(segma_c2))*(Z - mu2_c2')' ;
+            elseif(ClassNo == 3)
+              PI_c3 = TrainOut.PILDA.PI_c3;
+              segma_c3 = TrainOut.SegmaLDA.segma_c3;
+              mu1_c3 = TrainOut.mu1LDA.mu1_c3;
+              mu2_c3 = TrainOut.mu2LDA.mu2_c3;
+              N1 = PI_c3;    
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c3')*(inv(segma_c3))*(Z - mu1_c3')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c3')*(inv(segma_c3))*(Z - mu2_c3')' ;
+            elseif(ClassNo == 4)
+              PI_c4 = TrainOut.PILDA.PI_c4;
+              segma_c4 = TrainOut.SegmaLDA.segma_c4;
+              mu1_c4 = TrainOut.mu1LDA.mu1_c4;
+              mu2_c4 = TrainOut.mu2LDA.mu2_c4;
+              N1 = PI_c4;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c4')*(inv(segma_c4))*(Z - mu1_c4')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c4')*(inv(segma_c4))*(Z - mu2_c4')' ;
+            elseif(ClassNo == 5)
+              PI_c5 = TrainOut.PILDA.PI_c5;
+              segma_c5 = TrainOut.SegmaLDA.segma_c5;
+              mu1_c5 = TrainOut.mu1LDA.mu1_c5;
+              mu2_c5 = TrainOut.mu2LDA.mu2_c5;
+              N1 = PI_c5;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c5')*(inv(segma_c5))*(Z - mu1_c5')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c5')*(inv(segma_c5))*(Z - mu2_c5')' ;
+            endif
+            N2 = 1-N1;
             ModifiedClass1_Ratio = log(N1/N2) + (P_XgivenC1_expTerm1 - P_XgivenC2_expTerm2);
             ModifiedClass2_Ratio = log(N2/N1) + (P_XgivenC2_expTerm2 - P_XgivenC1_expTerm1); 
-            P_comparison = [P_comparison; ModifiedClass1_Ratio > ModifiedClass2_Ratio];
-	end
-       
-        if(P_comparison == 1)
-            TargetsLDA = 'RIGHT';
-            ClassLDA = 1;
-        elseif(P_comparison == 0)
-            TargetsLDA = 'LEFT';
-            ClassLDA = 2;
+            Class_Ratio = [Class_Ratio; ModifiedClass1_Ratio];
+         end
+           
+ % getting the class label here
+  	[maxYvalue maxPositiveClass] = max(Class_Ratio);
+	TargetsLDA = Classnames(maxPositiveClass);
+        for i=1:size(classes_no)(2)
+            if(ismember(TargetsLDA{1,1}, Classes{i,1}))
+                ClassLDA = i
+            endif
         end
+
     endif
     if(NoneFlag == 1)
         if (preProjectedFlag == 1)
@@ -122,59 +154,142 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
         else
             Z = [Mu Beta];
         endif
-        Z = Z(:,1:PC_Num);       
-        N1 = PI;
-        N2 = 1-PI;
-        P_comparison = [];
-        
-        for s = 1:size(Z)(1)
-            P_XgivenC1_expTerm1 = -0.5*(Z(s,:)-mu1')*(inv(segma))*(Z(s,:)-mu1')' ;
-            P_XgivenC2_expTerm2 = -0.5*(Z(s,:)-mu2')*(inv(segma))*(Z(s,:)-mu2')' ;
+        features = Z ;
+          Class_Ratio = [];
+	%Z = features(:,1:PC_Num);
+         for ClassNo = 1:nClass
+             
+           Z = features(:,1:PC_Num(ClassNo));
+            x="hiiiiiiii"
+            if(ClassNo == 1)
+              PI_c1 = TrainOut.PI.PI_c1;
+              segma_c1 = TrainOut.Segma.segma_c1;
+              mu1_c1 = TrainOut.mu1.mu1_c1;
+              mu2_c1 = TrainOut.mu2.mu2_c1;
+              N1 = PI_c1;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c1')*(inv(segma_c1))*(Z - mu1_c1')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c1')*(inv(segma_c1))*(Z - mu2_c1')' ;
+            elseif(ClassNo == 2)
+              PI_c2 = TrainOut.PI.PI_c2;
+              segma_c2 = TrainOut.Segma.segma_c2;
+              mu1_c2 = TrainOut.mu1.mu1_c2;
+              mu2_c2 = TrainOut.mu2.mu2_c2;
+              N1 = PI_c2;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c2')*(inv(segma_c2))*(Z - mu1_c2')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c2')*(inv(segma_c2))*(Z - mu2_c2')' ;
+            elseif(ClassNo == 3)
+              PI_c3 = TrainOut.PI.PI_c3;
+              segma_c3 = TrainOut.Segma.segma_c3;
+              mu1_c3 = TrainOut.mu1.mu1_c3;
+              mu2_c3 = TrainOut.mu2.mu2_c3;
+              N1 = PI_c3;    
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c3')*(inv(segma_c3))*(Z - mu1_c3')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c3')*(inv(segma_c3))*(Z - mu2_c3')' ;
+            elseif(ClassNo == 4)
+              PI_c4 = TrainOut.PI.PI_c4;
+              segma_c4 = TrainOut.Segma.segma_c4;
+              mu1_c4 = TrainOut.mu1.mu1_c4;
+              mu2_c4 = TrainOut.mu2.mu2_c4;
+              N1 = PI_c4;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c4')*(inv(segma_c4))*(Z - mu1_c4')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c4')*(inv(segma_c4))*(Z - mu2_c4')' ;
+            elseif(ClassNo == 5)
+              PI_c5 = TrainOut.PI.PI_c5;
+              segma_c5 = TrainOut.Segma.segma_c5;
+              mu1_c5 = TrainOut.mu1.mu1_c5;
+              mu2_c5 = TrainOut.mu2.mu2_c5;
+              N1 = PI_c5;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c5')*(inv(segma_c5))*(Z - mu1_c5')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c5')*(inv(segma_c5))*(Z - mu2_c5')' ;
+            endif
+            N2 = 1-N1;
             ModifiedClass1_Ratio = log(N1/N2) + (P_XgivenC1_expTerm1 - P_XgivenC2_expTerm2);
             ModifiedClass2_Ratio = log(N2/N1) + (P_XgivenC2_expTerm2 - P_XgivenC1_expTerm1); 
-            P_comparison = [P_comparison; ModifiedClass1_Ratio > ModifiedClass2_Ratio];
-	end
-       
-        if(P_comparison == 1)
-            Targets = 'RIGHT';
-            Class = 1;
-        elseif(P_comparison == 0)
-            Targets = 'LEFT';
-            Class = 2;
+            Class_Ratio = [Class_Ratio; ModifiedClass1_Ratio];
+         end
+           
+        % getting the class label here
+  	[maxYvalue maxPositiveClass] = max(Class_Ratio);
+	Targets = Classnames(maxPositiveClass);
+        for i=1:size(classes_no)(2)
+            if(ismember(Targets{1,1}, Classes{i,1}))
+                Class = i
+            endif
         end
+
     endif
     
     if(PCAFlag == 1)
         if (preProjectedFlag == 1)
             Z =TrialData';
         else
-            Z = VPCA'*[Mu Beta]';
+             Z = [Mu Beta];
         endif
-        Z = Z(1:PC_NumPCA,:);
-        Z=Z';
-        N1 = PIPCA;
-        N2 = 1-PIPCA;
-        P_comparison = [];
-        %bug
-        %for s = 1:size(Z)(1)
-            P_XgivenC1_expTerm1 = -0.5*(Z-mu1PCA')*(inv(segmaPCA))*(Z-mu1PCA')' ;
-            P_XgivenC2_expTerm2 = -0.5*(Z-mu2PCA')*(inv(segmaPCA))*(Z-mu2PCA')' ;
+        features = Z ; 
+          Class_Ratio = [];
+	%Z = features(:,1:PC_Num);
+         for ClassNo = 1:nClass    
+            Z = features*real(VPCA(:,1:PC_NumPCA(ClassNo)));
+            x="hiiiiiiiii"
+            if(ClassNo == 1)
+              PI_c1 = TrainOut.PIPCA.PI_c1;
+              segma_c1 = TrainOut.SegmaPCA.segma_c1;
+              mu1_c1 = TrainOut.mu1PCA.mu1_c1;
+              mu2_c1 = TrainOut.mu2PCA.mu2_c1;
+              N1 = PI_c1;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c1')*(inv(segma_c1))*(Z - mu1_c1')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c1')*(inv(segma_c1))*(Z - mu2_c1')' ;
+            elseif(ClassNo == 2)
+              PI_c2 = TrainOut.PIPCA.PI_c2;
+              segma_c2 = TrainOut.SegmaPCA.segma_c2;
+              mu1_c2 = TrainOut.mu1PCA.mu1_c2;
+              mu2_c2 = TrainOut.mu2PCA.mu2_c2;
+              N1 = PI_c2;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c2')*(inv(segma_c2))*(Z - mu1_c2')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c2')*(inv(segma_c2))*(Z - mu2_c2')' ;
+            elseif(ClassNo == 3)
+              PI_c3 = TrainOut.PIPCA.PI_c3;
+              segma_c3 = TrainOut.SegmaPCA.segma_c3;
+              mu1_c3 = TrainOut.mu1PCA.mu1_c3;
+              mu2_c3 = TrainOut.mu2PCA.mu2_c3;
+              N1 = PI_c3;    
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c3')*(inv(segma_c3))*(Z - mu1_c3')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c3')*(inv(segma_c3))*(Z - mu2_c3')' ;
+            elseif(ClassNo == 4)
+              PI_c4 = TrainOut.PIPCA.PI_c4;
+              segma_c4 = TrainOut.SegmaPCA.segma_c4;
+              mu1_c4 = TrainOut.mu1PCA.mu1_c4;
+              mu2_c4 = TrainOut.mu2PCA.mu2_c4;
+              N1 = PI_c4;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c4')*(inv(segma_c4))*(Z - mu1_c4')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c4')*(inv(segma_c4))*(Z - mu2_c4')' ;
+            elseif(ClassNo == 5)
+              PI_c5 = TrainOut.PIPCA.PI_c5;
+              segma_c5 = TrainOut.SegmaPCA.segma_c5;
+              mu1_c5 = TrainOut.mu1PCA.mu1_c5;
+              mu2_c5 = TrainOut.mu2PCA.mu2_c5;
+              N1 = PI_c5;
+              P_XgivenC1_expTerm1 = -0.5*(Z - mu1_c5')*(inv(segma_c5))*(Z - mu1_c5')' ;
+              P_XgivenC2_expTerm2 = -0.5*(Z - mu2_c5')*(inv(segma_c5))*(Z - mu2_c5')' ;
+            endif
+            N2 = 1-N1;
             ModifiedClass1_Ratio = log(N1/N2) + (P_XgivenC1_expTerm1 - P_XgivenC2_expTerm2);
             ModifiedClass2_Ratio = log(N2/N1) + (P_XgivenC2_expTerm2 - P_XgivenC1_expTerm1); 
-            P_comparison = [P_comparison; ModifiedClass1_Ratio > ModifiedClass2_Ratio];
-        %end
-
-        if(P_comparison == 1)
-            TargetsPCA = 'RIGHT';
-            ClassPCA = 1;
-        elseif(P_comparison == 0)
-            TargetsPCA = 'LEFT';
-            ClassPCA = 2;
+            Class_Ratio = [Class_Ratio; ModifiedClass1_Ratio];
+         end
+           
+ % getting the class label here
+  	[maxYvalue maxPositiveClass] = max(Class_Ratio);
+	TargetsPCA = Classnames(maxPositiveClass);
+        for i=1:size(classes_no)(2)
+            if(ismember(TargetsPCA{1,1}, Classes{i,1}))
+                ClassPCA = i
+            endif
         end
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug
-    DetectOut.vote = P_comparison;
+    %DetectOut.vote = P_comparison;
     DetectOut.Z = Z;
     
 

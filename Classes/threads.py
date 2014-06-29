@@ -123,6 +123,7 @@ class readDataThread(QtCore.QThread):
 	self.fisherTrainOut = oct2py.Struct()
 	self.leastSquaresTrainOut = oct2py.Struct()
 	self.likelihoodTrainOut = oct2py.Struct()
+	self.likelihoodClass  = oct2py.Struct()
 	
 	
 	self.knnResult = oct2py.Struct()
@@ -161,11 +162,12 @@ class readDataThread(QtCore.QThread):
 	    print("Fisher training done!")
     
 	elif(self.classifierFile == "Likelihood"):
-	    self.likelihoodTrainOut = self.octave.call('Likelihood_Generic.m', self.dataFile, self.removeNoiseFlag,self.idealFlag, self.butterFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
+	    [self.likelihoodTrainOut, self.likelihoodClass] = self.octave.call('Likelihood_Generic.m', self.dataFile, self.removeNoiseFlag,self.idealFlag, self.butterFlag, self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag,self.SignalStart,self.SignalEnd)
 	    self.LDAData = self.likelihoodTrainOut.LDAData
 	    self.PCAData = self.likelihoodTrainOut.PCAData
 	    self.NoneData = self.likelihoodTrainOut.NoneData
 	    self.dataLength = self.likelihoodTrainOut.datalength
+	    
 	    print("Likelihood training done!")
     
 	elif(self.classifierFile == "Least Squares"):
@@ -327,7 +329,7 @@ class readDataThread(QtCore.QThread):
 		    trial = trials["trials"][:,:,i]
 
 		self.likelihoodResultInput["TrialData"] = trial
-		self.likelihoodResult = self.octave.call('Likelihood_Generic_Detect.m',self.likelihoodResultInput,  self.dataFile, self.removeNoiseFlag, self.idealFlag, self.butterFlag,self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag, self.preProjectedFlag)
+		self.likelihoodResult = self.octave.call('Likelihood_Generic_Detect.m',self.likelihoodResultInput,self.likelihoodClass,  self.dataFile, self.removeNoiseFlag, self.idealFlag, self.butterFlag,self.f1FLag,self.f2FLag,self.f3FLag,self.f4FLag,self.f5FLag,self.f6FLag,self.LDAFlag,self.PCAFlag,self.CSP_LDAFlag,self.NoneFlag, self.preProjectedFlag)
 		if (self.verbose):
 		    feedback = "trial " + str(i) + ": PCA " + str(self.likelihoodResult.PCAresult) + ", LDA " + str(self.likelihoodResult.LDAresult) + ", None " + str(self.likelihoodResult.Noneresult)
 		    print feedback

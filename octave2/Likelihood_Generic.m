@@ -1,4 +1,4 @@
-function TrainOut = Likelihood_Generic(directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
+function [TrainOut likelihoodClass]= Likelihood_Generic(directory, noiseFlag, idealFlag, butterFlag, f1FLag,f2FLag,f3FLag,f4FLag,f5FLag,f6FLag,LDAFLag,PCAFlag,CSP_LDAFlag,NoneFlag,startD,endD)
 %{
 
 example call
@@ -24,13 +24,13 @@ signal starts at 3 and ends at 7 (4 seconds)
 startD = start time for the trial enter number between 3 to 7 
 endD = end of trial signal
 %}
-
+        warning('off')
         startD = int32(startD);
         endD = int32(endD);
         %warnings('off');
 	% Get Raw Data from the file 
 	[data, HDR] = getRawData(directory);
-         HDR.TRIG = HDR.TRIG +1;
+        HDR.TRIG = HDR.TRIG +1;
 	% Intial values
 	Classes = HDR.Classnames;
         nClass = length(Classes);
@@ -103,16 +103,49 @@ endD = end of trial signal
 		%LDA
 		X = [Mu Beta];
 		[ZLDA, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
-		C1 = ZLDA((HDR.Classlabel==1),:);
-		C2 = ZLDA((HDR.Classlabel==2),:);
-		ZLDA = [C1; C2];
-                t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]'
-                
-                accuracy = likelihoodResults(C1, C2, t);
-		[AccSelected, AccIndex] = max(accuracy);
-		PC_NumLDA = min(AccIndex);
-		[PILDA segmaLDA mu1LDA mu2LDA] = Likeli_Classifier_Parameters(PC_NumLDA, ZLDA, t);
-        	datalength = size(ZLDA)(1);                
+		PC_NumLDA = [];
+     
+        for g = 1:nClass
+            C1 = ZLDA((HDR.Classlabel == g),:);
+            C2 = ZLDA((HDR.Classlabel ~= g),:);
+            Z = [C1; C2];
+            t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+            accuracy = likelihoodResults(C1, C2, t);
+            [AccSelected, AccIndex] = max(accuracy)
+            PC_NumLDA =[PC_NumLDA; min(AccIndex)];
+           if(g == 1) 
+              [PI_c1 segma_c1 mu1_c1 mu2_c1] = Likeli_Classifier_Parameters(PC_NumLDA(g), Z, t);
+              PILDA.PI_c1 = PI_c1;
+              segmaLDA.segma_c1 = segma_c1;
+              mu1LDA.mu1_c1 = mu1_c1;
+              mu2LDA.mu2_c1 = mu2_c1;
+           elseif(g == 2)
+              [PI_c2 segma_c2 mu1_c2 mu2_c2] = Likeli_Classifier_Parameters(PC_NumLDA(g), Z, t);
+              PILDA.PI_c2 = PI_c2;
+              segmaLDA.segma_c2 = segma_c2;
+              mu1LDA.mu1_c2 = mu1_c2;
+              mu2LDA.mu2_c2 = mu2_c2;
+           elseif(g == 3)
+              [PI_c3 segma_c3 mu1_c3 mu2_c3] = Likeli_Classifier_Parameters(PC_NumLDA(g), Z, t);
+              PILDA.PI_c3 = PI_c3;
+              segmaLDA.segma_c3 = segma_c3;
+              mu1LDA.mu1_c3 = mu1_c3;
+              mu2LDA.mu2_c3 = mu2_c3;
+           elseif(g == 4)
+              [PI_c4 segma_c4 mu1_c4 mu2_c4] = Likeli_Classifier_Parameters(PC_NumLDA(g), Z, t);
+              PILDA.PI_c4 = PI_c4;
+              segmaLDA.segma_c4 = segma_c4;
+              mu1LDA.mu1_c4 = mu1_c4;
+              mu2LDA.mu2_c4 = mu2_c4;
+           elseif(g == 5)
+              [PI_c5 segma_c5 mu1_c5 mu2_c5] = Likeli_Classifier_Parameters(PC_NumLDA(g), Z, t);
+              PILDA.PI_c4 = PI_c5;
+              segmaLDA.segma_c4 = segma_c5;
+              mu1LDA.mu1_c4 = mu1_c5;
+              mu2LDA.mu2_c4 = mu2_c5;
+	   endif
+        end
+        datalength = size(ZLDA)(1);                
 	
         elseif(PCAFlag == 1)
 		%PCA
@@ -120,15 +153,48 @@ endD = end of trial signal
 		pureData = [Mu, Beta];
 		[VPCA, ZPCA]= pcaProject(pureData);
 		ZPCA=ZPCA';
-		C1 = ZPCA((HDR.Classlabel==1),:);
-		C2 = ZPCA((HDR.Classlabel==2),:);
-		ZPCA = [C1; C2];
-		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
-                
-		accuracy = likelihoodResults(C1, C2, t);
-		[AccSelected, AccIndex] = max(accuracy);
-		PC_NumPCA = min(AccIndex);
-		[PIPCA segmaPCA mu1PCA mu2PCA] = Likeli_Classifier_Parameters(PC_NumPCA, ZPCA, t);
+		PC_NumPCA = [];
+     
+        for g = 1:nClass
+            C1 = ZPCA((HDR.Classlabel == g),:);
+            C2 = ZPCA((HDR.Classlabel ~= g),:);
+            Z = [C1; C2];
+            t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+            accuracy = likelihoodResults(C1, C2, t);
+            [AccSelected, AccIndex] = max(accuracy)
+            PC_NumPCA =[PC_NumPCA; min(AccIndex)];
+           if(g == 1) 
+              [PI_c1 segma_c1 mu1_c1 mu2_c1] = Likeli_Classifier_Parameters(PC_NumPCA(g), Z, t);
+              PIPCA.PI_c1 = PI_c1;
+              segmaPCA.segma_c1 = segma_c1;
+              mu1PCA.mu1_c1 = mu1_c1;
+              mu2PCA.mu2_c1 = mu2_c1;
+           elseif(g == 2)
+              [PI_c2 segma_c2 mu1_c2 mu2_c2] = Likeli_Classifier_Parameters(PC_NumPCA(g), Z, t);
+              PIPCA.PI_c2 = PI_c2;
+              segmaPCA.segma_c2 = segma_c2;
+              mu1PCA.mu1_c2 = mu1_c2;
+              mu2PCA.mu2_c2 = mu2_c2;
+           elseif(g == 3)
+              [PI_c3 segma_c3 mu1_c3 mu2_c3] = Likeli_Classifier_Parameters(PC_NumPCA(g), Z, t);
+              PIPCA.PI_c3 = PI_c3;
+              segmaPCA.segma_c3 = segma_c3;
+              mu1PCA.mu1_c3 = mu1_c3;
+              mu2PCA.mu2_c3 = mu2_c3;
+           elseif(g == 4)
+              [PI_c4 segma_c4 mu1_c4 mu2_c4] = Likeli_Classifier_Parameters(PC_NumPCA(g), Z, t);
+              PIPCA.PI_c4 = PI_c4;
+              segmaPCA.segma_c4 = segma_c4;
+              mu1PCA.mu1_c4 = mu1_c4;
+              mu2PCA.mu2_c4 = mu2_c4;
+           elseif(g == 5)
+              [PI_c5 segma_c5 mu1_c5 mu2_c5] = Likeli_Classifier_Parameters(PC_NumPCA(g), Z, t);
+              PIPCA.PI_c4 = PI_c5;
+              segmaPCA.segma_c4 = segma_c5;
+              mu1PCA.mu1_c4 = mu1_c5;
+              mu2PCA.mu2_c4 = mu2_c5;
+	   endif
+        end
         	datalength = size(ZPCA)(1);
 	elseif(CSP_LDAFlag == 1)
 		%NOT working to be reviewed with Raghda or Hemaly !
@@ -138,54 +204,80 @@ endD = end of trial signal
 		X = [Mu Beta];
                 Z = X;
                 V=1;
-                C1 = Z((HDR.Classlabel==1),:);
-		C2 = Z((HDR.Classlabel==2),:);
-                Z = [C1; C2];
-		t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
-                accuracy = likelihoodResults(C1, C2, t);
-                [AccSelected, AccIndex] = max(accuracy);
-		PC_Num = min(AccIndex);
-                [PI segma mu1 mu2] = Likeli_Classifier_Parameters(PC_Num, Z, t);
-        	datalength = size(Z)(1);
+                PC_Num = [];
+     
+        for g = 1:nClass
+            C1 = Z((HDR.Classlabel == g),:);
+            C2 = Z((HDR.Classlabel ~= g),:);
+            Z = [C1; C2];
+            t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+            accuracy = likelihoodResults(C1, C2, t);
+            [AccSelected, AccIndex] = max(accuracy)
+            PC_Num =[PC_Num; min(AccIndex)];
+           if(g == 1) 
+              [PI_c1 segma_c1 mu1_c1 mu2_c1] = Likeli_Classifier_Parameters(PC_Num(g), Z, t);
+              PI.PI_c1 = PI_c1;
+              segma.segma_c1 = segma_c1;
+              mu1.mu1_c1 = mu1_c1;
+              mu2.mu2_c1 = mu2_c1;
+           elseif(g == 2)
+              [PI_c2 segma_c2 mu1_c2 mu2_c2] = Likeli_Classifier_Parameters(PC_Num(g), Z, t);
+              PI.PI_c2 = PI_c2;
+              segma.segma_c2 = segma_c2;
+              mu1.mu1_c2 = mu1_c2;
+              mu2.mu2_c2 = mu2_c2;
+           elseif(g == 3)
+              [PI_c3 segma_c3 mu1_c3 mu2_c3] = Likeli_Classifier_Parameters(PC_Num(g), Z, t);
+              PI.PI_c3 = PI_c3;
+              segma.segma_c3 = segma_c3;
+              mu1.mu1_c3 = mu1_c3;
+              mu2.mu2_c3 = mu2_c3;
+           elseif(g == 4)
+              [PI_c4 segma_c4 mu1_c4 mu2_c4] = Likeli_Classifier_Parameters(PC_Num(g), Z, t);
+              PI.PI_c4 = PI_c4;
+              segma.segma_c4 = segma_c4;
+              mu1.mu1_c4 = mu1_c4;
+              mu2.mu2_c4 = mu2_c4;
+	   elseif(g == 5)
+	      [PI_c5 segma_c5 mu1_c5 mu2_c5] = Likeli_Classifier_Parameters(PC_Num(g), Z, t);
+              PI.PI_c4 = PI_c5;
+              segma.segma_c4 = segma_c5;
+              mu1.mu1_c4 = mu1_c5;
+              mu2.mu2_c4 = mu2_c5;
+    	   endif
+        end
+        datalength = size(Z)(1);
 	endif
         
 	% Returing output structure
-	TrainOut.VPCA = VPCA;
-	TrainOut.VLDA = VLDA;
-        TrainOut.V = V;
-	
-	TrainOut.Wlda = Wlda(1:end-1);
-	TrainOut.Wolda = Wlda(end);
-	
-	TrainOut.Wpca = Wpca(1:end-1);
-	TrainOut.Wopca = Wpca(end);
-
-	TrainOut.PC_NumPCA = PC_NumPCA;
-	TrainOut.PC_NumLDA = PC_NumLDA;
-        TrainOut.PC_Num = PC_Num;
-
-	TrainOut.mu1PCA = mu1PCA;
-	TrainOut.mu2PCA = mu2PCA;
+        TrainOut.PILDA = PILDA;
+	TrainOut.SegmaLDA = segmaLDA;
 	TrainOut.mu1LDA = mu1LDA;
 	TrainOut.mu2LDA = mu2LDA;
-        TrainOut.mu1 = mu1;
-	TrainOut.mu2 = mu2;
-
-	TrainOut.PIPCA = PIPCA;
-	TrainOut.PILDA = PILDA;
-        TrainOut.PI = PI;
-
-	TrainOut.segmaPCA = segmaPCA;
-	TrainOut.segmaLDA = segmaLDA;
-        TrainOut.segma = segma;
-
-	TrainOut.HDR = HDR;
-
-        TrainOut.PCAData = ZPCA;
+	TrainOut.VLDA = VLDA;
+	TrainOut.PC_NumLDA = PC_NumLDA;
         TrainOut.LDAData = ZLDA;
+        %------
+        TrainOut.PIPCA = PIPCA;
+	TrainOut.SegmaPCA = segmaPCA;
+	TrainOut.mu1PCA = mu1PCA;
+	TrainOut.mu2PCA = mu2PCA;
+	TrainOut.VPCA = VPCA;
+	TrainOut.PC_NumPCA = PC_NumPCA;
+        TrainOut.PCAData = ZPCA;
+	%------
+        TrainOut.PI = PI;
+	TrainOut.Segma = segma;
+	TrainOut.mu1 = mu1;
+	TrainOut.mu2 = mu2;
+	TrainOut.V = V;
+	TrainOut.PC_Num = PC_Num;
         TrainOut.NoneData = Z;
+        %------
+        TrainOut.HDR = HDR;
+	TrainOut.Classnames = HDR.Classnames;
+	TrainOut.nClass = nClass;
         TrainOut.datalength = datalength;
-
         TrainOut.ClassesTypes = HDR.Classlabel;
         TrainOut.ClassesTypesSameFile = t';
 

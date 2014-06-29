@@ -41,7 +41,7 @@ PreprocessingAll = True
 
 #Directories
 
-TrainDir = AC.MainFolder + "/Data/Training/Session_2014_05_18_65914/"
+TrainDir = AC.MainFolder + "/Data/Training/Session_2014_06_23_61827/"
 DetectDir = AC.MainFolder + "/Data/Detection/"
 
 #Online database update

@@ -9,12 +9,12 @@ OctaveFolder = MainFolder + "/octave2"
 #TrainingFile =  "/home/rho/Documents/GP/bAnalyzer/master/Data/Training/OldData/[T][2014-01-15 15-02-52] Mohamed Nour El-Din.csv"
 #DetectionFile = "/home/rho/Documents/GP/bAnalyzer/master/Data/Detection/oldData/[D][2014-03-01 16-48-36] Mohamed Nour El-Din.csv"
 
-#TrainingFile = "/home/rho/Documents/GP/[2014-03-23] Braingizer/Data/TrainingData/Session_2014_05_06_84005/[T][2014-05-10 19-25-38] Osama Mohamed.csv"
-#DetectionFile ="/home/rho/Documents/GP/[2014-03-23] Braingizer/Data//DetectionData/[D][2014-05-10 19-34-11] Osama Mohamed.csv"
+TrainingFile = "/home/rho/Documents/GP/bAnalyzer/master/Data/Training/Session_2014_06_23_61827/[T][2014-06-23 17-28-14] Walid Ezzat.csv"
+DetectionFile ="/home/rho/Documents/GP/bAnalyzer/master/Data/Detection/[D][2014-06-23 17-34-09] Walid Ezzat.csv"
 
-TrainingFile = MainFolder + "/Data/Training/OldData/[T][2014-01-15 19-41-58] Ahmed Hemaly.csv"
+#TrainingFile = MainFolder + "/Data/Training/OldData/[T][2014-01-15 19-41-58] Ahmed Hemaly.csv"
 
-DetectionFile =  MainFolder + "/Data/Training/OldData/[T][2014-01-15 19-41-58] Ahmed Hemaly.csv"
+#DetectionFile =  MainFolder + "/Data/Training/OldData/[T][2014-01-15 19-41-58] Ahmed Hemaly.csv"
 
 
 
@@ -26,7 +26,7 @@ SampleEnd = 4
 
 ####---Methods---####
 #Noise
-NoiseRemoval = False
+NoiseRemoval = True
 
 #Extraction
 #those names can't be anything near to a readable variable!! stick to numbers
@@ -41,14 +41,14 @@ ExtractionMethod = 0
 _PCA = 0
 _LDA = 1
 _CSP = 2
-FeatureEnhancementMethod = _PCA
+FeatureEnhancementMethod = _CSP
 
 #Classification
 _Fisher = 0
 _KNN = 1
 _Likelihood = 2
 _LeastSquares = 3
-ClassificationMethod = _Fisher
+ClassificationMethod = _Likelihood
 
 #Processing
 _Method1 = 0
