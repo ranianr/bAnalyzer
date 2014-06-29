@@ -279,7 +279,7 @@ endD = end of trial signal
 	TrainOut.nClass = nClass;
         TrainOut.datalength = datalength;
         TrainOut.ClassesTypes = HDR.Classlabel;
-        TrainOut.ClassesTypesSameFile = t';
+        TrainOut.ClassesTypesSameFile = HDR.Classlabel;
 
 end
 

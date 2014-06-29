@@ -81,7 +81,7 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn,likelihoodClass,
     if(LDAFLag == 1)
         if (preProjectedFlag == 1)
             Z =TrialData;
-            Z = Z(:,1:PC_NumLDA);  
+            %Z = Z(:,1:PC_NumLDA);  
         else
             Z = [Mu Beta];
         endif

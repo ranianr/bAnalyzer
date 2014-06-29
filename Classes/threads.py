@@ -246,7 +246,7 @@ class readDataThread(QtCore.QThread):
 	#we may be later interested in providing a feedback for the signal start and end too! but for now, that's definitely not!
 	detectionDescription = "Train = " + self.path + "\r\nNoise Removal = " + str(self.removeNoiseFlag)+ "\r\nSame File" + str(self.sameFile) + "\r\nDetect" + convDetectPath + \
 	"\r\nExtraction Flags = " + str(self.f1FLag) + str(self.f2FLag) + str(self.f3FLag) + str(self.f4FLag) + str(self.f5FLag) + str(self.f6FLag) + \
-	"\r\nPreprocessing Flags = " + str(self.butterFlag) + str(self.idealFlag) + "\r\nEnhancement flags " + str(self.LDAFlag) + str(self.PCAFlag) + str(self.CSP_LDAFlag) + str(self.NoneFlag) + "\r\nClassifier " + cf
+	"\r\nPreprocessing Flags = " + str(self.butterFlag) + str(self.idealFlag) + "\r\nEnhancement flags " + str(self.LDAFlag) + str(self.PCAFlag) + str(self.CSP_LDAFlag) + str(self.NoneFlag) + "\r\nClassifier " + str(cf)
 
 	indexWindow = 0
 
@@ -346,14 +346,14 @@ class readDataThread(QtCore.QThread):
 		elif (self.NoneFlag == 1):
 		    self.classifierResult.append(self.likelihoodResult.NoneResultClass)
 		
-		if((self.sameFile==1) and ((self.LDAFlag ==1) or (self.PCAFlag ==1) )):
+		if((self.sameFile==1) and ((self.LDAFlag ==1) or (self.PCAFlag ==1)  )):
 		    self.realClasses = self.likelihoodTrainOut.ClassesTypesSameFile
 		else:
 	    	    self.realClasses = self.likelihoodTrainOut.ClassesTypes
 	   
 	    if (self.sameFile == False):
 		self.realClasses = self.octave.call('getRealClass.m', self.detectFile)
-	   
+	    print self.realClasses
 
 	elif (cf == "Least Squares"):
 	    trials = self.captureTrialData()
@@ -383,10 +383,10 @@ class readDataThread(QtCore.QThread):
 		elif (self.NoneFlag == 1):
 		    self.classifierResult.append(self.leastSquaresResult.NoneResultClass)
 	    
-	if (self.sameFile == True):
-	    self.realClasses = self.leastSquaresTrainOut.ClassesTypes
-	elif (self.sameFile == False):
-	    self.realClasses = self.octave.call('getRealClass.m', self.detectFile)
+	    if (self.sameFile == True):
+		self.realClasses = self.leastSquaresTrainOut.ClassesTypes
+	    elif (self.sameFile == False):
+		self.realClasses = self.octave.call('getRealClass.m', self.detectFile)
 		
 
 	self.trialStatues(indexWindow)
@@ -412,21 +412,16 @@ class readDataThread(QtCore.QThread):
 	self.comparisonResults = []
 
 	for i in range (indexWindow):
-	  
 	    if (self.realClasses[i] == -1):
 		self.realClasses[i] = 2
-	    
 	    #print self.realClasses
 	    #print self.classifierResult
 	    
 	    if (self.classifierResult[i] == int(self.realClasses[i])):
-		
 		self.comparisonResults.append(True)
 
 	    else:
-		
-		self.comparisonResults.append(False)
-	
+		self.comparisonResults.append(False)	
 	return self.comparisonResults
 
     def  captureTrialData(self):
