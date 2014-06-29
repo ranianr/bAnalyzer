@@ -41,30 +41,42 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn, directory, nois
 
     %TODO according to the preprojectionflag, validate TrialData/VLDA/VPCA matrices
     if (preProjectedFlag == 0)
+
         % do pre-processing here please
         if(noiseFlag == 1)
             noise = mean(TrialData);
             TrialData = bsxfun(@minus, TrialData, noise);
         endif
-
-	% Get features (mu & beta) according to the selected method
-        if(f1FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect(TrialData);
-        elseif (f2FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect_more_feature(TrialData);
-        elseif (f3FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect_more_feature2(TrialData);
-        elseif (f4FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect_more_feature3(TrialData);
-        elseif (f5FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect_more_feature4(TrialData);
-        elseif (f6FLag == 1)
-            [Mu,Beta] = GetMuBeta_detect_more_feature5(TrialData);
-        else
-            errorVar = "features flag isn't set!"
+        
+        if(idealFlag == 1)
+            if(f1FLag == 1)
+                [Mu,Beta] = idealFilter(TrialData);
+                
+            elseif(f2FLag == 1)
+                [Mu,temp] = idealFilter(TrialData, @min);
+                [temp,Beta] = idealFilter(TrialData, @max);
+            %TODO: support F3 to F6 flags
+            endif
         endif
+        if(butterFlag == 1)
+            % Get features (mu & beta) according to the selected method
+            if(f1FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect(TrialData);
+            elseif (f2FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature(TrialData);
+            elseif (f3FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature2(TrialData);
+            elseif (f4FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature3(TrialData);
+            elseif (f5FLag == 1)
+                [Mu,Beta] =  GetMuBeta_detect_more_feature4(TrialData);
+            elseif (f6FLag == 1)
+                [Mu,Beta] = GetMuBeta_detect_more_feature5(TrialData);
+            endif
+        endif
+        %else we've got preprojected data
     endif
-	
+    
     %default return
     TargetsLDA="Unknown";
     TargetsPCA="Unknown";

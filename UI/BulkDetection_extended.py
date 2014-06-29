@@ -161,6 +161,8 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
     def BulkDetect(filesDict, noiseDict, featDict, preprocDict, enhanceDict, classDict, \
                    sampleStart, sampleEnd, selectedData, sameFile, updateGSpread=False):
 
+	i = 0
+
         if (updateGSpread == True):
             ##Connect to google spreadsheet 
             gc = gspread.login( GSC.email , GSC.password)
@@ -177,7 +179,6 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
             desc = TrainingFileClass.getDescription(tfItem)
             name = TrainingFileClass.getName(tfItem)
 
-            i = 0
             threadList = []
             if (updateGSpread == True):
                 j = 0
@@ -379,13 +380,20 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         return self.fileDialog.getExistingDirectory()
 
     @staticmethod
-    def getDirCSVFiles(directory):
+    def getDirCSVFiles(directory, verbose=True):
+
         csvFileList = []
         for root, dirs, fileNames in os.walk(directory):
             for fileName in fileNames:
                 fileBase, fileExt = os.path.splitext(fileName)
                 if (fileExt == ".csv"):
                     csvFileList.append(root + fileName)
+
+		if (verbose == True):
+		    print "CSV File Search Found: " + root + fileName
+
+	if ((verbose == True) & (csvFileList == [])):
+	    print "CSV File Search Found: no files"
 
 	return csvFileList
 
