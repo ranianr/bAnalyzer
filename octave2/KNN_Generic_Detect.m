@@ -10,26 +10,36 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, idealFla
     % Get inputs from python
     TrialData = DetectIn.("TrialData"); %data to be sent from python
     TrainOut = DetectIn.("TrainOut"); %
-
-    KPCA = TrainOut.KPCA;
-    KLDA = TrainOut.KLDA;
-    K = TrainOut.K;
-
-    VPCA = TrainOut.VPCA ;
-    VLDA = TrainOut.VLDA ;
+    %-----------
+    [data, HDR] = getRawData(directory);
+    Classes = HDR.Classnames;
+    nClass = length(Classes);
+    classes_no =[];
+    for g = 1:nClass
+        classes_no = [ classes_no , getClassNumber(HDR,Classes(g)) ];
+    end
+    %-----------
+    VLDA           = TrainOut.VLDA;
+    kTotalLDA      = TrainOut.kLDA;
+    ZtrainLDA      = TrainOut.ZtrainLDA;
+    PC_NumLDA      = TrainOut.PC_NumLDA;
+    %-----------
+    VPCA           = TrainOut.VPCA;
+    kTotalPCA      = TrainOut.kPCA;
+    ZtrainPCA      = TrainOut.ZtrainPCA;
+    PC_NumPCA      = TrainOut.PC_NumPCA;
+    %-----------
+    VNone           = TrainOut.VNone;
+    kTotalNone      = TrainOut.kNone;
+    ZtrainNone      = TrainOut.ZtrainNone;
+    PC_NumNone     = TrainOut.PC_NumNone;
+    %-----------
+    nClass      = TrainOut.nClass;
+    Classlabel  = TrainOut.Classlabel;
+    Classnames  = TrainOut.Classnames;
+    classes_no = TrainOut.classes_no;
     
-	
-    ZtrainPCA  = TrainOut.ZtrainPCA;
-    ZtrainLDA  = TrainOut.ZtrainLDA;
-    Ztrain  = TrainOut.Z;
     
-    PC_NumPCA  = TrainOut.PC_NumPCA;
-    PC_NumLDA  = TrainOut.PC_NumLDA;
-    PC_Num  = TrainOut.PC_Num;
-
-    ClassLabels = TrainOut.ClassLabels;%class labels
-
-    ClassLabels(ClassLabels == 2) = -1;
 
      if (preProjectedFlag == 0)
 
@@ -84,143 +94,167 @@ function DetectOut = KNN_Generic_Detect(DetectIn, directory, noiseFlag, idealFla
             Z = Z(:,1:PC_NumLDA);
         else
 
-            Z = [Mu Beta]*real(VLDA(:,1:PC_NumLDA));
+            Z = [Mu Beta];
         endif
-  
-        ZtrainLDA = ZtrainLDA(:,1:PC_NumLDA);
         
-% appy the classifier here
-        if(size(Z)(2) == 1)
-            ZtrainLDA = [ZtrainLDA, ZtrainLDA];
-            Z = [Z, Z];
-        end 
-        
-        pointDistance = distancePoints(Z, ZtrainLDA); 
-        distance = pointDistance';
-        [dist index1] = sort(distance);
-        nearestK = dist(2:KLDA+1);
-        nearestPointsIndex = index1(2:KLDA+1);
-        Ktargets = ClassLabels(nearestPointsIndex);
-        
-        vote = sum(Ktargets);
-     
-        Yp = 0;%add else error = error +1
-        
-        if(vote > 0)
-            TargetsLDA =  'RIGHT';
-            ClassLDA = 1;
-
-        elseif(vote < 0)
-            TargetsLDA = 'LEFT';
-            ClassLDA = 2;
-        else 
-            single_target = ClassLabels( distance == min(distance(2:KLDA+1)));
-
-            if(single_target > 0)
-                TargetsLDA =  'RIGHT';
-                ClassLDA = 1;
+        features = Z ; 
+        Votes = [];
+	   
+         for ClassNo = 1:nClass  
+            Z = features*real(VLDA(:,1:PC_NumLDA(ClassNo)));
+            ZtrainTemp = ZtrainLDA(:,1:PC_NumLDA(ClassNo));
+            C1  = ZtrainTemp(Classlabel == classes_no(ClassNo),:);
+            C2  = ZtrainTemp(Classlabel ~= classes_no(ClassNo),:);
+	    ZtrainTemp = [C1; C2];
+            ClassLabels = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+            k = kTotalLDA(ClassNo);
+        	if(size(Z)(2) == 1)
+			ZtrainTemp = [ZtrainTemp, ZtrainTemp];
+			Z = [Z, Z];
+          end
+	
+            pointDistance = distancePoints(Z, ZtrainTemp);
+            distance = pointDistance';
+            [dist index1] = sort(distance);
+            nearestK = dist(2:k+1);
+            nearestPointsIndex = index1(2:k+1);
+            Ktargets = ClassLabels(nearestPointsIndex);
+            vote = sum(Ktargets);
+            Yp = 0;%add else error = error +1
+            
+            if (vote == 0 ) 
+                single_target = ClassLabels( distance == min(distance(2:k+1)));
+                Votes = [Votes; single_target];
             else
-                TargetsLDA = 'LEFT';
-                ClassLDA = 2;
+                Votes = [Votes; vote];
             end
-        end
+            end
+        
+            % getting the class label here
+            [maxYvalue maxPositiveClass] = max(Votes)
+            TargetsLDA = Classnames(maxPositiveClass);
+            for i=1:size(classes_no)(2)
+                if(ismember(TargetsLDA{1,1}, Classes{i,1}))
+                    ClassLDA = i
+                endif
+            end
     endif
     
     if(PCAFlag == 1)
         if (preProjectedFlag == 1)
             Z =TrialData';
         else
-            Z = VPCA'*[Mu Beta]';
+            Z =[Mu Beta];
         endif
-        
-        Z = Z(1:PC_NumPCA,:);
-        %removed to fix mul dimensions
-        ZtrainPCA = ZtrainPCA';
-        ZtrainPCA = ZtrainPCA(1:PC_NumPCA,:);
-        ZtrainPCA = ZtrainPCA';
-        Z = Z';
-        % apply the classifier here
-        if(size(Z)(2) == 1)
-                ZtrainPCA = [ZtrainPCA, ZtrainPCA];
-                Z = [Z, Z];
-        end
-       
-        pointDistance = distancePoints(Z, ZtrainPCA); 
-        distance = pointDistance';
-        
-        [dist index1] = sort(distance);
-        dist = dist';
-        nearestK = dist(2:KPCA+1);
-        
-        nearestPointsIndex = index1(2:KPCA+1);
-        Ktargets = ClassLabels(nearestPointsIndex);
-        vote = sum(Ktargets);
-        Yp = 0;%add else error = error +1
-        
-        if(vote > 0)
-            TargetsPCA =  'RIGHT';
-            ClassPCA = 1;
-        elseif(vote < 0)
-            TargetsPCA = 'LEFT';
-            ClassPCA = 2;
-        else 
-            single_target = ClassLabels( distance == min(distance(2:KPCA+1)));
-            if(single_target > 0)
-                TargetsPCA =  'RIGHT';
-                ClassPCA = 1;
+         
+        features = Z ; 
+        Votes = [];
+	   
+         for ClassNo = 1:nClass
+             x = "hiiii"
+            Z = features*real(VPCA(:,1:PC_NumPCA(ClassNo)));
+            x = "hiiii"
+            ZtrainTemp = ZtrainPCA(:,1:PC_NumPCA(ClassNo));
+            C1  = ZtrainTemp(Classlabel == classes_no(ClassNo),:);
+            C2  = ZtrainTemp(Classlabel ~= classes_no(ClassNo),:);
+	    ZtrainTemp = [C1; C2];
+            ClassLabels = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+            k = kTotalPCA(ClassNo);
+        	if(size(Z)(2) == 1)
+			ZtrainTemp = [ZtrainTemp, ZtrainTemp];
+			Z = [Z, Z];
+          end
+	
+            pointDistance = distancePoints(Z, ZtrainTemp);
+            distance = pointDistance';
+            [dist index1] = sort(distance);
+            nearestK = dist(2:k+1);
+            nearestPointsIndex = index1(2:k+1);
+            Ktargets = ClassLabels(nearestPointsIndex);
+            vote = sum(Ktargets);
+            Yp = 0;%add else error = error +1
+            
+            if (vote == 0 ) 
+                single_target = ClassLabels( distance == min(distance(2:k+1)));
+                Votes = [Votes; single_target];
             else
-                TargetsPCA = 'LEFT';
-                ClassPCA = 2;
+                Votes = [Votes; vote];
             end
-        end
+            end
+        
+            % getting the class label here
+            [maxYvalue maxPositiveClass] = max(Votes)
+            TargetsPCA = Classnames(maxPositiveClass);
+            for i=1:size(classes_no)(2)
+                if(ismember(TargetsPCA{1,1}, Classes{i,1}))
+                    ClassPCA = i
+                endif
+            end
     endif
     
     if(NoneFlag == 1)
         if (preProjectedFlag == 1)
             Z =TrialData;
-            Z = Z(:,1:PC_Num);
+            Z = Z(:,1:PC_NumNone);
         else
             Z = [Mu Beta];
         endif
         
-        Ztrain = Ztrain(:,1:PC_Num);
-        
-% appy the classifier here
-        if(size(Z)(2) == 1)
-            Ztrain = [Ztrain, Ztrain];
-            Z = [Z, Z];
-        end 
-        
-        pointDistance = distancePoints(Z, Ztrain); 
-        distance = pointDistance';
-        [dist index1] = sort(distance);
-        nearestK = dist(2:K+1);
-        nearestPointsIndex = index1(2:K+1);
-        Ktargets = ClassLabels(nearestPointsIndex);
-        
-        vote = sum(Ktargets)
-        
-        Yp = 0;%add else error = error +1
-        
-        if(vote > 0)
-            Targets =  'RIGHT';
-            Class = 1;
-
-        elseif(vote < 0)
-            Targets = 'LEFT';
-            Class = 2;
-            
-        else 
-            single_target = ClassLabels( distance == min(distance(2:KLDA+1)));
-
-            if(single_target > 0)
-                Targets =  'RIGHT';
-                Class = 1;
-            else
-                Targets = 'LEFT';
-                Class = 2;
+        features = Z ; 
+        Votes = [];
+         for ClassNo = 1:nClass
+            x = "begin"
+            Z = features(:,1:PC_NumNone(ClassNo))
+            size(Z)
+            x = "hiiiii"
+            ZtrainTemp = ZtrainNone(:,1:PC_NumNone(ClassNo));
+            x = "hiiiii"
+            C1  = ZtrainTemp(Classlabel == classes_no(ClassNo),:);
+            C2  = ZtrainTemp(Classlabel ~= classes_no(ClassNo),:);
+            x = "hiiiii"
+	    ZtrainTemp = [C1; C2];
+            x = "hiiiiiiiiiiii"
+            ClassLabels = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+            k = kTotalNone(ClassNo);
+            if(size(Z)(2) == 1)
+                ZtrainTemp = [ZtrainTemp, ZtrainTemp];
+    		Z = [Z, Z];
+                size(Z)
             end
-        end
+	    x = "hiiiiiiiiiiii"
+            size(ZtrainTemp)
+            size(Z)
+            pointDistance = distancePoints(Z, ZtrainTemp)
+            distance = pointDistance';
+            [dist index1] = sort(distance);
+	    x = "hiiiiiiiiiiii"
+
+            nearestK = dist(2:k+1);
+            nearestPointsIndex = index1(2:k+1);
+            Ktargets = ClassLabels(nearestPointsIndex);
+            vote = sum(Ktargets);
+            Yp = 0;%add else error = error +1
+	    x = "hiiiiiiiiiiii"
+            
+            if (vote == 0 ) 
+                single_target = ClassLabels( distance == min(distance(2:k+1)));
+                Votes = [Votes; single_target];
+            else
+                Votes = [Votes; vote];
+            end
+            end
+        
+            % getting the class label here
+            [maxYvalue maxPositiveClass] = max(Votes)
+            x = "hiiiii"
+            Targets = Classnames(maxPositiveClass);
+            x = "hiiiii"
+            for i=1:size(classes_no)(2)
+                if(ismember(Targets{1,1}, Classes{i,1}))
+                    Class = i
+                endif
+            end
+            x = "hiiiii"
     endif
     %TODO check non of the CSP, LDA nor CSP flags raised 
     % Debug

@@ -30,9 +30,15 @@ endD = end of trial signal
 
 	% Get Raw Data from the file 
 	[data, HDR] = getRawData(directory);
-        
+        HDR.TRIG = HDR.TRIG +1;
+        % Intial values
+        Classes = HDR.Classnames;
+        nClass = length(Classes);
+        classes_no =[];
+        for g = 1:nClass
+            classes_no = [ classes_no , getClassNumber(HDR,Classes(g)) ];
+        end
 	% Intial values
-	classes_no = [ getClassNumber(HDR,'RIGHT')  getClassNumber(HDR,'LEFT') ];
         
 	% do pre-processing here please 
 	if(noiseFlag == 1)
@@ -70,44 +76,63 @@ endD = end of trial signal
         endif
         
 	% apply LDA or PCA or CSP
-	KLDA = 0;
-	KPCA = 0;
-        K=0;
+
+        kPCA = [];
+        kLDA = [];
+        kNone = [];
+        
         X=[];
         t=[];
 	ZLDA = [];
 	ZPCA = [];
 	VPCA = [];
+        VNone = [];
 	VLDA = [];
 	PC_NumLDA = 0;
 	PC_NumPCA = 0;
-        PC_Num = 0;
+        PC_NumNone = 0;
         datalength = 0;
 	
 	if(LDAFLag == 1)
 		%LDA
 		X = [Mu Beta];
 		[ZLDA, VLDA]  = LDA_fn(HDR.Classlabel, X, classes_no);
-		C1 = ZLDA((HDR.Classlabel==1),:);
-		C2 = ZLDA((HDR.Classlabel==2),:);
-		ZLDA = [C1; C2];
-		t = [ones(size(C1)(1),1) ; 2*ones(size(C2)(1),1)]';
-		[accuracy k_total] = knnResults(ZLDA, t);
-		[AccSelected, AccIndex] = max(accuracy);
-		PC_NumLDA = min(AccIndex);
-		KLDA = k_total(PC_NumLDA);
+		PC_NumLDA = [];
+                kLDA = [];
+            % Get the classifier parameters here
+                ClassesData = zeros(size(X)(1)/nClass,PC_NumLDA,nClass);
+                for g = 1:nClass
+                    C1  = ZLDA(HDR.Classlabel == classes_no(g),:);
+                    C2  = ZLDA(HDR.Classlabel ~= classes_no(g),:);
+                    Z = [C1; C2];
+                    t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+                    [accuracy k_total] = knnResults(Z, t);
+                    [AccSelected, AccIndex] = max(accuracy)
+                    PC_NumLDA =[PC_NumLDA; min(AccIndex)];
+                    kLDA =[kLDA; k_total(PC_NumLDA)];
+                end
         	datalength = size(ZLDA)(1);
 	elseif(PCAFlag == 1)
 		%PCA
 		pureData = [Mu, Beta];
 		[VPCA, ZPCA]= pcaProject(pureData);
-                t=HDR.Classlabel;
-		[accuracy k_total] = knnResults(ZPCA', HDR.Classlabel);
-		[AccSelected, AccIndex] = max(accuracy);
-		PC_NumPCA = min(AccIndex);
-		KPCA = k_total(PC_NumPCA);
                 % make zpca consistent with zlda!
                 ZPCA = ZPCA';
+                PC_NumPCA = [];
+                kPCA = [];
+            % Get the classifier parameters here
+                ClassesData = zeros(size(X)(1)/nClass,PC_NumPCA,nClass);
+                for g = 1:nClass
+                    C1  = ZPCA(HDR.Classlabel == classes_no(g),:);
+                    C2  = ZPCA(HDR.Classlabel ~= classes_no(g),:);
+                    Z = [C1; C2];
+                    t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+                    [accuracy k_total] = knnResults(Z, t);
+                    [AccSelected, AccIndex] = max(accuracy)
+                    PC_NumPCA =[PC_NumPCA; min(AccIndex)];
+                    kPCA =[kPCA; k_total(PC_NumPCA)];
+                end
+                
         	datalength = size(ZPCA)(1);		
 	
         elseif(CSP_LDAFlag == 1)
@@ -117,14 +142,21 @@ endD = end of trial signal
       
 	elseif(NoneFlag == 1)
                 
-		X = [Mu Beta]';
-                t=HDR.Classlabel;
-                [accuracy k_total] = knnResults(X', HDR.Classlabel);
-              
-		[AccSelected, AccIndex] = max(accuracy)
-		PC_Num = min(AccIndex)
-		K = k_total(PC_Num);
-                % make zpca consistent with zlda!
+		X = [Mu Beta];
+                PC_NumNone = [];
+                kNone = [];
+            % Get the classifier parameters here
+                ClassesData = zeros(size(X)(1)/nClass,PC_NumNone,nClass);
+                for g = 1:nClass
+                    C1  = X(HDR.Classlabel == classes_no(g),:);
+                    C2  = X(HDR.Classlabel ~= classes_no(g),:);
+                    Z = [C1; C2];
+                    t = [ones(size(C1)(1),1) ; -1*ones(size(C2)(1),1)]';
+                    [accuracy k_total] = knnResults(Z, t);
+                    [AccSelected, AccIndex] = max(accuracy)
+                    PC_NumNone =[PC_NumNone; min(AccIndex)];
+                    kNone =[kNone; k_total(PC_NumNone)];
+                end
                 
         	datalength = size(X)(1)
                 
@@ -135,32 +167,33 @@ endD = end of trial signal
         %%% adding a new variable to the struct is as easy as the following line
         %TrainOut.lol = "haha";
         %%% if we ever wanted to comment multi-lines, use % instead of %{ and %}
-        
-	TrainOut.KPCA = KPCA;
-	TrainOut.KLDA = KLDA;
-        TrainOut.K = K;
-	
-        % is this used anywhere!?
+        %--------
+        TrainOut.VLDA = VLDA;
 	TrainOut.ZtrainLDA = ZLDA;
-	TrainOut.ZtrainPCA = ZPCA;
-        TrainOut.Z = X;
-	
-	TrainOut.VPCA = VPCA;
-	TrainOut.VLDA = VLDA;
-	
-	TrainOut.PC_NumPCA = PC_NumPCA;
 	TrainOut.PC_NumLDA = PC_NumLDA;
-        TrainOut.PC_Num = PC_Num;
-	
-        TrainOut.ClassLabels = t;
-        
-        TrainOut.PCAData = ZPCA;
+	TrainOut.kLDA = kLDA;
         TrainOut.LDAData = ZLDA;
-        TrainOut.NoneData = X;
+        %--------
+        TrainOut.VPCA = VPCA;
+	TrainOut.ZtrainPCA = ZPCA;
+	TrainOut.PC_NumPCA = PC_NumPCA;
+	TrainOut.kPCA = kPCA;
+        TrainOut.PCAData = ZPCA;
+        %--------
+        TrainOut.VNone = 1;
+	TrainOut.ZtrainNone = X;
+	TrainOut.PC_NumNone = PC_NumNone;
+	TrainOut.kNone = kNone;
+        TrainOut.NoneData = Z;
+        %--------
+	TrainOut.Classlabel = HDR.Classlabel;
+        TrainOut.Classnames = HDR.Classnames;
+        TrainOut.nClass = nClass;
+        TrainOut.classes_no =  classes_no;
+	%--------
         TrainOut.datalength = datalength;
-
         TrainOut.ClassesTypes = HDR.Classlabel;
-        TrainOut.ClassesTypesSameFile = t';
+        TrainOut.ClassesTypesSameFile = HDR.Classlabel;
 
 end
 

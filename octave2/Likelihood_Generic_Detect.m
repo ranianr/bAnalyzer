@@ -160,7 +160,7 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn,likelihoodClass,
          for ClassNo = 1:nClass
              
            Z = features(:,1:PC_Num(ClassNo));
-            x="hiiiiiiii"
+            
             if(ClassNo == 1)
               PI_c1 = TrainOut.PI.PI_c1;
               segma_c1 = TrainOut.Segma.segma_c1;
@@ -230,7 +230,7 @@ function [DetectOut Debug] = Likelihood_Generic_Detect(DetectIn,likelihoodClass,
 	%Z = features(:,1:PC_Num);
          for ClassNo = 1:nClass    
             Z = features*real(VPCA(:,1:PC_NumPCA(ClassNo)));
-            x="hiiiiiiiii"
+            
             if(ClassNo == 1)
               PI_c1 = TrainOut.PIPCA.PI_c1;
               segma_c1 = TrainOut.SegmaPCA.segma_c1;
