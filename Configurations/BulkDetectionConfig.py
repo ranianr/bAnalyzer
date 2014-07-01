@@ -22,7 +22,7 @@ FeaturesAll = False
 _PCA = 1<<0
 _LDA = 1<<1
 _None = 1<<2
-EnhancementMethod = _PCA | _LDA
+EnhancementMethod = _PCA | _LDA | _None
 EnhancementAll = True
 
 #Classification
@@ -41,7 +41,8 @@ PreprocessingAll = True
 
 #Directories
 
-TrainDir = AC.MainFolder + "/Data/Training/Session_2014_01_15_54172/"
+TrainDir = AC.MainFolder  + "/Data/Training/Session_2014_01_15_54172/"
+
 DetectDir = AC.MainFolder + "/Data/Detection/"
 
 #Online database update

@@ -1,7 +1,7 @@
 import os
 import thread
 import gspread
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore
 from TrainingFileClass import TrainingFileClass
 from multiprocessing.pool import ThreadPool
 
@@ -34,8 +34,6 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         QtCore.QObject.connect(self.allClassifiersRB, QtCore.SIGNAL(("toggled(bool)")), self.ClassifiersRB_toggled) #Classifiers Radio button
         QtCore.QObject.connect(self.BulkDetectBtnBox, QtCore.SIGNAL(("accepted()")), self.BulkDetectBtnBox_accepted) #Bulk Detect button
         #TODO: add signlas for the text boxes!
-        QtCore.QObject.connect(self.trainDirBrowseB, QtCore.SIGNAL(("clicked()")), self.TrainDirB_Clicked) #Train button
-        QtCore.QObject.connect(self.detectDirBrowseB, QtCore.SIGNAL(("clicked()")), self.DetectDirB_Clicked) #Detect button
 
     #TODO: make the appconfig an object that could be changed itself, not just a static method
     #TODO: make other setters for the selfies and remove the whole setters thing to a new file ^_^!
@@ -99,13 +97,6 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         self.likelihoodCB.setChecked(BDConfig.ClassificationMethod & BDConfig._Likelihood)
         self.leastSquaresCB.setChecked(BDConfig.ClassificationMethod & BDConfig._LeastSquares)
 
-        self.trainDir = BDConfig.TrainDir
-        self.trainDirT.setText(self.trainDir)
-        self.detectDir = BDConfig.DetectDir
-        self.detectDirT.setText(self.detectDir)
-
-        self.updateGDocsCB.setChecked(BDConfig.UpdateGDocs)
-
     ######## signaling functions #######
     def NoiseRB_toggled(self, value):
         self.NoiseCBSetter(value)
@@ -126,21 +117,9 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         # for all the Class. with all the enhancement, using all the preprocessing methods for each feature!
         self.BulkDetectExec()
         
-    def TrainDirB_Clicked(self):
-        self.fileDialog = QtGui.QFileDialog()
-        self.trainDir = self.getFileName()
-
-        self.trainDirT.setText(self.trainDir)
-
-    def DetectDirB_Clicked(self):
-        self.fileDialog = QtGui.QFileDialog()
-        self.detectDir = self.getFileName()
-
-        self.detectDirT.setText(self.detectDir)
-
     ######## end of signaling functions ######
     
-
+	
     ######## Bulk
     def BulkDetectExec(self):
         #TODO: add assertions -> there must be at least a single selected checkbox for each column
@@ -150,107 +129,81 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         preprocDict = self.DictOfPreprocessingCB()
         enhanceDict = self.DictOfEnhancementCB()
         classDict = self.DictOfClassifiersCB()
+	
+	##Connect to google spreadsheet 
+	gc = gspread.login( GSC.email , GSC.password)
+	sh = gc.open(GSC.title) 
+	worksheet = sh.get_worksheet(0)
+	self.rowIndex = self.getEmptyRowIndex()
 
-        filesDict = self.DictOfFiles()
-        updateGDocs = self.CBGetter(self.updateGDocsCB)
+        self.threadList = []
+        i = 0
+	j = 0
+	print "Traing File: " + self.trainFilePath
+	print "************"
 
-        self.BulkDetect(filesDict, noiseDict, featDict, preprocDict, enhanceDict, classDict, \
-                        self.sampleStart, self.sampleEnd, self.selectedData, self.sameFile, updateGDocs)
+	print "Detection File: " + self.detectFilePath
+	print "************"
+	
+	desc = TrainingFileClass.getDescription(self.trainFilePath)
+	name = TrainingFileClass.getName(self.trainFilePath)
+	
+	worksheet.update_cell(self.rowIndex, 3, desc)
+	worksheet.update_cell(self.rowIndex, 2, name)
+	
+	self.accumelatedAcc = []
+        print "Creating Detection Paths:"
+        print "-------------------------"
 
-    @staticmethod
-    def BulkDetect(filesDict, noiseDict, featDict, preprocDict, enhanceDict, classDict, \
-                   sampleStart, sampleEnd, selectedData, sameFile, updateGSpread=False):
+        for noiseItem,noiseValue in noiseDict.items():
+	    #TODO: remove this hack! a hack till we propagate the noise removal to be an unified variable(enum or struct) throughout all the code!
+	    wrappingNoiseValue = False
+	    if (noiseItem == "Remove") & (noiseValue & True):
+		wrappingNoiseValue = True
+	    elif (noiseItem == "Raw") & (noiseValue & True):
+		wrappingNoiseValue = False
 
-        if (updateGSpread == True):
-            ##Connect to google spreadsheet 
-            gc = gspread.login( GSC.email , GSC.password)
-            sh = gc.open(GSC.title) 
-            worksheet = sh.get_worksheet(0)
-            rowIndex = Ui_BulkDetectionWindow_Extended.getEmptyRowIndex()
+            for preprocItem, preprocValue in preprocDict.items():
+		#get feature dictionary 
+		for featItem, featValue in featDict.items():
+                    for enhanceItem, enhanceValue in enhanceDict.items():
+                        for classItem, classValue in classDict.items():
 
-        for tfItem, tfValue in filesDict.items():
-            ## given a train file, and dict methods, detect files, loop on each and do magic!
+                            Path = "Path " + str(i) + ": " +noiseItem + ", " + featItem + ", " + preprocItem + ", " + enhanceItem + ", " + classItem
+			    print Path
+			    print classValue
+                            thread = readDataThread(self.trainFilePath, self.detectFilePath, wrappingNoiseValue, self.sampleStart, self.sampleEnd, \
+                                                    featValue, preprocValue, enhanceValue, classValue, \
+						    False, self.selectedData, self.sameFile,True)
+                            self.threadList.append(thread)
+                            self.threadList[i].start()
+                            self.threadList[i].wait()
+			    Acc = self.threadList[i].getAcc()
+			    #Write the path description and it's accuracy 
+			    worksheet.update_cell(self.rowIndex, 7+j , Path)
+			    worksheet.update_cell(self.rowIndex, 8+j , Acc)
 
-            print "Training File: " + tfItem
-            print "************"
-
-            desc = TrainingFileClass.getDescription(tfItem)
-            name = TrainingFileClass.getName(tfItem)
-
-            i = 0
-            threadList = []
-            if (updateGSpread == True):
-                j = 0
-                worksheet.update_cell(rowIndex, 3, desc)
-                worksheet.update_cell(rowIndex, 2, name)
-            
-                accumelatedAcc = []
-
-            print "Creating Detection Paths:"
-            print "-----------------------"
-
-            for noiseItem, noiseValue in noiseDict.items():
-                #TODO: remove this hack! a hack till we propagate the noise removal to be an unified variable(enum or struct) throughout all the code!
-                wrappingNoiseValue = False
-                if (noiseItem == "Remove") & (noiseValue & True):
-                    wrappingNoiseValue = True
-                elif (noiseItem == "Raw") & (noiseValue & True):
-                    wrappingNoiseValue = False
-
-                for preprocItem, preprocValue in preprocDict.items():
-                    #get feature dictionary 
-                    for featItem, featValue in featDict.items():
-                        for enhanceItem, enhanceValue in enhanceDict.items():
-                            for classItem, classValue in classDict.items():
-                                # if we can separate the training from the detection, do the training here and detect for each file by itself
-                                # that would speed the process too much if we've multiple detection sessions for the same training session
-
-                                if (Ui_BulkDetectionWindow_Extended.CheckTrainingFile(tfItem, tfValue, False) == False):
-                                    continue
-                                
-                                #df are stored as lists
-                                for dfItem in tfValue:
-                                    print "Detection File: " + dfItem
-                                    print "************"
-            
-                                    Path = "Path " + str(i) + ": " + noiseItem + ", " + featItem + ", " + preprocItem + ", " + enhanceItem + ", " + classItem
-                                    print Path
-                                    print classValue
-                                    thread = readDataThread(tfItem, dfItem, wrappingNoiseValue, sampleStart, sampleEnd, \
-                                                            featValue, preprocValue, enhanceValue, classValue, \
-                                                            False, selectedData, sameFile, True)
-                                    threadList.append(thread)
-                                    threadList[i].start()
-                                    threadList[i].wait()
-
-                                    if (updateGSpread == True):
-                                        Acc = threadList[i].getAcc()
-                                        #Write the path description and it's accuracy 
-                                        worksheet.update_cell(rowIndex, 7+j , Path)
-                                        worksheet.update_cell(rowIndex, 8+j , Acc)
-
-                                        #Array to hold accurcies of all paths
-                                        accumelatedAcc.append(Acc)
-                                        j += 2
-
-                                    i += 1
-
-        if ((updateGSpread == True) & (i > 0)):
-            #Get the Min, Max and avrg accuracy then write them
-            mySorted = sorted(accumelatedAcc)
-            worksheet.update_cell(rowIndex, 4 , mySorted[0])
-            worksheet.update_cell(rowIndex, 5 , mySorted[i-1])
-            temp = 0
-            for k in range(0, i):
-                temp = temp + accumelatedAcc[k]
-            avrg = temp / len(accumelatedAcc)
-            worksheet.update_cell(rowIndex, 6 , avrg)
-
+			    #Array to hold accurcies of all paths
+			    self.accumelatedAcc.append(Acc)
+			    
+                            i += 1
+			    j += 2
+			    
+	#Get the Min, Max and avrg accuracy then write them 
+	self.sorted = sorted(self.accumelatedAcc)
+	worksheet.update_cell(self.rowIndex, 4 , self.sorted[0])
+	worksheet.update_cell(self.rowIndex, 5 , self.sorted[i-1])
+	temp = 0
+	for o in range(0, i):
+	    temp = temp + self.accumelatedAcc[o]
+	avrg = temp / len(self.accumelatedAcc)
+	worksheet.update_cell(self.rowIndex, 6 , avrg)
+	
         print "-----------------------"
         print "Finished bulk detection"
 
     ######## helping functions #########
-
+    
     def DictOfNoiseCB(self):
         noiseDict = {}
 	if(self.CBGetter(self.noiseRemCB)):
@@ -315,22 +268,6 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
             ClassDict["leastSquares"] = "Least Squares"
         return ClassDict
 
-    def DictOfFiles(self):
-        # Get train files list
-        trainFiles = self.getDirCSVFiles(self.trainDir)
-        filesDict = {}
-
-        # case of empty text fall back to single files inherited from the main GUI
-        # TODO: check is it None or ""
-        if (trainFiles == None):
-            trainFiles.append(self.trainFilePath)
-            filesDict[self.trainFilePath].append(self.detectFilePath)
-
-        for tf in trainFiles:
-            detectFiles = self.GetDetectMatchTrain(tf, self.detectDir)
-            filesDict[tf] = detectFiles
-        return filesDict
-
     def NoiseCBSetter(self, value):
         self.CBSetter(self.noiseRemCB, value)
         self.CBSetter(self.noiseRemRawCB, value)
@@ -364,76 +301,12 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
     #generic Checkbox getter
     def CBGetter(self, checkBox):
         return checkBox.isChecked()
-
-    @staticmethod
-    def getEmptyRowIndex():
+    
+    def getEmptyRowIndex(self):
 	gc = gspread.login( GSC.email , GSC.password)
 	sh = gc.open(GSC.title) 
 	worksheet = sh.get_worksheet(0)
 	values_list = worksheet.col_values(2)
 	index = len(values_list)
 	return index+1
-
-    ## helping functions to detect from multiple files at once ##
-    def getFileName(self):
-        return self.fileDialog.getExistingDirectory()
-
-    @staticmethod
-    def getDirCSVFiles(directory):
-        csvFileList = []
-        for root, dirs, fileNames in os.walk(directory):
-            for fileName in fileNames:
-                fileBase, fileExt = os.path.splitext(fileName)
-                if (fileExt == ".csv"):
-                    csvFileList.append(root + fileName)
-
-	return csvFileList
-
-    @staticmethod
-    def GetDetectMatchTrain(trainFile, detectDir, verbose=True):
-        trainFileSsn = TrainingFileClass.getSession(trainFile)
-        trainFileSubject = TrainingFileClass.getName(trainFile)
-
-        if(verbose == True):
-            print "Matching Training file:"
-            print "File: " + trainFile
-            #print matching criterions
-            print "-> Session: " + trainFileSsn
-            print "-> Subject: " + trainFileSubject
-
-        detFileList = []
-        for root, dirs, detFileNames in os.walk(detectDir):
-            for fileName in detFileNames:
-                detFileSsn = TrainingFileClass.getSession(root + fileName)
-                detFileSubject = TrainingFileClass.getName(root + fileName)
-
-                if((detFileSsn == trainFileSsn) & (detFileSubject == trainFileSubject)):
-                    # Check f is a name
-                    detFileList.append(root + fileName)
-
-                    if(verbose == True):
-                        print "-> Matched detection file: " + root + fileName + "\r\n"
-
-        if ((verbose == True) & (detFileList == [])):
-            print "-> No matching detection file in the detection directory"
-            print "-> Ensure we have consistent subject name/session in the training and detection files\r\n"
-
-        return detFileList
-
-    @staticmethod
-    def CheckTrainingFile(trainFileName, detFileList, verbose=False):
-        valid = True
-
-        if(detFileList == []):
-            valid = False
-            if(verbose == True):
-                print "Warning: training file: " + trainFileName + "\r\n\thas no detection file matches :<"
-
-        elif(detFileList == None):
-            if(verbose == True):
-                print "Undetermined error with training/detection file(s) for " + trainFileName
-            valid = False
-
-        return valid
-
     ######## end of helping functions #########
