@@ -76,15 +76,16 @@ class CrossValidationUtilities():
 
                                     Path = "Path " + str(i) + ": " + noiseItem + ", " + featItem + ", " + preprocItem + ", " + enhanceItem + ", " + classItem + ", " + str(offsetItem)
                                     print Path
+
                                     thread = readDataThread(tfItem, tfItem, wrappingNoiseValue, sampleStart, sampleEnd, \
                                                             featValue, preprocValue, enhanceValue, classValue, \
                                                             False, offsetDict, True, True)
-                                    threadList.append(thread)
-                                    threadList[i].start()
-                                    threadList[i].wait()
+                                    thread.start()
+                                    thread.wait()
 
                                     if (updateGSpread == True):
-                                        Acc = threadList[i].getAcc()
+                                        Acc = thread.getAcc()
+                                        thread.wait()
                                         #Write the path description and it's accuracy 
                                         worksheet.update_cell(rowIndex, 7+j , Path)
                                         worksheet.update_cell(rowIndex, 8+j , Acc)
@@ -93,7 +94,9 @@ class CrossValidationUtilities():
                                         accumelatedAcc.append(Acc)
                                         j += 2
 
-                                    i += 1
+                                    thread.exit()
+
+            i += 1
 
         if ((updateGSpread == True) & (i > 0)):
             #Get the Min, Max and avrg accuracy then write them
@@ -113,7 +116,7 @@ class CrossValidationUtilities():
     @staticmethod
     def DeselectDataOffset(offsetDict):
         for offsetItem, offsetValue in offsetDict.items():
-            offsetValue = False
+            offsetDict[offsetItem] = False
         return offsetDict
 
     @staticmethod
@@ -123,15 +126,18 @@ class CrossValidationUtilities():
 
     @staticmethod
     def SelectSingleDataOffset(offsetDict, offsetName):
-        CrossValidationUtilities.DeselectDataOffset(offsetDict)
-        CrossValidationUtilities.SelectDataOffset(offsetDict, offsetName)
+        offsetDict = CrossValidationUtilities.DeselectDataOffset(offsetDict)
+        offsetDict = CrossValidationUtilities.SelectDataOffset(offsetDict, offsetName)
         return offsetDict
 
+    #is offsetDictNew useful?
+    #is offsetDictNew needed?
     @staticmethod
     def SelectAllDataOffset(offsetDict):
+        offsetDictNew = offsetDict
         for offsetName in offsetDict.items():
-            CrossValidationUtilities.SelectDataOffset(offsetDict, offsetName)
-        return offsetDict
+            offsetDictNew = CrossValidationUtilities.SelectDataOffset(offsetDictNew, offsetName)
+        return offsetDictNew
 
 
 #TODO: change naming to Offset_##
