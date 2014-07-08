@@ -12,7 +12,6 @@ class CrossValidationUtilities():
                           sampleStart, sampleEnd, selectedData, updateGSpread=False):
 
         threadList = []
-        i = 0
         offsetDict = {}
 
         #TODO: change to enums
@@ -32,6 +31,8 @@ class CrossValidationUtilities():
         for offsetItem, offsetValue in offsetDict.items():
             print "Detection Offset: " + str(offsetItem)
             print "************"
+
+            i = 0
 
             if (updateGSpread == True):
                 rowIndex = GSPU.getEmptyRowIndex(range(1, 10))
@@ -95,8 +96,7 @@ class CrossValidationUtilities():
                                         j += 2
 
                                     thread.exit()
-
-            i += 1
+                                    i += 1
 
         if ((updateGSpread == True) & (i > 0)):
             #Get the Min, Max and avrg accuracy then write them
