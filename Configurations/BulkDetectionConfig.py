@@ -41,9 +41,9 @@ PreprocessingAll = True
 
 #Directories
 
-TrainDir = AC.MainFolder  + "/Data/Training/Session_2014_01_15_54172/"
+TrainPath = AC.MainFolder  + "/Data/Session_2014_07_01_62730/[T][2014-07-01 17-31-07] Osama Mohamed.csv"
 
-DetectDir = AC.MainFolder + "/Data/Detection/"
+DetectPath = AC.MainFolder + "/Data/[D][2014-07-01 17-36-12] Osama Mohamed.csv"
 
 #Online database update
 UpdateGDocs = True

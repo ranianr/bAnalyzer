@@ -400,6 +400,7 @@ class readDataThread(QtCore.QThread):
 	print color.BOLD + color.YELLOW + summary + color.END  + color.END
         #worksheet.update_cell(i, 2, "Bingo!.. "+str(i))
 	#return each turen accuracy
+	self.octave.close
 	return self.accTestResult
 
 	

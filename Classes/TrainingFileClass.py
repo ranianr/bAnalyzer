@@ -31,6 +31,29 @@ class TrainingFileClass(object):
                 # Training session
                 return words[1].strip()
 
+    #TODO: unhack isTrain and isDetect by searching for the Training/Detection keyword
+    @staticmethod
+    def isTrain(filepath):
+        logfile = open(filepath, "r").readlines()
+        
+        for line in logfile:
+            words = line.split(':')
+            if(words[0] == "Session"):
+                return True
+
+        return False
+
+    @staticmethod
+    def isDetect(filepath):
+        logfile = open(filepath, "r").readlines()
+        
+        for line in logfile:
+            words = line.split(':')
+            if(words[0] == "Source"):
+                return True
+
+        return False
+
     @staticmethod
     def getClasses(filepath):
         logfile = open(filepath, "r").readlines()

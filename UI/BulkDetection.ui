@@ -474,10 +474,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>Browse</string>
+    <string>Browse Dir</string>
    </property>
   </widget>
-  <widget class="QTextEdit" name="trainDirT">
+  <widget class="QTextEdit" name="trainPathT">
    <property name="geometry">
     <rect>
      <x>32</x>
@@ -503,10 +503,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>Train Files Path (leave empty to fallback to single file)</string>
+    <string>Train Files Path</string>
    </property>
   </widget>
-  <widget class="QTextEdit" name="detectDirT">
+  <widget class="QTextEdit" name="detectPathT">
    <property name="geometry">
     <rect>
      <x>32</x>
@@ -532,7 +532,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Browse</string>
+    <string>Browse Dir</string>
    </property>
   </widget>
   <widget class="QLabel" name="detectDirLbl">
@@ -559,6 +559,32 @@
    </property>
    <property name="text">
     <string>Update GDocs</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="detectFileBrowseB">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>270</y>
+     <width>99</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse File</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="trainFileBrowseB">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>220</y>
+     <width>99</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse File</string>
    </property>
   </widget>
  </widget>

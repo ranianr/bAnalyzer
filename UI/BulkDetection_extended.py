@@ -1,7 +1,7 @@
 import os
 import thread
 import gspread
-from PyQt4 import QtCore
+from PyQt4 import QtCore, QtGui
 from TrainingFileClass import TrainingFileClass
 from multiprocessing.pool import ThreadPool
 
@@ -17,6 +17,11 @@ from BulkDetection import Ui_BulkDetectionWindow
 import AppConfig
 import BulkDetectionConfig as BDConfig
 import GooglespreadSheetConfig as GSC
+
+from CrossValidation import CrossValidationUtilities as CVU
+from GSpreadPrinting import GSpreadPrintingUtilities as GSPU
+from Bulk import BulkUtilities as BU
+from FileImporters import RecursiveImporterUtilities as RIU
 
 class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 
@@ -34,6 +39,10 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         QtCore.QObject.connect(self.allClassifiersRB, QtCore.SIGNAL(("toggled(bool)")), self.ClassifiersRB_toggled) #Classifiers Radio button
         QtCore.QObject.connect(self.BulkDetectBtnBox, QtCore.SIGNAL(("accepted()")), self.BulkDetectBtnBox_accepted) #Bulk Detect button
         #TODO: add signlas for the text boxes!
+        QtCore.QObject.connect(self.trainDirBrowseB, QtCore.SIGNAL(("clicked()")), self.TrainDirB_Clicked) #Train button
+        QtCore.QObject.connect(self.detectDirBrowseB, QtCore.SIGNAL(("clicked()")), self.DetectDirB_Clicked) #Detect button
+        QtCore.QObject.connect(self.trainFileBrowseB, QtCore.SIGNAL(("clicked()")), self.TrainFileB_Clicked) #Train button
+        QtCore.QObject.connect(self.detectFileBrowseB, QtCore.SIGNAL(("clicked()")), self.DetectFileB_Clicked) #Detect button
 
     #TODO: make the appconfig an object that could be changed itself, not just a static method
     #TODO: make other setters for the selfies and remove the whole setters thing to a new file ^_^!
@@ -97,6 +106,13 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
         self.likelihoodCB.setChecked(BDConfig.ClassificationMethod & BDConfig._Likelihood)
         self.leastSquaresCB.setChecked(BDConfig.ClassificationMethod & BDConfig._LeastSquares)
 
+        self.trainPath = BDConfig.TrainPath
+        self.trainPathT.setText(self.trainPath)
+        self.detectPath = BDConfig.DetectPath
+        self.detectPathT.setText(self.detectPath)
+
+        self.updateGDocsCB.setChecked(BDConfig.UpdateGDocs)
+
     ######## signaling functions #######
     def NoiseRB_toggled(self, value):
         self.NoiseCBSetter(value)
@@ -115,13 +131,80 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 
     def BulkDetectBtnBox_accepted(self):
         # for all the Class. with all the enhancement, using all the preprocessing methods for each feature!
+        print self.trainPathT.toPlainText()
+        print self.detectPathT.toPlainText()
+        self.trainPath = self.trainPathT.toPlainText()
+        self.detectPath = self.detectPathT.toPlainText()
+
         self.BulkDetectExec()
-        
+
+    def TrainDirB_Clicked(self):
+        self.fileDialog = QtGui.QFileDialog()
+        self.trainPath = self.getDirName()
+
+        self.trainPathT.setText(self.trainPath)
+
+    def DetectDirB_Clicked(self):
+        self.fileDialog = QtGui.QFileDialog()
+        self.detectPath = self.getDirName()
+
+        self.detectPathT.setText(self.detectPath)
+
+    def TrainFileB_Clicked(self):
+        self.fileDialog = QtGui.QFileDialog()
+        self.trainPath = self.getFileName()
+
+        self.trainPathT.setText(self.trainPath)
+
+    def DetectFileB_Clicked(self):
+        self.fileDialog = QtGui.QFileDialog()
+        self.detectPath = self.getFileName()
+
+        self.detectPathT.setText(self.detectPath)
+
     ######## end of signaling functions ######
     
 	
     ######## Bulk
     def BulkDetectExec(self):
+        #TODO: add assertions -> there must be at least a single selected checkbox for each column
+        #TODO: add time estimation, even static ones would be great for now! calc a trial p
+
+        verbose = True
+
+        noiseDict = self.DictOfNoiseCB()
+        featDict = self.DictOfFeaturesCB()
+        preprocDict = self.DictOfPreprocessingCB()
+        enhanceDict = self.DictOfEnhancementCB()
+        classDict = self.DictOfClassifiersCB()
+
+        filesDict = self.DictOfFiles(self.trainPath, self.detectPath, verbose)
+        updateGDocs = self.CBGetter(self.updateGDocsCB)
+
+        trainPath = self.trainPath
+        detectPath = self.detectPath
+
+        #Check the logic out
+        if (self.sameFile):
+            print "samefile is set, entering 80/20!"
+            CVU.BulkEightyTweenty(filesDict, noiseDict, featDict, preprocDict, enhanceDict, classDict, \
+                                self.sampleStart, self.sampleEnd, self.sameFile, updateGDocs)
+
+        else:
+            print "samefile is not set, entering BulkDetect!"
+        
+            #separate the multiple files mode from the single file one
+            CDR = self.CheckDir(trainPath, detectPath, verbose)
+
+            if (CDR.isDirectory):
+                BU.MultiFileBulkDetect(filesDict, noiseDict, featDict, preprocDict, enhanceDict, classDict, \
+                                       self.sampleStart, self.sampleEnd, self.selectedData, self.sameFile, updateGDocs)
+            elif (CDR.isFile):
+                self.SingleFileBulkDetect()
+            else:
+                print "Warning: supplied path isn't valid"
+
+    def SingleFileBulkDetect(self):
         #TODO: add assertions -> there must be at least a single selected checkbox for each column
         #TODO: add time estimation, even static ones would be great for now! calc a trial p
         noiseDict = self.DictOfNoiseCB()
@@ -132,21 +215,21 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
 	
 	##Connect to google spreadsheet 
 	gc = gspread.login( GSC.email , GSC.password)
-	sh = gc.open(GSC.title) 
-	worksheet = sh.get_worksheet(0)
-	self.rowIndex = self.getEmptyRowIndex()
+	sh = gc.open(GSC.title)
+	worksheet = sh.worksheet(GSC.sheet_title)
+	self.rowIndex = GSPU.getEmptyRowIndex(range(1, 10))
 
         self.threadList = []
         i = 0
 	j = 0
-	print "Traing File: " + self.trainFilePath
+	print "Traing File: " + self.trainPath
 	print "************"
 
-	print "Detection File: " + self.detectFilePath
+	print "Detection File: " + self.detectPath
 	print "************"
 	
-	desc = TrainingFileClass.getDescription(self.trainFilePath)
-	name = TrainingFileClass.getName(self.trainFilePath)
+	desc = TrainingFileClass.getDescription(self.trainPath)
+	name = TrainingFileClass.getName(self.trainPath)
 	
 	worksheet.update_cell(self.rowIndex, 3, desc)
 	worksheet.update_cell(self.rowIndex, 2, name)
@@ -172,7 +255,7 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
                             Path = "Path " + str(i) + ": " +noiseItem + ", " + featItem + ", " + preprocItem + ", " + enhanceItem + ", " + classItem
 			    print Path
 			    print classValue
-                            thread = readDataThread(self.trainFilePath, self.detectFilePath, wrappingNoiseValue, self.sampleStart, self.sampleEnd, \
+                            thread = readDataThread(self.trainPath, self.detectPath, wrappingNoiseValue, self.sampleStart, self.sampleEnd, \
                                                     featValue, preprocValue, enhanceValue, classValue, \
 						    False, self.selectedData, self.sameFile,True)
                             self.threadList.append(thread)
@@ -268,6 +351,58 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
             ClassDict["leastSquares"] = "Least Squares"
         return ClassDict
 
+    # TODO: change to a static method!
+    def DictOfFiles(self, trainPath, detectPath, verbose=True):
+        # Get train files list
+        filesDict = {}
+        print self.sameFile
+
+        if (verbose):
+            print "\r\nCreating file dictionaries:\r\n------------------"
+            print "Dict of files contains the following entry/entries"
+
+        if (self.sameFile):
+            train_filename = self.trainPath
+            detect_filename = detectPath
+            filesDict[train_filename] = detect_filename
+
+            if (verbose):
+                print train_filename
+                print detect_filename
+
+        #TODO: remove duplicate code, unify the behavior
+        else:
+            #separate the multiple files mode from the single file one
+            CDR = self.CheckDir(trainPath, detectPath, verbose)
+            if (CDR.isDirectory):
+                #get train files list
+                trainFiles = RIU.getDirCSVFiles(trainPath)
+    
+                for tf in trainFiles:
+                    detectFiles = BU.GetDetectMatchTrain(tf, detectPath)
+                    filesDict[tf] = detectFiles
+
+                    if (verbose):
+                        print tf
+                        print detectFiles
+
+            elif (CDR.isFile):
+                train_filename = trainPath
+                detect_filename = detectPath
+                filesDict[train_filename] = detect_filename
+
+                if (verbose):
+                    print train_filename
+                    print detect_filename
+
+            else:
+                print "Couldn't retrieve the file dictionary\r\n"
+
+        if (verbose):
+            print "\r\n"
+
+        return filesDict
+
     def NoiseCBSetter(self, value):
         self.CBSetter(self.noiseRemCB, value)
         self.CBSetter(self.noiseRemRawCB, value)
@@ -301,12 +436,59 @@ class Ui_BulkDetectionWindow_Extended(Ui_BulkDetectionWindow):
     #generic Checkbox getter
     def CBGetter(self, checkBox):
         return checkBox.isChecked()
-    
-    def getEmptyRowIndex(self):
-	gc = gspread.login( GSC.email , GSC.password)
-	sh = gc.open(GSC.title) 
-	worksheet = sh.get_worksheet(0)
-	values_list = worksheet.col_values(2)
-	index = len(values_list)
-	return index+1
+
+    def getDirName(self):
+        return self.fileDialog.getExistingDirectory()
+
+    def getFileName(self):
+        return self.fileDialog.getOpenFileName()
+
+    @staticmethod
+    def CheckDir(trainPath, detectPath, verbose=False):
+        CDR = CheckDirReturn()
+
+        if (os.path.isdir(trainPath)):
+            if (os.path.isdir(detectPath)):
+                CDR.isDirectory = True
+            elif (os.path.isfile(detectPath)):
+                CDR.isMixed = True
+            else:
+                CDR.inValid = True
+
+        elif (os.path.isfile(trainPath)):
+            if (os.path.isdir(detectPath)):
+                CDR.isMixed = True
+            elif (os.path.isfile(detectPath)):
+                CDR.isFile = True
+            else:
+                CDR.inValid = True
+
+
+        else:
+            CDR.inValid = True
+
+        if (verbose):
+            print "Given train file is: " + str(trainPath)
+            print "Given detect file is: " + str(detectPath)
+            if (os.path.isfile(detectPath)):
+                print "Detection path is a file"
+            elif (os.path.isdir(detectPath)):
+                print "Detection path is a directory"
+            else:
+                print "Detection path is invalid"
+
+            if (os.path.isfile(trainPath)):
+                print "Training path is a file"
+            elif (os.path.isdir(trainPath)):
+                print "Training path is a directory"
+            else:
+                print "Training path is invalid"
+
+        return CDR
+
     ######## end of helping functions #########
+class CheckDirReturn:
+    isDirectory = False
+    isFile = False
+    isMixed = False
+    inValid = False
